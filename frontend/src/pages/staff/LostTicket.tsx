@@ -74,10 +74,10 @@ export default function LostTicket() {
   );
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="w-full">
       <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-3">
-          <AlertTriangle className="text-red-500" /> ໃບບິນຫາຍ (Lost Ticket)
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+          ໃບບິນຫາຍ (Lost Ticket)
         </h1>
         <p className="text-gray-500 mt-1">ບັນທຶກຫຼັກຖານກໍລະນີໃບບິນຫາຍ</p>
       </div>

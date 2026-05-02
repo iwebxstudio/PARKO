@@ -145,6 +145,24 @@
   .badge-lost { @apply bg-red-100 text-red-700; }
   .badge-paid { @apply bg-primary-100 text-primary-700; }
   .badge-unpaid { @apply bg-accent-100 text-accent-700; }
+
+  /* Number pad button */
+  .numpad-btn {
+    @apply flex items-center justify-center
+           w-full aspect-square rounded-xl
+           bg-sky-400 text-white font-bold text-2xl
+           shadow-md shadow-sky-400/25
+           transition-all duration-150 select-none
+           hover:bg-sky-500 active:scale-90 active:shadow-sm;
+  }
+
+  /* Plate color selection button */
+  .plate-color-btn {
+    @apply px-5 py-2.5 rounded-xl text-sm font-bold
+           border-2 cursor-pointer
+           transition-all duration-200 select-none
+           hover:opacity-90 active:scale-95;
+  }
 }
 
 /* Touch-friendly for mobile */
@@ -155,4 +173,44 @@
   .btn-primary, .btn-secondary, .btn-success, .btn-danger {
     @apply py-4 text-lg;
   }
+}
+
+/* ============================================
+   QR Scanner Styles
+   ============================================ */
+
+/* Scanning line animation */
+@keyframes scanLine {
+  0% { top: 8px; opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { top: calc(100% - 8px); opacity: 1; }
+}
+.animate-scan-line {
+  animation: scanLine 2s ease-in-out infinite alternate;
+  position: absolute;
+}
+
+/* Override html5-qrcode default styles */
+#qr-reader {
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+#qr-reader video {
+  border-radius: 0 !important;
+  object-fit: cover !important;
+}
+#qr-reader__scan_region {
+  min-height: 280px !important;
+}
+#qr-reader__header_message,
+#qr-reader__dashboard_section,
+#qr-reader__status_span {
+  display: none !important;
+}
+#qr-reader img[alt="Info icon"] {
+  display: none !important;
+}
+#qr-reader__dashboard {
+  display: none !important;
 }

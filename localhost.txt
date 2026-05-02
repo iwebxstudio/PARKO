@@ -1,0 +1,7 @@
+1. เปิดการทำงานของฝั่ง Backend (API) ให้คุณเปิด Terminal/Command Prompt ขึ้นมา แล้วเข้าไปที่โฟลเดอร์ backend จากนั้นรันคำสั่ง:
+cd d:\PARKO\backend
+npm run start:dev
+2. เปิดการทำงานของฝั่ง Frontend (หน้าเว็บ) ให้คุณเปิด Terminal/Command Prompt ขึ้นมาใหม่อีก 1 หน้าต่าง แล้วเข้าไปที่โฟลเดอร์ frontend จากนั้นรันคำสั่ง:
+cd d:\PARKO\frontend
+npm run dev
+http://localhost:5173/
