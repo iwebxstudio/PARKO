@@ -32,12 +32,20 @@ export class ReportsController {
   @ApiQuery({ name: 'period', enum: ['daily', 'monthly', 'yearly'] })
   @ApiQuery({ name: 'dateFrom', required: false })
   @ApiQuery({ name: 'dateTo', required: false })
+  @ApiQuery({ name: 'type', enum: ['in', 'out'], required: false })
   getVehicles(
     @Query('period') period: 'daily' | 'monthly' | 'yearly',
     @Query('dateFrom') dateFrom?: string,
     @Query('dateTo') dateTo?: string,
+    @Query('type') type?: 'in' | 'out',
   ) {
-    return this.reportsService.getVehicleReport(period || 'daily', dateFrom, dateTo);
+    return this.reportsService.getVehicleReport(period || 'daily', dateFrom, dateTo, type || 'in');
+  }
+
+  @Get('dashboard-stats')
+  @ApiOperation({ summary: 'Get comprehensive dashboard statistics' })
+  getDashboardStats() {
+    return this.reportsService.getDashboardStats();
   }
 
   @Get('export')

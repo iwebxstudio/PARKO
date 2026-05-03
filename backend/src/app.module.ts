@@ -41,7 +41,7 @@ import { TransformInterceptor } from './common/interceptors';
 
     // Serve uploaded files statically
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
+      rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
     }),
 

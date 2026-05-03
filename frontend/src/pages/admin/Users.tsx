@@ -19,6 +19,9 @@ export default function UsersPage() {
     try {
       if (editing) {
         await api.patch(`/users/${editing.id}`, { displayName: form.displayName, email: form.email, role: form.role });
+        if (form.password && form.password.trim().length > 0) {
+          await api.post(`/users/${editing.id}/reset-password`, { newPassword: form.password });
+        }
       } else {
         await api.post('/users', form);
       }
@@ -63,7 +66,7 @@ export default function UsersPage() {
               {!editing && <input value={form.username} onChange={e=>setForm({...form,username:e.target.value})} className="input-field" placeholder="Username" />}
               <input value={form.displayName} onChange={e=>setForm({...form,displayName:e.target.value})} className="input-field" placeholder="Display Name" />
               <input value={form.email} onChange={e=>setForm({...form,email:e.target.value})} className="input-field" placeholder="Email" type="email" />
-              {!editing && <input value={form.password} onChange={e=>setForm({...form,password:e.target.value})} className="input-field" placeholder="Password" type="password" />}
+              <input value={form.password} onChange={e=>setForm({...form,password:e.target.value})} className="input-field" placeholder={editing ? "ປ່ຽນລະຫັດຜ່ານໃໝ່ (ປ່ອຍວ່າງຖ້າບໍ່ປ່ຽນ)" : "Password"} type="password" />
               <select value={form.role} onChange={e=>setForm({...form,role:e.target.value})} className="input-field">
                 <option value="STAFF">Staff</option>
                 <option value="ADMIN">Admin</option>

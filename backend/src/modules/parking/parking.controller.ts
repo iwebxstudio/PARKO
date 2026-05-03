@@ -72,4 +72,12 @@ export class ParkingController {
   getRecentActivity(@Query('limit') limit?: string) {
     return this.parkingService.getRecentActivity(parseInt(String(limit)) || 10);
   }
+
+  @Post('delete/:id')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Delete a ticket (Admin only)' })
+  deleteTicket(@Param('id') id: string) {
+    return this.parkingService.deleteTicket(id);
+  }
 }

@@ -4,7 +4,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import {
   Camera, CameraOff, Search, Check, Printer, QrCode,
   RotateCcw, Clock, Car, Banknote, ArrowRight, Smartphone,
-  Keyboard, X,
+  Keyboard, X, Delete
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../api/client';
@@ -36,7 +36,7 @@ export default function CheckOut() {
       if (qrSetting && qrSetting.value?.enabled && qrSetting.value?.url) {
         setQrImage(qrSetting.value.url);
       }
-    }).catch(() => {});
+    }).catch(() => { });
   }, []);
 
   // ── QR Camera Scanner ─────────────────────
@@ -136,6 +136,15 @@ export default function CheckOut() {
 
   const search = () => searchTicket(query);
 
+  /* Number-pad handlers */
+  const handleNumPad = (digit: string) => {
+    if (query.length < 5) {
+      setQuery(prev => prev + digit);
+    }
+  };
+  const handleNumPadClear = () => setQuery('');
+  const handleNumPadBackspace = () => setQuery(prev => prev.slice(0, -1));
+
   // ── Check-out ──────────────────────────────
   const handleCheckOut = async () => {
     if (!ticket) return;
@@ -186,11 +195,10 @@ export default function CheckOut() {
   if (done && ticket) return (
     <div className="max-w-lg mx-auto animate-scale-in">
       <div className="glass-card p-8 text-center">
-        <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-5 ${
-          payStatus === 'PENDING'
-            ? 'bg-amber-100 text-amber-500'
-            : 'gradient-success text-white shadow-lg shadow-emerald-500/30'
-        }`}>
+        <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-5 ${payStatus === 'PENDING'
+          ? 'bg-amber-100 text-amber-500'
+          : 'gradient-success text-white shadow-lg shadow-emerald-500/30'
+          }`}>
           {payStatus === 'PENDING'
             ? <Clock className="w-10 h-10" />
             : <Check className="w-10 h-10" />}
@@ -226,12 +234,11 @@ export default function CheckOut() {
           </div>
           <div className="mt-2 flex justify-between items-center">
             <span className="text-sm text-gray-400">ສະຖານະ</span>
-            <span className={`badge ${
-              payStatus === 'PAID' ? 'badge-paid' :
+            <span className={`badge ${payStatus === 'PAID' ? 'badge-paid' :
               payStatus === 'WAIVED' ? 'badge-completed' : 'badge-unpaid'
-            }`}>
+              }`}>
               {payStatus === 'PAID' ? '✓ ຈ່າຍແລ້ວ' :
-               payStatus === 'WAIVED' ? 'Waived' : '⏳ ລໍຖ້າ'}
+                payStatus === 'WAIVED' ? 'Waived' : '⏳ ລໍຖ້າ'}
             </span>
           </div>
         </div>
@@ -320,11 +327,10 @@ export default function CheckOut() {
                 ['TRANSFER', 'ໂອນເງິນ', <ArrowRight size={18} key="tf" />],
               ] as [string, string, React.ReactNode][]).map(([v, l, icon]) => (
                 <button key={v} onClick={() => setPayMethod(v)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                    payMethod === v
-                      ? 'bg-primary-500 text-white shadow-md shadow-primary-500/20'
-                      : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100'
-                  }`}>
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${payMethod === v
+                    ? 'bg-primary-500 text-white shadow-md shadow-primary-500/20'
+                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100'
+                    }`}>
                   {icon}
                   {l}
                 </button>
@@ -357,11 +363,10 @@ export default function CheckOut() {
                 ['WAIVED', 'Waived', 'bg-gray-700'],
               ] as [string, string, string][]).map(([v, l, activeColor]) => (
                 <button key={v} onClick={() => setPayStatus(v)}
-                  className={`w-full px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                    payStatus === v
-                      ? `${activeColor} text-white shadow-md`
-                      : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100'
-                  }`}>
+                  className={`w-full px-4 py-3 rounded-xl text-sm font-bold transition-all ${payStatus === v
+                    ? `${activeColor} text-white shadow-md`
+                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100'
+                    }`}>
                   {l}
                 </button>
               ))}
@@ -370,11 +375,10 @@ export default function CheckOut() {
 
           {/* Confirm Button */}
           <button onClick={handleCheckOut} disabled={processing}
-            className={`w-full text-lg py-4 flex items-center justify-center gap-2 rounded-2xl font-bold transition-all shadow-lg active:scale-95 disabled:opacity-50 ${
-              payStatus === 'PENDING'
-                ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/25'
-                : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/25'
-            }`}>
+            className={`w-full text-lg py-4 flex items-center justify-center gap-2 rounded-2xl font-bold transition-all shadow-lg active:scale-95 disabled:opacity-50 ${payStatus === 'PENDING'
+              ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/25'
+              : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/25'
+              }`}>
             {processing ? '⏳ ກຳລັງດຳເນີນ...' : <><Check size={24} /> ຢືນຢັນລົດອອກ</>}
           </button>
         </div>
@@ -388,37 +392,24 @@ export default function CheckOut() {
   return (
     <div className="w-full">
       {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">ລົດອອກ (Check-out)</h1>
-        <p className="text-gray-400 mt-1">ສະແກນ QR Code ຫຼື ພິມເລກ Ticket</p>
+      <div className="mb-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">ລົດອອກ (check out)</h1>
+        <p className="text-gray-400 mt-1">ໃສ່ເລກ Ticket ຫຼື ທະບຽນລົດ ສະແກນ QR</p>
       </div>
 
-      {/* Mode Switcher (Redesigned) */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      {/* Mode Switcher (Redesigned matching image) */}
+      <div className="flex w-full mb-6">
         <button
           onClick={() => setMode('manual')}
-          className={`group flex items-center justify-center gap-2.5 py-3 rounded-xl font-bold text-sm transition-all duration-300 border-2 ${
-            mode === 'manual'
-              ? 'border-primary-500 bg-primary-50 text-primary-700 shadow-md shadow-primary-500/10 scale-[1.01]'
-              : 'border-gray-100 bg-white text-gray-500 hover:border-primary-200 hover:bg-gray-50 hover:text-gray-700'
-          }`}>
-          <div className={`p-1.5 rounded-lg transition-colors ${mode === 'manual' ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-primary-100 group-hover:text-primary-500'}`}>
-            <Keyboard size={18} />
-          </div>
-          <span>ພິມ Ticket ID</span>
+          className={`flex-1 py-5 font-bold text-lg md:text-xl flex items-center justify-center gap-3 transition-all ${mode === 'manual' ? 'bg-[#F59E0B] text-white opacity-100' : 'bg-[#F59E0B] text-white opacity-60 hover:opacity-100'}`}
+        >
+          <Keyboard size={28} /> ພິມ Ticket ID
         </button>
-
         <button
           onClick={() => setMode('camera')}
-          className={`group flex items-center justify-center gap-2.5 py-3 rounded-xl font-bold text-sm transition-all duration-300 border-2 ${
-            mode === 'camera'
-              ? 'border-primary-500 bg-primary-50 text-primary-700 shadow-md shadow-primary-500/10 scale-[1.01]'
-              : 'border-gray-100 bg-white text-gray-500 hover:border-primary-200 hover:bg-gray-50 hover:text-gray-700'
-          }`}>
-          <div className={`p-1.5 rounded-lg transition-colors ${mode === 'camera' ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-primary-100 group-hover:text-primary-500'}`}>
-            <Camera size={18} />
-          </div>
-          <span>ສະແກນ QR (ກ້ອງ)</span>
+          className={`flex-1 py-5 font-bold text-lg md:text-xl flex items-center justify-center gap-3 transition-all ${mode === 'camera' ? 'bg-[#14B8A6] text-white opacity-100' : 'bg-[#14B8A6] text-white opacity-60 hover:opacity-100'}`}
+        >
+          <Camera size={28} /> ສະແກນ QR (ກ້ອງ)
         </button>
       </div>
 
@@ -472,30 +463,59 @@ export default function CheckOut() {
 
       {/* Manual Mode */}
       {mode === 'manual' && (
-        <div className="glass-card p-6 mb-4">
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 mx-auto rounded-full bg-primary-50 flex items-center justify-center mb-3">
-              <Search size={28} className="text-primary-500" />
-            </div>
-            <p className="text-gray-500 font-medium">ໃສ່ເລກ Ticket ຫຼື ທະບຽນລົດ</p>
-          </div>
-
-          <div className="flex gap-3">
+        <div className="bg-white py-8 px-6 mb-4">
+          <div className="flex flex-col sm:flex-row gap-3 max-w-3xl mx-auto">
             <input
               value={query}
-              onChange={e => setQuery(e.target.value)}
+              onChange={e => setQuery(e.target.value.slice(0, 5))}
               onKeyDown={e => e.key === 'Enter' && search()}
-              className="input-field text-center text-lg tracking-widest flex-1 !rounded-xl"
+              maxLength={5}
+              className="w-full px-6 py-4 rounded-xl border-[3px] border-[#14B8A6] text-center text-xl text-gray-700 focus:outline-none focus:ring-4 focus:ring-teal-500/20 placeholder-gray-300"
               placeholder="Ticket # / ທະບຽນລົດ"
               autoFocus
             />
             <button onClick={search} disabled={loading}
-              className="btn-primary !px-8 !rounded-xl flex items-center gap-2">
+              className="bg-[#14B8A6] hover:bg-teal-600 text-white px-10 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50">
               {loading ? (
                 <span className="animate-spin">⏳</span>
               ) : (
-                <><Search size={18} /> ຄົ້ນຫາ</>
+                <><Search size={24} /> ຄົ້ນຫາ</>
               )}
+            </button>
+          </div>
+
+          {/* Number pad */}
+          <div className="grid grid-cols-6 gap-2 w-full max-w-3xl mx-auto mt-6">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => handleNumPad(String(n))}
+                className="flex items-center justify-center h-16 sm:h-20 md:h-24 rounded-none bg-[#1D8BCF] hover:bg-[#1A7AB5] text-white font-normal text-2xl md:text-3xl shadow active:scale-95 transition-all w-full"
+              >
+                {n}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => handleNumPad('0')}
+              className="flex items-center justify-center h-16 sm:h-20 md:h-24 rounded-none bg-[#1D8BCF] hover:bg-[#1A7AB5] text-white font-normal text-2xl md:text-3xl shadow active:scale-95 transition-all w-full"
+            >
+              0
+            </button>
+            <button
+              type="button"
+              onClick={handleNumPadBackspace}
+              className="flex items-center justify-center h-16 sm:h-20 md:h-24 rounded-none bg-[#EE9B00] hover:bg-[#D48A00] text-white shadow active:scale-95 transition-all w-full"
+            >
+              <Delete size={28} />
+            </button>
+            <button
+              type="button"
+              onClick={handleNumPadClear}
+              className="flex items-center justify-center h-16 sm:h-20 md:h-24 rounded-none bg-[#EB4A4A] hover:bg-[#D13E3E] text-white font-bold text-lg shadow active:scale-95 transition-all w-full"
+            >
+              CLR
             </button>
           </div>
         </div>

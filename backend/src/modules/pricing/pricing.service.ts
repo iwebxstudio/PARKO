@@ -71,4 +71,36 @@ export class PricingService {
       orderBy: { sortOrder: 'asc' },
     });
   }
+
+  /**
+   * Get the rate for a specific vehicle type and parking type
+   * Used by check-in to preview and lock-in the prepaid amount
+   */
+  async getRate(vehicleTypeId: number, parkingType: string): Promise<{ rate: number; pricingRuleId: string }> {
+    const rule = await this.prisma.pricingRule.findFirst({
+      where: { vehicleTypeId, isActive: true },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!rule) {
+      return { rate: 0, pricingRuleId: '' };
+    }
+
+    let rate = 0;
+    switch (parkingType) {
+      case 'DAILY':
+        rate = Number(rule.dailyRate);
+        break;
+      case 'WEEKLY':
+        rate = Number(rule.weeklyRate);
+        break;
+      case 'MONTHLY':
+        rate = Number(rule.monthlyRate);
+        break;
+      default:
+        rate = Number(rule.dailyRate);
+    }
+
+    return { rate, pricingRuleId: rule.id };
+  }
 }

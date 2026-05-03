@@ -22,25 +22,23 @@ export default function AppLayout() {
   };
 
   const staffLinks = [
-    { to: '/staff/check-in', icon: LogIn, label: 'ລົດເຂົ້າ (Check-in)' },
-    { to: '/staff/check-out', icon: ScanLine, label: 'ລົດອອກ (Check-out)' },
-    { to: '/staff/lost-ticket', icon: AlertTriangle, label: 'ໃບບິນຫາຍ (Lost Ticket)' },
+    { to: '/staff/check-in', icon: LogIn, label: 'ລົດເຂົ້າ (Check in)' },
+    { to: '/staff/check-out', icon: ScanLine, label: 'ລົດອອກ (Check out)' },
+    { to: '/staff/lost-ticket', icon: AlertTriangle, label: 'ແຈ້ງປີ້ຫາຍ (Lost Ticket)' },
   ];
 
   const adminLinks = [
-    { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/admin/dashboard', icon: LayoutDashboard, label: 'ແຜງຄວບຄຸມ' },
     { to: '/admin/users', icon: Users, label: 'ຈັດການຜູ້ໃຊ້' },
     { to: '/admin/reports', icon: BarChart3, label: 'ລາຍງານ' },
-    { to: '/admin/pricing', icon: DollarSign, label: 'ຕັ້ງຄ່າລາຄາ' },
     { to: '/admin/settings', icon: Settings, label: 'ຕັ້ງຄ່າລະບົບ' },
     { to: '/admin/audit-log', icon: ClipboardList, label: 'Audit Log' },
   ];
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-bold ${
-      isActive
-        ? 'bg-primary-50 text-primary-700 border border-primary-100'
-        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+    `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-bold ${isActive
+      ? 'bg-primary-50 text-primary-700 border border-primary-100'
+      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
     }`;
 
   return (
@@ -55,9 +53,8 @@ export default function AppLayout() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-40 w-72 bg-white/95 backdrop-blur-xl border-r border-gray-200 flex flex-col transform transition-transform duration-300 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-        }`}
+        className={`fixed md:static inset-y-0 left-0 z-40 w-72 bg-white/95 backdrop-blur-xl border-r border-gray-200 flex flex-col transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          }`}
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-200">
@@ -65,7 +62,7 @@ export default function AppLayout() {
             <ParkingCircle className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900 tracking-wide">PARKO</h1>
+            <h1 className="text-lg font-bold text-gray-900 tracking-wide">PARKO V2.0</h1>
             <p className="text-[10px] text-gray-500 uppercase tracking-widest">Parking System</p>
           </div>
           <button
@@ -80,7 +77,6 @@ export default function AppLayout() {
         <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
           {/* Staff Section */}
           <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-            Staff
           </p>
           {staffLinks.map((link) => (
             <NavLink
@@ -99,7 +95,6 @@ export default function AppLayout() {
             <>
               <div className="my-3 border-t border-gray-100" />
               <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                Admin
               </p>
               {adminLinks.map((link) => (
                 <NavLink

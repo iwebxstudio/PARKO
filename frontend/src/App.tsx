@@ -12,7 +12,6 @@ import LostTicket from './pages/staff/LostTicket';
 import Dashboard from './pages/admin/Dashboard';
 import Users from './pages/admin/Users';
 import Reports from './pages/admin/Reports';
-import Pricing from './pages/admin/Pricing';
 import Settings from './pages/admin/Settings';
 import AuditLog from './pages/admin/AuditLog';
 
@@ -39,7 +38,6 @@ function AppRoutes() {
         <Route path="admin/dashboard" element={<ProtectedRoute adminOnly><Dashboard /></ProtectedRoute>} />
         <Route path="admin/users" element={<ProtectedRoute adminOnly><Users /></ProtectedRoute>} />
         <Route path="admin/reports" element={<ProtectedRoute adminOnly><Reports /></ProtectedRoute>} />
-        <Route path="admin/pricing" element={<ProtectedRoute adminOnly><Pricing /></ProtectedRoute>} />
         <Route path="admin/settings" element={<ProtectedRoute adminOnly><Settings /></ProtectedRoute>} />
         <Route path="admin/audit-log" element={<ProtectedRoute adminOnly><AuditLog /></ProtectedRoute>} />
         {/* Default redirect */}

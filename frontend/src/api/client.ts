@@ -54,6 +54,20 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
     }
+    
+    // Log error to a hidden div for debugging
+    const errDiv = document.getElementById('debug-error-log') || document.createElement('div');
+    errDiv.id = 'debug-error-log';
+    errDiv.style.display = 'none';
+    errDiv.innerText = JSON.stringify({
+      url: error.config?.url,
+      method: error.config?.method,
+      data: error.config?.data,
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message
+    });
+    document.body.appendChild(errDiv);
+    
     return Promise.reject(error);
   },
 );

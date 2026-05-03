@@ -58,21 +58,26 @@ export class ReportsService {
   /**
    * Get vehicle count report
    */
-  async getVehicleReport(period: 'daily' | 'monthly' | 'yearly', dateFrom?: string, dateTo?: string) {
+  async getVehicleReport(period: 'daily' | 'monthly' | 'yearly', dateFrom?: string, dateTo?: string, type: 'in' | 'out' = 'in') {
     const from = dateFrom ? new Date(dateFrom) : new Date(new Date().setDate(new Date().getDate() - 30));
     const to = dateTo ? new Date(dateTo) : new Date();
 
+    const whereClause = type === 'out' 
+      ? { checkOutAt: { gte: from, lte: to }, status: 'COMPLETED' as TicketStatus }
+      : { checkInAt: { gte: from, lte: to } };
+
     const tickets = await this.prisma.parkingTicket.findMany({
-      where: { checkInAt: { gte: from, lte: to } },
+      where: whereClause,
       include: { vehicleType: true },
-      orderBy: { checkInAt: 'asc' },
+      orderBy: type === 'out' ? { checkOutAt: 'asc' } : { checkInAt: 'asc' },
     });
 
     const grouped = new Map<string, { total: number; byType: Record<string, number> }>();
 
     for (const ticket of tickets) {
       let key: string;
-      const d = new Date(ticket.checkInAt);
+      const dateToUse = type === 'out' ? ticket.checkOutAt! : ticket.checkInAt;
+      const d = new Date(dateToUse);
       switch (period) {
         case 'daily': key = d.toISOString().split('T')[0]; break;
         case 'monthly': key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; break;
@@ -122,5 +127,67 @@ export class ReportsService {
     ]);
 
     return { tickets, payments, dateRange: { from: from.toISOString(), to: to.toISOString() }, currency: 'LAK' };
+  }
+
+  /**
+   * Get comprehensive stats for dashboard
+   */
+  async getDashboardStats() {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+    // Vehicles - In (checkInAt)
+    const inToday = await this.prisma.parkingTicket.count({ where: { checkInAt: { gte: startOfToday } } });
+    const inMonth = await this.prisma.parkingTicket.count({ where: { checkInAt: { gte: startOfMonth } } });
+    const inYear = await this.prisma.parkingTicket.count({ where: { checkInAt: { gte: startOfYear } } });
+    const inAll = await this.prisma.parkingTicket.count();
+    const parked = await this.prisma.parkingTicket.count({ where: { status: 'ACTIVE' } });
+
+    // Vehicles - Out (checkOutAt)
+    const outToday = await this.prisma.parkingTicket.count({ where: { checkOutAt: { gte: startOfToday }, status: 'COMPLETED' } });
+    const outMonth = await this.prisma.parkingTicket.count({ where: { checkOutAt: { gte: startOfMonth }, status: 'COMPLETED' } });
+    const outYear = await this.prisma.parkingTicket.count({ where: { checkOutAt: { gte: startOfYear }, status: 'COMPLETED' } });
+    const outAll = await this.prisma.parkingTicket.count({ where: { status: 'COMPLETED' } });
+
+    // Revenue (paidAt)
+    const revTodayAgg = await this.prisma.payment.aggregate({ _sum: { amount: true }, where: { paidAt: { gte: startOfToday } } });
+    const revMonthAgg = await this.prisma.payment.aggregate({ _sum: { amount: true }, where: { paidAt: { gte: startOfMonth } } });
+    const revYearAgg = await this.prisma.payment.aggregate({ _sum: { amount: true }, where: { paidAt: { gte: startOfYear } } });
+    const revAllAgg = await this.prisma.payment.aggregate({ _sum: { amount: true } });
+
+    // Vehicle types breakdown (Active / Parked)
+    const activeGrouped = await this.prisma.parkingTicket.groupBy({
+      by: ['vehicleTypeId'],
+      where: { status: 'ACTIVE' },
+      _count: { id: true },
+    });
+
+    const vehicleTypes = await this.prisma.vehicleType.findMany();
+    const typeBreakdown = activeGrouped.map(g => {
+      const vType = vehicleTypes.find(t => t.id === g.vehicleTypeId);
+      return {
+        id: vType?.id || g.vehicleTypeId,
+        name: vType?.name || 'Unknown',
+        label: vType?.label || 'Unknown',
+        count: g._count.id
+      };
+    }).sort((a, b) => b.count - a.count);
+
+    return {
+      vehicles: {
+        parked,
+        in: { today: inToday, month: inMonth, year: inYear, all: inAll },
+        out: { today: outToday, month: outMonth, year: outYear, all: outAll },
+        byType: typeBreakdown
+      },
+      revenue: {
+        today: Number(revTodayAgg._sum.amount || 0),
+        month: Number(revMonthAgg._sum.amount || 0),
+        year: Number(revYearAgg._sum.amount || 0),
+        all: Number(revAllAgg._sum.amount || 0),
+      }
+    };
   }
 }

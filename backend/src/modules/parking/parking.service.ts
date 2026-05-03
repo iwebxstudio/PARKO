@@ -41,7 +41,7 @@ export class ParkingService {
   }
 
   /**
-   * Check-in a vehicle
+   * Check-in a vehicle — with auto-charge (prepaid)
    */
   async checkIn(dto: CheckInDto, userId: string) {
     // Validate vehicle type exists
@@ -53,6 +53,39 @@ export class ParkingService {
     }
 
     const ticketNumber = await this.generateTicketNumber();
+
+    // ── Auto-charge: look up pricing rule ──
+    const parkingType = dto.parkingType || ParkingType.DAILY;
+    let prepaidAmount: number | null = null;
+
+    const pricingRule = await this.prisma.pricingRule.findFirst({
+      where: { vehicleTypeId: dto.vehicleTypeId, isActive: true },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (pricingRule) {
+      switch (parkingType) {
+        case ParkingType.DAILY:
+          prepaidAmount = Number(pricingRule.dailyRate);
+          break;
+        case ParkingType.WEEKLY:
+          prepaidAmount = Number(pricingRule.weeklyRate);
+          break;
+        case ParkingType.MONTHLY:
+          prepaidAmount = Number(pricingRule.monthlyRate);
+          break;
+        default:
+          // Fallback for legacy HOURLY — no prepaid
+          prepaidAmount = dto.prepaidAmount || null;
+      }
+    }
+
+    // Use explicit prepaidAmount from DTO if provided (override)
+    if (dto.prepaidAmount && dto.prepaidAmount > 0) {
+      prepaidAmount = dto.prepaidAmount;
+    }
+
+    const isPrepaid = prepaidAmount !== null && prepaidAmount > 0;
 
     // QR code data contains all essential ticket info
     const qrCodeData = JSON.stringify({
@@ -70,13 +103,14 @@ export class ParkingService {
         plateNumber: dto.plateNumber || null,
         plateProvince: dto.plateProvince || null,
         qrCodeData,
-        parkingType: dto.parkingType || ParkingType.HOURLY,
+        parkingType: parkingType,
         customStart: dto.customStart ? new Date(dto.customStart) : null,
         customEnd: dto.customEnd ? new Date(dto.customEnd) : null,
-        prepaidAmount: dto.prepaidAmount || null,
+        prepaidAmount: isPrepaid ? prepaidAmount : null,
+        totalAmount: isPrepaid ? prepaidAmount : null,
         checkedInById: userId,
         notes: dto.notes || null,
-        paymentStatus: dto.prepaidAmount ? PaymentStatus.PAID : PaymentStatus.UNPAID,
+        paymentStatus: isPrepaid ? PaymentStatus.PAID : PaymentStatus.UNPAID,
       },
       include: {
         vehicleType: true,
@@ -86,12 +120,12 @@ export class ParkingService {
       },
     });
 
-    // If prepaid, create payment record
-    if (dto.prepaidAmount) {
+    // Create payment record for prepaid tickets
+    if (isPrepaid && prepaidAmount) {
       await this.prisma.payment.create({
         data: {
           ticketId: ticket.id,
-          amount: dto.prepaidAmount,
+          amount: prepaidAmount,
           paymentMethod: 'CASH',
           receivedById: userId,
         },
@@ -413,5 +447,35 @@ export class ParkingService {
       tickets,
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     };
+  }
+
+  /**
+   * Delete a parking ticket completely (Admin only)
+   */
+  async deleteTicket(id: string) {
+    const ticket = await this.prisma.parkingTicket.findUnique({
+      where: { id },
+    });
+
+    if (!ticket) {
+      throw new NotFoundException('Ticket not found');
+    }
+
+    // First delete any associated payments
+    await this.prisma.payment.deleteMany({
+      where: { ticketId: id },
+    });
+
+    // Then delete the ticket
+    await this.prisma.parkingTicket.delete({
+      where: { id },
+    });
+
+    this.logger.log(`Ticket deleted by Admin: ${ticket.ticketNumber}`);
+
+    // Broadcast refresh so dashboard updates
+    this.parkingGateway.broadcastUpdate({ type: 'stats_refresh' });
+
+    return { success: true, message: 'Ticket deleted successfully' };
   }
 }

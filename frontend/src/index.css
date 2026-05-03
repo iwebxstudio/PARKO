@@ -46,7 +46,7 @@
 @layer components {
   /* White Card */
   .glass-card {
-    @apply bg-white border border-gray-100 rounded-2xl shadow-lg;
+    @apply bg-white border border-gray-100 rounded-none shadow-lg;
   }
 
   /* Gradient backgrounds */
@@ -104,7 +104,7 @@
 
   /* Vehicle type card for check-in */
   .vehicle-card {
-    @apply flex flex-col items-center justify-center p-6 md:p-8 rounded-2xl
+    @apply flex flex-col items-center justify-center p-6 md:p-8 rounded-none
            bg-white border-2 border-gray-100 cursor-pointer
            transition-all duration-200 hover:border-primary-300
            hover:bg-primary-50 hover:shadow-md

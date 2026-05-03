@@ -1,7 +1,7 @@
 // ============================================
 // PARKO — Pricing DTOs
 // ============================================
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { IsInt, IsEnum, IsNumber, IsOptional, IsBoolean, IsDateString, Min } from 'class-validator';
 import { ParkingType } from '@prisma/client';
 
@@ -51,4 +51,5 @@ export class CreatePricingRuleDto {
   effectiveTo?: string;
 }
 
-export class UpdatePricingRuleDto extends CreatePricingRuleDto {}
+export class UpdatePricingRuleDto extends PartialType(CreatePricingRuleDto) {}
+

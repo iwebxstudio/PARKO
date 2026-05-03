@@ -23,6 +23,12 @@ export class PricingController {
   @ApiOperation({ summary: 'Create pricing rule (Admin)' })
   create(@Body() dto: CreatePricingRuleDto) { return this.pricingService.create(dto); }
 
+  @Get('rate')
+  @ApiOperation({ summary: 'Get rate for a vehicle type + parking type' })
+  getRate(@Query('vehicleTypeId') vehicleTypeId: string, @Query('parkingType') parkingType: string) {
+    return this.pricingService.getRate(parseInt(vehicleTypeId) || 1, parkingType || 'DAILY');
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get all pricing rules' })
   findAll() { return this.pricingService.findAll(); }
