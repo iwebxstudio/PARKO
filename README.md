@@ -17,7 +17,7 @@
 
 <img src="docs/screenshots/login.png" alt="ໜ້າຈໍເຂົ້າສູ່ລະບົບ (Login Portal)" width="100%" />
 
-#### ໜ້າຈໍ Check-in ລົດເຂົ້າ (Staff Dashboard)
+#### ໜ້າຈໍ Check-in ລົດເຂົ້າ (admin Dashboard)
 
 <img src="docs/screenshots/checkin.png" alt="ໜ້າຈໍ Check-in ລົດເຂົ້າ (Staff Dashboard)" width="100%" />
 
