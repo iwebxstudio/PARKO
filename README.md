@@ -1,7 +1,7 @@
-# 🚗 PARKO — ໂປຣແກຣມບໍລິຫານຈັດການບ່ອນຈອດລົດ
+# PARKO — ໂປຣແກຣມບໍລິຫານຈັດການບ່ອນຈອດລົດ
 
-> **Smart Parking Management System**  
-> ໂປຣແກຣມລະບົບຄຸ້ມຄອງບໍລິຫານບ່ອນຈອດລົດ ຮອງຮັບລົດທຸກປະເພດ ທັງລົດມີປ້າຍ ແລະ ບໍ່ມີປ້າຍ. ໃຊ້ງານໄດ້ຜ່ານໂທລະສັບ, ຄອມພິວເຕີ ແລະ ແທັບເລັດ. ສາມາດພິມປີ້/ໃບຮັບເງິນຜ່ານ Thermal Printer (USB/Bluetooth), ຮອງຮັບການສະແກນ QR Code, ຄິດໄລ່ຄ່າຈອດ Real-time, ພິມປີ້ຄວາມຮ້ອນ ESC/POS ແລະ ຈັດການປີ້ເສຍ. ລະບົບເນັ້ນ High-Performance, Enterprise Security, Clean code, ລະບົບນິ່ງຄວາມສະຖຽນ ແລະ ຮອງຮັບການອັບເກຣດລະບົບໄດ້ໃນອະນາຄົດ.
+**Smart Parking Management System**  
+ໂປຣແກຣມລະບົບຄຸ້ມຄອງບໍລິຫານບ່ອນຈອດລົດ ຮອງຮັບລົດທຸກປະເພດ ທັງລົດມີປ້າຍ ແລະ ບໍ່ມີປ້າຍ. ໃຊ້ງານໄດ້ຜ່ານໂທລະສັບ, ຄອມພິວເຕີ ແລະ ແທັບເລັດ. ສາມາດພິມປີ້/ໃບຮັບເງິນຜ່ານ Thermal Printer (USB/Bluetooth), ຮອງຮັບການສະແກນ QR Code, ຄິດໄລ່ຄ່າຈອດ Real-time, ພິມປີ້ຄວາມຮ້ອນ ESC/POS ແລະ ຈັດການປີ້ເສຍ. ລະບົບເນັ້ນ High-Performance, Enterprise Security, Clean code, ລະບົບນິ່ງຄວາມສະຖຽນ ແລະ ຮອງຮັບການອັບເກຣດລະບົບໄດ້ໃນອະນາຄົດ.
 
 [![NestJS](https://img.shields.io/badge/NestJS-11.x-E0234E?logo=nestjs)](https://nestjs.com/)
 [![React](https://img.shields.io/badge/React-19.x-61DAFB?logo=react)](https://react.dev/)
@@ -11,11 +11,15 @@
 
 ---
 
-### 📸 ພາບຕົວຢ່າງໜ້າຕາລະບົບ (Application Screenshots)
+### ພາບຕົວຢ່າງໜ້າຕາລະບົບ (Application Screenshots)
 
-| 🔐 ໜ້າຈໍເຂົ້າສູ່ລະບົບ (Login Portal) | 🚗 ໜ້າຈໍ Check-in ລົດເຂົ້າ (Staff Dashboard) |
-| :---: | :---: |
-| <img src="docs/screenshots/login.png" alt="PARKO Login Portal" width="100%" /> | <img src="docs/screenshots/checkin.png" alt="PARKO Check-in Dashboard" width="100%" /> |
+#### ໜ້າຈໍເຂົ້າສູ່ລະບົບ (Login Portal)
+
+<img src="docs/screenshots/login.png" alt="ໜ້າຈໍເຂົ້າສູ່ລະບົບ (Login Portal)" width="100%" />
+
+#### ໜ້າຈໍ Check-in ລົດເຂົ້າ (Staff Dashboard)
+
+<img src="docs/screenshots/checkin.png" alt="ໜ້າຈໍ Check-in ລົດເຂົ້າ (Staff Dashboard)" width="100%" />
 
 ---
 
