@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Load environment variables
+# ໂຫຼດຄ່າຕົວປ່ຽນສະພາບແວດລ້ອມຈາກຟາຍ .env
 if [ -f .env ]; then
   export $(grep -v '^#' .env | xargs)
 fi
@@ -17,7 +17,7 @@ FILENAME="$BACKUP_DIR/backup_$TIMESTAMP.sql"
 
 echo "📂 Backing up database to $FILENAME..."
 
-# Execute pg_dump inside postgres container and write output to host file
+# ສັ່ງ run ຄຳສັ່ງ pg_dump ພາຍໃນ PostgreSQL container ເພື່ອ export ຂໍ້ມູນທັງໝົດອອກມາຍັງຟາຍໃນ Host
 docker compose exec -T postgres pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" > "$FILENAME"
 
 if [ $? -eq 0 ]; then

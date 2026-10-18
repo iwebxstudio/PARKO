@@ -1,9 +1,10 @@
-# ==================================================
+# ==============================================================================
 #      PARKO SYSTEM             
-#      Production Deployment Script (Windows)        
-# ==================================================
+#      ສະຄຣິບສຳລັບ Deploy ລະບົບຂຶ້ນ Production (Windows PowerShell)
+#      ເຮັດໜ້າທີ່ກວດສອບຄວາມພ້ອມ, Build Docker Images ແລະ ເລີ່ມຕົ້ນ Services ທັງໝົດ
+# ==============================================================================
 
-# 1. Environment File Check
+# 1. ກວດສອບຟາຍສະພາບແວດລ້ອມ (.env) ຖ້າຍັງບໍ່ມີແມ່ນຈະທຳການສຳເນົາຈາກ .env.example ມາສ້າງໃຫ້ອັດຕະໂນມັດ
 if (-not (Test-Path ".env")) {
     Write-Host "[!] .env file not found! Copying from .env.example..." -ForegroundColor Yellow
     Copy-Item ".env.example" ".env"
@@ -12,7 +13,7 @@ if (-not (Test-Path ".env")) {
     Write-Host ""
 }
 
-# Load variables from .env
+# ອ່ານ ແລະ ໂຫຼດຄ່າຕົວປ່ຽນຕ່າງໆຈາກຟາຍ .env ເຂົ້າສູ່ຕົວປ່ຽນສະພາບແວດລ້ອມ (Environment Variables) ຂອງ PowerShell
 Get-Content ".env" | Where-Object { $_ -notmatch "^#" -and $_ -match "=" } | ForEach-Object {
     $name, $value = $_.Split('=', 2)
     [Environment]::SetEnvironmentVariable($name.Trim(), $value.Trim())
@@ -23,7 +24,7 @@ $ParkoSslPort = $env:PARKO_SSL_PORT
 if (-not $ParkoPort) { $ParkoPort = "39741" }
 if (-not $ParkoSslPort) { $ParkoSslPort = "39742" }
 
-# 2. Directory Structure Check
+# 2. ກວດສອບ ແລະ ສ້າງໂຄງສ້າງໂຟນເດີທີ່ຈຳເປັນສຳລັບການ Mount Volume ຂອງ Docker ຖ້າຍັງບໍ່ທັນມີຢູ່ໃນເຄື່ອງ
 Write-Host "[DIR] Ensuring required mount directories exist..." -ForegroundColor Cyan
 $Dirs = @(
     "infra/database/backup",
@@ -40,20 +41,20 @@ foreach ($dir in $Dirs) {
 Write-Host "[OK] Directories verified." -ForegroundColor Green
 Write-Host ""
 
-# 3. Pull Base Images & Build
+# 3. ດາວໂຫຼດ Base Images ລ່າສຸດ ແລະ ທຳການ Build ທຸກໆ Services ຂອງລະບົບ PARKO ໃຫ້ພ້ອມໃຊ້ງານ
 Write-Host "[DOCKER] Pulling latest base images and building services..." -ForegroundColor Cyan
 docker compose pull
 docker compose build --pull
 Write-Host "[OK] Services build completed." -ForegroundColor Green
 Write-Host ""
 
-# 4. Start Containers
+# 4. ສັ່ງເລີ່ມຕົ້ນການເຮັດວຽກຂອງ Docker Containers ທັງໝົດໃນແບບ Background Daemon
 Write-Host "[START] Launching PARKO services in background..." -ForegroundColor Cyan
 docker compose up -d
 Write-Host "[OK] Containers started." -ForegroundColor Green
 Write-Host ""
 
-# 5. Health Check Loop
+# 5. ກວດສອບສະຖານະຄວາມພ້ອມໃຊ້ງານ (Health Check Loop) ເພື່ອຮັບປະກັນວ່າທຸກ Service ເຮັດວຽກໄດ້ຢ່າງສົມບູນ
 Write-Host "[WAIT] Waiting for all services to become healthy..." -ForegroundColor Cyan
 $Timeout = 90
 $Elapsed = 0

@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — App Layout with Sidebar Navigation
+// ລະບົບ PARKO — App Layout with Sidebar Navigation (ໂຄງສ້າງຫຼັກຂອງແອັບພລິເຄຊັນ)
+// ປະກອບມີແຖບເມນູຂ້າງ (Sidebar) ທີ່ຮອງຮັບການຫຍໍ້-ຂະຫຍາຍ, ແຖບຫົວດ້ານເທິງ (Header) ແລະ ລະບົບແຈ້ງເຕືອນ Real-time
 // ============================================
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
@@ -46,12 +47,12 @@ export default function AppLayout() {
     }).catch(() => { });
   }, [user]);
 
-  // Refresh whenever user changes or user navigates to any page
+  // ອັບເດດຈຳນວນແຈ້ງເຕືອນໃໝ່ທຸກຄັ້ງເມື່ອມີການປ່ຽນແປງຜູ້ໃຊ້ ຫຼື ເມື່ອມີການປ່ຽນໜ້າເວັບ
   React.useEffect(() => {
     refreshExpiringCount();
   }, [refreshExpiringCount, location.pathname]);
 
-  // Listen for real-time notification count events, websocket, cross-tab, and poll periodically
+  // ຕິດຕາມເຫດການແຈ້ງເຕືອນແບບ Real-time ຜ່ານ Custom Events, WebSocket, BroadcastChannel ແລະ ການດຶງຂໍ້ມູນເປັນໄລຍະ
   React.useEffect(() => {
     const handleCountUpdate = (e: any) => {
       if (typeof e.detail === 'number') {
@@ -64,7 +65,7 @@ export default function AppLayout() {
     window.addEventListener('notification-count-update', handleCountUpdate);
     window.addEventListener('membership-updated', handleCountUpdate);
 
-    // Cross-tab broadcast
+    // ກະຈາຍສັນຍານແຈ້ງເຕືອນລະຫວ່າງແຖບໜ້າຈໍບຣາວເຊີ (Cross-tab BroadcastChannel)
     let channel: BroadcastChannel | null = null;
     try {
       channel = new BroadcastChannel('parko_channel');
@@ -77,7 +78,7 @@ export default function AppLayout() {
       };
     } catch {}
 
-    // WebSocket real-time update
+    // ເຊື່ອມຕໍ່ WebSocket ສຳລັບການອັບເດດສະຖານະບ່ອນຈອດລົດ ແລະ ການແຈ້ງເຕືອນແບບທັນທີທັນໃດ
     const WS = import.meta.env.VITE_WS_URL || '';
     const socket = io(`${WS}/parking`, { transports: ['websocket'] });
     socket.on('parking_update', () => {
@@ -141,7 +142,7 @@ export default function AppLayout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
-      {/* Mobile overlay */}
+      {/* ແຜ່ນບັງພື້ນຫຼັງສຳລັບໜ້າຈໍມືຖື (Mobile Overlay) */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/60 md:hidden"
@@ -149,13 +150,13 @@ export default function AppLayout() {
         />
       )}
 
-      {/* Sidebar — entire sidebar scrolls together */}
+      {/* ແຖບເມນູດ້ານຂ້າງ (Sidebar) — ຮອງຮັບການເລື່ອນຂຶ້ນ-ລົງໄດ້ຢ່າງລຽບນຽນ */}
       <aside
         className={`fixed md:static inset-y-0 left-0 z-40 ${sidebarCollapsed ? 'md:w-20' : 'md:w-72'} w-72 overflow-y-auto overflow-x-hidden transform transition-all duration-300 shadow-xl flex flex-col sidebar-scrollbar ${isAdmin ? 'admin-sidebar-border' : 'staff-sidebar-border'
           } ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
         style={{ background: '#5D5D5D' }}
       >
-        {/* Logo — Red header (Fixed at top) */}
+        {/* ສ່ວນຫົວໂລໂກ້ສີແດງ PARKO SYSTEM (ຕິດແໜ້ນຢູ່ດ້ານເທິງສຸດຂອງ Sidebar) */}
         <div className={`flex items-center ${sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-5'} shrink-0 sticky top-0 z-10 shadow-sm transition-all duration-300`} style={{ background: '#B02019', height: '72px' }}>
           <div
             className="w-10 h-10 rounded-none border-[3.5px] border-white flex items-center justify-center shadow-md shrink-0 select-none"
@@ -174,7 +175,7 @@ export default function AppLayout() {
           </button>
         </div>
 
-        {/* Navigation — Orange body (flows naturally) */}
+        {/* ລາຍການເມນູຫຼັກຂອງລະບົບ (Navigation Links) */}
         <nav className={`${sidebarCollapsed ? 'px-0' : 'px-3'} py-3 space-y-1`}>
           {currentLinks.map((link) => (
             <NavLink
@@ -205,11 +206,11 @@ export default function AppLayout() {
             </NavLink>
           ))}
 
-          {/* User info — Split Orange/Red Bar with exact same spacing as menu items */}
+          {/* ສ່ວນສະແດງຂໍ້ມູນຜູ້ໃຊ້ງານ ແລະ ປຸ່ມອອກຈາກລະບົບ (User Info & Sign Out) */}
           <div>
             {!sidebarCollapsed ? (
               <div className="flex items-stretch h-11 w-full rounded-none overflow-hidden shadow-sm">
-                {/* Left: admin (Orange #F9A825) — flexible width */}
+                {/* ດ້ານຊ້າຍ: ສະແດງບົດບາດຂອງຜູ້ໃຊ້ງານ (ສີສົ້ມ #F9A825) */}
                 <div
                   className="flex-auto flex items-center justify-center gap-2 px-3 select-none min-w-0"
                   style={{ background: '#F9A825' }}
@@ -220,7 +221,7 @@ export default function AppLayout() {
                   </span>
                 </div>
 
-                {/* Right: sign out Button (Red #B02019) — flexible width */}
+                {/* ດ້ານຂວາ: ປຸ່ມອອກຈາກລະບົບ (ສີແດງ #B02019) */}
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -247,23 +248,23 @@ export default function AppLayout() {
         </nav>
       </aside>
 
-      {/* Main Content */}
+      {/* ພື້ນທີ່ເນື້ອຫາຫຼັກຂອງໜ້າຈໍ (Main Content Area) */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Universal Navbar (Fixed at top) */}
+        {/* ແຖບ Navbar ດ້ານເທິງ (ຕິດແໜ້ນຢູ່ດ້ານເທິງສຸດຂອງໜ້າຈໍ) */}
         <header
           className="relative flex items-center justify-between px-3 sm:px-4 md:px-5 shrink-0 shadow-md z-10 overflow-hidden"
           style={{ background: '#B02019', height: '72px' }}
         >
-          {/* Diagonal Gray Section with White Slant Divider on the Right */}
+          {/* ລວດລາຍເສັ້ນສະຫຼຽງສີເທົາ ແລະ ເສັ້ນຕັດສີຂາວທີ່ເປັນເອກະລັກຂອງ PARKO ທາງດ້ານຂວາ */}
           <div className="absolute inset-y-0 right-0 w-[120px] sm:w-[130px] md:w-[295px] lg:w-[310px] pointer-events-none select-none">
-            {/* White slant layer (underneath, 4px wider to create clean white line) */}
+            {/* ຊັ້ນເສັ້ນສະຫຼຽງສີຂາວດ້ານລຸ່ມ (ກວ້າງກວ່າ 4px ເພື່ອສ້າງຂອບເສັ້ນສີຂາວທີ່ຄົມຊັດ) */}
             <div
               className="absolute inset-0 bg-white"
               style={{
                 clipPath: 'polygon(0 0, 100% 0, 100% 100%, 46px 100%)',
               }}
             />
-            {/* Gray slant layer (on top of white, offset by 4px) */}
+            {/* ຊັ້ນເສັ້ນສະຫຼຽງສີເທົາດ້ານເທິງ (Offset 4px) */}
             <div
               className="absolute inset-0 bg-[#4D4D4D]"
               style={{
@@ -272,7 +273,7 @@ export default function AppLayout() {
             />
           </div>
 
-          {/* Left: Hamburger & Title */}
+          {/* ດ້ານຊ້າຍ: ປຸ່ມເມນູ Hamburger ສຳລັບຫຍໍ້/ຂະຫຍາຍ Sidebar ແລະ ຊື່ໜ້າຈໍ */}
           <div className="relative z-10 flex items-center gap-2.5 sm:gap-3.5">
             <button
               type="button"
@@ -294,9 +295,9 @@ export default function AppLayout() {
             </span>
           </div>
 
-          {/* Right: Bell, Divider, Greeting, User Profile */}
+          {/* ດ້ານຂວາ: ກະດິ່ງແຈ້ງເຕືອນ, ເສັ້ນຂັ້ນ, ຄຳທັກທາຍ ແລະ ໄອຄອນໂປຣໄຟລ໌ */}
           <div className="relative z-10 flex items-center gap-2 sm:gap-3 md:gap-4">
-            {/* Notification Bell */}
+            {/* ປຸ່ມກະດິ່ງແຈ້ງເຕືອນສະມາຊິກໃກ້ໝົດອາຍຸ */}
             <button
               type="button"
               onClick={() => navigate('/admin/notifications')}
@@ -312,15 +313,15 @@ export default function AppLayout() {
               )}
             </button>
 
-            {/* Vertical White Divider */}
+            {/* ເສັ້ນຂັ້ນແນວຕັ້ງສີຂາວ */}
             <div className="hidden md:block w-[2px] h-8 sm:h-9 bg-white mx-1 lg:mx-2 shrink-0 rounded-none" />
 
-            {/* Greeting Text */}
+            {/* ຂໍ້ຄວາມທັກທາຍບົດບາດຜູ້ໃຊ້ງານ */}
             <span className="hidden md:inline-block text-white font-bold text-base lg:text-[17px] tracking-wide whitespace-nowrap select-none">
               Hi! {user?.role || 'ADMIN/STAFF'}
             </span>
 
-            {/* User Profile (Transparent background, white icon matching Image 2, size-matched) */}
+            {/* ປຸ່ມໂປຣໄຟລ໌ຜູ້ໃຊ້ງານ (User Profile) */}
             <button
               type="button"
               onClick={() => navigate(isAdmin ? '/admin/users' : '#')}
@@ -333,7 +334,7 @@ export default function AppLayout() {
           </div>
         </header>
 
-        {/* Page Content */}
+        {/* ພື້ນທີ່ສະແດງຜົນຂອງແຕ່ລະໜ້າ (Page Content ຜ່ານ Outlet) */}
         <div
           className="flex-1 overflow-y-auto no-scrollbar p-3.5 bg-[#FDF1D7] flex flex-col"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}

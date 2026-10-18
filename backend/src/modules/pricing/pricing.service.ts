@@ -1,6 +1,6 @@
 // ============================================
-// PARKO — Pricing Service
-// CRUD for pricing rules per vehicle type
+// ລະບົບ PARKO — Pricing Service (ການບໍລິການຈັດການກົດລະບຽບລາຄາ)
+// ຈັດການຂໍ້ມູນ (CRUD) ກົດລະບຽບອັດຕາຄ່າທຳນຽມບ່ອນຈອດລົດຕາມແຕ່ລະປະເພດພາຫະນະ
 // ============================================
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -78,8 +78,8 @@ export class PricingService {
   }
 
   /**
-   * Get the rate for a specific vehicle type and parking type
-   * Used by check-in to preview and lock-in the prepaid amount
+   * ດຶງອັດຕາຄ່າທຳນຽມສຳລັບປະເພດພາຫະນະ ແລະ ຮູບແບບການຈອດທີ່ກຳນົດ
+   * ນຳໃຊ້ໃນຂະບວນການ Check-in ເພື່ອກວດເບິ່ງອັດຕາລາຄາລ່ວງໜ້າ ແລະ ລັອກຍອດເງິນທີ່ຕ້ອງຊຳລະລ່ວງໜ້າ
    */
   async getRate(
     vehicleTypeId: number,

@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Prisma Service
-// Manages database connection lifecycle
-// ============================================
+// ==============================================================================
+// PARKO — ບໍລິການຈັດການຖານຂໍ້ມູນ Prisma (Prisma Service)
+// ເຮັດໜ້າທີ່ຄວບຄຸມ Lifecycle ຂອງການເຊື່ອມຕໍ່ ແລະ ຕັດການເຊື່ອມຕໍ່ກັບຖານຂໍ້ມູນ PostgreSQL
+// ==============================================================================
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 

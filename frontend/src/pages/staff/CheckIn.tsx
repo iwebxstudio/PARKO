@@ -1,3 +1,7 @@
+// ============================================
+// PARKO — ໜ້າບັນທຶກລົດເຂົ້າບ່ອນຈອດ (Check-In Page)
+// ໜ້າທີ່: ຈັດການການບັນທຶກຂໍ້ມູນລົດເຂົ້າ, ເລືອກປະເພດພາຫະນະ, ປ້ອນປ້າຍທະບຽນ, ກວດສອບສະມາຊິກ, ຄົ້ນຫາປະຫວັດເກົ່າ ແລະ ພິມປີ້ເຂົ້າຈອດ
+// ============================================
 import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Car, User, Search, Play, Pause, Square, QrCode, Ban, UserPlus, Printer, RotateCcw, Check, Zap, Truck, Bike, MessageSquare, Plus, Save, X, Menu, Bell, LogIn, CalendarDays, ChevronDown, MapPin, History, RefreshCw } from 'lucide-react';
@@ -66,7 +70,7 @@ export default function CheckIn() {
   const [parkingLogo, setParkingLogo] = useState<string | null>(null);
   const API_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || '';
 
-  // --- History Search State & Handlers ---
+  // --- ສະຖານະ ແລະ ຟັງຊັນສຳລັບການຄົ້ນຫາປະຫວັດລົດທີ່ເຄີຍເຂົ້າຈອດ (History Search State & Handlers) ---
   const [historyQuery, setHistoryQuery] = useState('');
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [historyResults, setHistoryResults] = useState<any[]>([]);
@@ -75,7 +79,7 @@ export default function CheckIn() {
   const [historyCache, setHistoryCache] = useState<any[]>([]);
   const [apiHasMatch, setApiHasMatch] = useState<boolean | null>(null);
 
-  // Preload completed tickets from history on mount
+  // ໂຫຼດຂໍ້ມູນປີ້ລົດທີ່ເຄີຍອອກໄປແລ້ວຈາກປະຫວັດມາເກັບໄວ້ລ່ວງໜ້າ (Preload Cache) ເພື່ອໃຫ້ຄົ້ນຫາໄດ້ວ່ອງໄວ
   useEffect(() => {
     const loadHistory = async () => {
       try {
@@ -96,13 +100,13 @@ export default function CheckIn() {
         }
         setHistoryCache(items);
       } catch {
-        /* ignore */
+        /* ລະເວັ້ນຂໍ້ຜິດພາດກໍລະນີໂຫຼດປະຫວັດບໍ່ສຳເລັດ */
       }
     };
     loadHistory();
   }, []);
 
-  // Check if plate exists as user types
+  // ກວດສອບປ້າຍທະບຽນລົດໃນຂະນະທີ່ຜູ້ໃຊ້ພິມຕົວເລກ (Debounced Search)
   useEffect(() => {
     const q = historyQuery.trim();
     if (!q) {
@@ -110,7 +114,7 @@ export default function CheckIn() {
       return;
     }
 
-    // Check preloaded cache first
+    // ກວດສອບຂໍ້ມູນຈາກ Cache ທີ່ໂຫຼດໄວ້ໃນໜ່ວຍຄວາມຈຳກ່ອນ
     const localMatch = historyCache.some((t: any) => {
       const numStr = String(t.plateNumber || '').trim();
       return numStr === q || numStr.includes(q);
@@ -120,7 +124,7 @@ export default function CheckIn() {
       return;
     }
 
-    // Debounced backend verification
+    // ຖ້າບໍ່ພົບໃນ Cache ໃຫ້ຮຽກຖາມ Backend ໂດຍໜ່ວງເວລາ (Debounce 200ms) ເພື່ອຫຼຸດຜ່ອນການໂຫຼດເຊີບເວີ
     const timer = setTimeout(async () => {
       try {
         const { data } = await api.get(`/parking/history?search=${encodeURIComponent(q)}&limit=50`);
@@ -164,7 +168,7 @@ export default function CheckIn() {
     setLoadingHistory(true);
     try {
       let rawTickets: any[] = [];
-      // 1. Try search via /parking/history with search param
+      // 1. ຄົ້ນຫາຜ່ານ API /parking/history ໂດຍສົ່ງຄ່າຕົວເລກທີ່ຄົ້ນຫາໄປນຳ
       try {
         const { data } = await api.get(`/parking/history?search=${encodeURIComponent(q)}&limit=100`);
         const payload = data.data || data || [];
@@ -174,10 +178,10 @@ export default function CheckIn() {
           ? payload
           : payload.data || [];
       } catch {
-        /* fallback to client-side filter */
+        /* ກໍລະນີ API ຂັດຂ້ອງ ໃຫ້ສືບຕໍ່ໃຊ້ການກັ່ນຕອງຝັ່ງ Frontend */
       }
 
-      // 2. Also check preloaded cache or fetch full history
+      // 2. ກວດສອບເພີ່ມເຕີມຈາກ Cache ທີ່ເກັບໄວ້ ຫຼື ດຶງປະຫວັດລວມທັງໝົດ
       if (rawTickets.length === 0 && historyCache.length > 0) {
         rawTickets = historyCache;
       } else if (rawTickets.length === 0) {
@@ -190,11 +194,11 @@ export default function CheckIn() {
             ? allPayload
             : allPayload.data || [];
         } catch {
-          /* fallback */
+          /* ລະເວັ້ນຂໍ້ຜິດພາດ */
         }
       }
 
-      // 3. Fallback to /parking/recent for completed tickets
+      // 3. ຖ້າບໍ່ພົບ ໃຫ້ກວດສອບຈາກລາຍການລົດທີ່ອອກລ່າສຸດ /parking/recent
       if (rawTickets.length === 0) {
         try {
           const resRecent = await api.get('/parking/recent?limit=200');
@@ -202,25 +206,25 @@ export default function CheckIn() {
           const recentTickets = Array.isArray(recentPayload) ? recentPayload : recentPayload.data || [];
           rawTickets = recentTickets.filter((t: any) => t.status === 'COMPLETED' || t.checkOutAt);
         } catch {
-          /* fallback */
+          /* ລະເວັ້ນຂໍ້ຜິດພາດ */
         }
       }
 
-      // STRICT FILTERING: Search ONLY by vehicle license plate number (plateNumber)
+      // ການກັ່ນຕອງຢ່າງເຂັ້ມງວດ: ຄົ້ນຫາສະເພາະຕົວເລກປ້າຍທະບຽນ (plateNumber) ເທົ່ານັ້ນ
       const filtered = rawTickets.filter((t: any) => {
         const numStr = String(t.plateNumber || '').trim();
         if (!numStr) return false;
         return numStr === q || numStr.includes(q);
       });
 
-      // Sort newest first
+      // ຈັດລຽງລຳດັບຂໍ້ມູນໂດຍເອົາລາຍການລ່າສຸດຂຶ້ນກ່ອນໝູ່
       filtered.sort((a: any, b: any) => {
         const timeA = new Date(a.checkOutAt || a.checkInAt || a.createdAt || 0).getTime();
         const timeB = new Date(b.checkOutAt || b.checkInAt || b.createdAt || 0).getTime();
         return timeB - timeA;
       });
 
-      // Deduplicate by plate info
+      // ຕັດລາຍການທີ່ຊ້ຳກັນອອກ ໂດຍອີງຕາມຂໍ້ມູນປ້າຍທະບຽນລົດ
       const seen = new Set();
       const uniqueResults = filtered.filter((t: any) => {
         const plateKey = `${t.plateProvince || ''}_${t.plateLetters || ''}_${t.plateNumber || ''}`.trim();
@@ -236,7 +240,7 @@ export default function CheckIn() {
         return;
       }
 
-      // Found matches!
+      // ພົບຂໍ້ມູນລົດທີ່ກົງກັນ! ເປີດໜ້າຕ່າງເລືອກລົດຈາກປະຫວັດ
       setHistoryResults(uniqueResults);
       setHistoryModalOpen(true);
     } catch (err) {
@@ -249,7 +253,7 @@ export default function CheckIn() {
   };
 
   const selectHistoryTicket = (ticket: any) => {
-    // 1. Vehicle Type
+    // 1. ຕັ້ງຄ່າປະເພດລົດຕາມປະຫວັດທີ່ເລືອກ
     let targetTypeId = ticket.vehicleTypeId || ticket.vehicleType?.id;
     if (!targetTypeId && ticket.vehicleType?.name) {
       const match = types.find(t => t.name === ticket.vehicleType.name);
@@ -259,7 +263,7 @@ export default function CheckIn() {
       setSelType(targetTypeId);
     }
 
-    // 2. Plate Info
+    // 2. ຕື່ມຂໍ້ມູນປ້າຍທະບຽນ (ໝວດອັກສອນ, ເລກປ້າຍ ແລະ ແຂວງ)
     const hasPlate = Boolean(ticket.plateNumber || ticket.plateLetters);
     if (hasPlate) {
       setNoPlate(false);
@@ -273,12 +277,12 @@ export default function CheckIn() {
       setPlateProv('');
     }
 
-    // 3. Notes
+    // 3. ຕື່ມໝາຍເຫດເພີ່ມເຕີມຖ້າມີ
     if (ticket.notes) {
       setNotes(ticket.notes);
     }
 
-    // 4. Modal and feedback
+    // 4. ປິດໜ້າຕ່າງປັອບອັບ ແລະ ແຈ້ງເຕືອນຜົນສຳເລັດໃຫ້ຜູ້ໃຊ້ຮັບຊາບ
     setHistoryModalOpen(false);
     const plateText = [ticket.plateProvince, ticket.plateLetters, ticket.plateNumber]
       .filter(Boolean)
@@ -288,7 +292,7 @@ export default function CheckIn() {
     toast.success(`ດຶງຂໍ້ມູນປະຫວັດລົດ: ${plateText} ສຳເລັດ!`);
   };
 
-  // --- Add Member State ---
+  // --- ສະຖານະ ແລະ ຟອມສຳລັບການເພີ່ມສະມາຊິກ / ຝາກມີກຳນົດ (Add Member State) ---
   const [isMemberMode, setIsMemberMode] = useState(false);
   const [pricingRules, setPricingRules] = useState<any[]>([]);
   const [memberForm, setMemberForm] = useState({
@@ -299,7 +303,7 @@ export default function CheckIn() {
     paymentMethod: 'CASH',
     notes: ''
   });
-  // Helper to calculate difference in calendar days
+  // ຟັງຊັນຊ່ວຍຄິດໄລ່ຈຳນວນມື້ລະຫວ່າງວັນທີເລີ່ມຕົ້ນ ແລະ ວັນທີສິ້ນສຸດ
   const calculateDays = (startStr: string, endStr: string) => {
     if (!startStr || !endStr) return 1;
     const start = new Date(startStr);
@@ -336,7 +340,7 @@ export default function CheckIn() {
     }).catch(console.error);
   }, []);
 
-  // Auto-calc member paid amount directly from database pricing rules
+  // ຄິດໄລ່ຄ່າທຳນຽມສະມາຊິກອັດຕະໂນມັດ ໂດຍອີງຕາມກົດລະບຽບລາຄາໃນຖານຂໍ້ມູນ
   useEffect(() => {
     if (!selType) return;
     const rule = pricingRules.find(r => r.vehicleTypeId === selType);
@@ -356,7 +360,7 @@ export default function CheckIn() {
     }
   }, [selType, memberForm.memberType, memberForm.startDate, memberForm.endDate, pricingRules, isMemberMode]);
 
-  // Fetch price preview when vehicle type or parking type changes
+  // ດຶງຂໍ້ມູນລາຄາລ່ວງໜ້າ (Price Preview) ເມື່ອມີການປ່ຽນແປງປະເພດລົດ ຫຼື ຮູບແບບການຈອດ
   useEffect(() => {
     if (!selType) { setPreviewPrice(null); return; }
     setLoadingPrice(true);
@@ -369,7 +373,7 @@ export default function CheckIn() {
       .finally(() => setLoadingPrice(false));
   }, [selType, pType]);
 
-  // Check membership when plate changes (debounced)
+  // ກວດສອບສະຖານະສະມາຊິກເມື່ອປ້າຍທະບຽນມີການປ່ຽນແປງ (Debounced Check)
   useEffect(() => {
     const finalPlate = noPlate ? '' : (plateLetters + ' ' + plate).trim();
     if (finalPlate.length >= 2) {
@@ -391,7 +395,7 @@ export default function CheckIn() {
     }
   }, [plate, plateLetters, noPlate]);
 
-  /* Number-pad handler: append digit to plate number */
+  /* ຟັງຊັນຈັດການປຸ່ມກົດຕົວເລກ (Number Pad): ຕື່ມຕົວເລກໃສ່ເລກປ້າຍລົດ */
   const handleNumPad = (digit: string) => {
     if (plate.length < 4) setPlate(prev => prev + digit);
   };
@@ -471,7 +475,7 @@ export default function CheckIn() {
     toast.success('ລ້າງຂໍ້ມູນຮຽບຮ້ອຍແລ້ວ', { position: 'top-center' });
   };
 
-  // --- Add Member Handlers ---
+  // --- ຟັງຊັນຈັດການສະຖານະການເພີ່ມສະມາຊິກ (Add Member Handlers) ---
   const calcMemberEndDate = (start: string, type: string) => {
     const end = new Date(start);
     if (type === 'DAILY') end.setDate(end.getDate() + 1);
@@ -486,7 +490,7 @@ export default function CheckIn() {
     const nextMode = !isMemberMode;
     setIsMemberMode(nextMode);
     if (nextMode) {
-      // Re-fetch pricing rules directly from DB to ensure always fresh
+      // ດຶງກົດລະບຽບລາຄາຈາກຖານຂໍ້ມູນຄືນໃໝ່ ເພື່ອຮັບປະກັນວ່າໄດ້ຂໍ້ມູນທີ່ອັບເດດລ່າສຸດສະເໝີ
       api.get('/pricing').then(r => {
         const rules = r.data.data || r.data || [];
         setPricingRules(rules);
@@ -581,10 +585,10 @@ export default function CheckIn() {
 
   if (result) return (
     <div className="max-w-sm mx-auto animate-scale-in">
-      {/* Receipt Box */}
+      {/* ກ່ອງສະແດງໃບບິນປີ້ລົດເຂົ້າ (Receipt Box) */}
       <div className="bg-white p-5 text-black shadow-xl rounded-none border border-gray-100 font-sans mx-auto" style={{ width: '100%', maxWidth: '320px' }}>
 
-        {/* Header */}
+        {/* ສ່ວນຫົວໃບບິນ: ໂລໂກ້ ແລະ ຊື່ສະຖານທີ່ຈອດລົດ */}
         <div className="text-center mb-3">
           {parkingLogo ? (
             <img src={parkingLogo.startsWith('http') ? parkingLogo : `${API_URL}${parkingLogo}`} alt="Logo" className="w-12 h-12 mx-auto mb-1 object-contain" />
@@ -597,7 +601,7 @@ export default function CheckIn() {
 
         <div className="border-t border-dashed border-gray-300 my-3"></div>
 
-        {/* Ticket Info */}
+        {/* ຂໍ້ມູນລະອຽດຂອງປີ້ຈອດລົດ (Ticket Information) */}
         <div className="space-y-1.5 text-[13px] text-gray-800">
           <div className="flex justify-between"><span>Ticket No:</span><span className="font-bold">{result.ticketNumber}</span></div>
           <div className="flex justify-between"><span>ປະເພດລົດ:</span><span className="font-bold">{result.vehicleType?.label}</span></div>
@@ -620,7 +624,7 @@ export default function CheckIn() {
           )}
         </div>
 
-        {/* Amount (if prepaid) */}
+        {/* ຈຳນວນເງິນ (ສະແດງສະເພາະກໍລະນີມີການຈ່າຍລ່ວງໜ້າ) */}
         {(result as any).prepaidAmount ? (
           <>
             <div className="border-t border-dashed border-gray-300 my-3"></div>
@@ -631,7 +635,7 @@ export default function CheckIn() {
           </>
         ) : <div className="border-t border-dashed border-gray-300 my-3"></div>}
 
-        {/* 2 QR Codes */}
+        {/* ລະຫັດ QR Code 2 ແບບ: QR ຊຳລະເງິນ ແລະ QR ສະແກນອອກ */}
         <div className="flex justify-between gap-3 my-4">
           {qrPaymentImage && (result as any).prepaidAmount ? (
             <div className="flex-1 text-center">
@@ -641,7 +645,7 @@ export default function CheckIn() {
               </div>
             </div>
           ) : (
-            <div className="flex-1"></div> /* Spacer if no QR Payment */
+            <div className="flex-1"></div> /* ຊ່ອງຫວ່າງສຳຮອງກໍລະນີບໍ່ມີ QR ຊຳລະເງິນ */
           )}
 
           <div className="flex-1 text-center">
@@ -662,7 +666,7 @@ export default function CheckIn() {
         </div>
       </div>
 
-      {/* Buttons */}
+      {/* ປຸ່ມກົດພິມໃບບິນ ແລະ ດຳເນີນການລົດຄັນຕໍ່ໄປ */}
       <div className="flex gap-3 mt-6 px-2 justify-center max-w-[320px] mx-auto">
         <button onClick={() => toast.success('🖨️ Printing...')} className="flex-[1.2] bg-emerald-500 text-white rounded-none py-3.5 px-3 font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95 transition-transform hover:bg-emerald-600">
           <Printer size={20} /> ພິມໃບບິນ
@@ -676,14 +680,14 @@ export default function CheckIn() {
 
   return (
     <div className="font-sans w-full flex flex-col">
-      {/* Main Card */}
+      {/* ບັດຫຼັກຂອງໜ້າບັນທຶກລົດເຂົ້າ (Main Card) */}
       <div className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-visible w-full border-0 flex flex-col" style={{ borderRadius: 0 }}>
-        {/* Header Bar — Dark Gray */}
+        {/* ແຖບຫົວຂໍ້ດ້ານເທິງ — ສີເທົາເຂັ້ມ (Dark Gray Header Bar) */}
         <div
           className="bg-[#5D5D5D] px-3 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Top Row on Mobile / Left Section on Desktop: Icon + Title */}
+          {/* ແຖວເທິງໃນຈໍມືຖື / ສ່ວນຊ້າຍໃນຈໍຄອມພິວເຕີ: ໄອຄອນ ແລະ ຫົວຂໍ້ໜ້າວຽກ */}
           <div className="flex items-center justify-between w-full md:w-auto h-10 shrink-0">
             <div className="flex items-center gap-2 sm:gap-2.5">
               <LogIn size={20} className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-white shrink-0" />
@@ -693,9 +697,9 @@ export default function CheckIn() {
             </div>
           </div>
 
-          {/* Controls: Search Box + Action Buttons */}
+          {/* ສ່ວນຄວບຄຸມ: ຊ່ອງຄົ້ນຫາປະຫວັດລົດ + ປຸ່ມຄຳສັ່ງດຳເນີນການ */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center md:justify-end md:ml-auto gap-2 md:gap-2.5 w-full md:w-auto shrink-0">
-            {/* Search Box from History */}
+            {/* ຊ່ອງຄົ້ນຫາເລກປ້າຍລົດຈາກປະຫວັດເກົ່າ */}
             <div className="flex items-center bg-white shadow-sm w-full md:w-[280px] lg:w-[315px] xl:w-[325px] rounded-l-none rounded-r-full overflow-hidden pl-3 sm:pl-3.5 h-10 min-h-[40px] shrink-0">
               <div className="flex items-center justify-center text-[#F9A825] shrink-0">
                 <Search size={18} className="w-[18px] h-[18px] text-[#F9A825]" />
@@ -749,7 +753,7 @@ export default function CheckIn() {
               </button>
             </div>
 
-            {/* Action Buttons: 3 columns on mobile, inline on sm+ */}
+            {/* ກຸ່ມປຸ່ມຄຳສັ່ງ: ສະແດງ 3 ຖັນໃນຈໍມືຖື ແລະ ລຽງແນວນອນໃນຈໍໃຫຍ່ */}
             <div className="grid grid-cols-3 sm:flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto shrink-0">
               <button
                 type="button"
@@ -785,12 +789,12 @@ export default function CheckIn() {
           </div>
         </div>
 
-        {/* Top Red Stripe */}
+        {/* ເສັ້ນຂອບແຖບສີແດງດ້ານເທິງ */}
         <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-        {/* Body — Orange (Equal spacing top and bottom for Section 1 and 2) */}
+        {/* ສ່ວນເນື້ອໃນຫຼັກ — ພື້ນຫຼັງສີສົ້ມ/ເຫຼືອງ (Main Body Area) */}
         <div className="bg-[#F9A825] px-3 sm:px-4 pt-3.5 sm:pt-4 pb-3.5 sm:pb-4">
-          {/* History Pre-fill Alert Banner */}
+          {/* ແຖບແຈ້ງເຕືອນເມື່ອດຶງຂໍ້ມູນຈາກປະຫວັດລົດສຳເລັດ (History Pre-fill Alert Banner) */}
           {historyFoundBadge && (
             <div className="bg-emerald-600 text-white px-3.5 py-2.5 mb-3.5 shadow-md flex items-center justify-between animate-fade-in font-bold text-xs sm:text-sm">
               <div className="flex items-center gap-2">
@@ -911,7 +915,7 @@ export default function CheckIn() {
             </div>
           )}
 
-          {/* Membership Info Badge (if active member found) */}
+          {/* ແຖບສະແດງຂໍ້ມູນສະມາຊິກ (ກໍລະນີພົບວ່າເປັນສະມາຊິກທີ່ຍັງບໍ່ທັນໝົດອາຍຸ) */}
           {!isMemberMode && memberInfo && (
             <div className="bg-emerald-600 px-5 py-3 mt-3 sm:mt-3.5 flex items-center justify-between shadow-md text-white">
               <div className="flex flex-col">
@@ -922,7 +926,7 @@ export default function CheckIn() {
             </div>
           )}
 
-          {/* Member Registration Mode */}
+          {/* ໂໝດລົງທະບຽນສະມາຊິກ / ຝາກລົດມີກຳນົດ (Member Registration Mode) */}
           {isMemberMode && (
             <div className="mt-3 sm:mt-3.5 animate-scale-in">
               <div className="flex items-center justify-between mb-2 sm:mb-2.5">
@@ -987,7 +991,7 @@ export default function CheckIn() {
                     required
                     value={memberForm.endDate}
                     onChange={e => {
-                      // Automatically switch to CUSTOM when date is manually modified
+                      // ປັບປ່ຽນເປັນຮູບແບບກຳນົດເອງ (CUSTOM) ອັດຕະໂນມັດ ເມື່ອມີການເລືອກວັນທີໝົດອາຍຸດ້ວຍຕົນເອງ
                       setMemberForm(prev => ({ ...prev, memberType: 'CUSTOM', endDate: e.target.value }));
                     }}
                     className="w-full h-11 sm:h-12 px-3 sm:px-4 bg-white text-sm sm:text-base md:text-[17px] font-bold text-black border-none focus:outline-none shadow-md rounded-none cursor-pointer"
@@ -1011,7 +1015,7 @@ export default function CheckIn() {
                 className="w-full h-12 sm:h-14 px-4 bg-white text-sm sm:text-base md:text-[17px] font-bold text-[#14B8A6] border-none focus:outline-none shadow-md mb-2 rounded-none"
               />
 
-              {/* Informative Price Card */}
+              {/* ບັດສະແດງລາຍລະອຽດການຄິດໄລ່ລາຄາ */}
               {currRule && (
                 <div className="bg-white p-3 shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-sm sm:text-base md:text-[17px] font-bold rounded-none">
                   <div className="flex items-center gap-1.5">
@@ -1040,15 +1044,15 @@ export default function CheckIn() {
           )}
         </div>
 
-        {/* Bottom Red Stripe */}
+        {/* ເສັ້ນຂອບແຖບສີແດງດ້ານລຸ່ມ */}
         <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-        {/* Footer Bar — Dark Gray with Centered Check-in Button */}
+        {/* ແຖບທ້າຍລຸ່ມສຸດ — ສີເທົາເຂັ້ມ ພ້ອມປຸ່ມ Check-in ຢູ່ກາງ */}
         <div
           className="bg-[#5D5D5D] px-3 py-3 md:py-0 min-h-[60px] md:h-16 flex items-center justify-center rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Button: Check in */}
+          {/* ປຸ່ມກົດບັນທຶກລົດເຂົ້າ (Check in) */}
           <button
             type="button"
             onClick={isMemberMode ? handleMemberSubmit : handleCheckIn}
@@ -1062,7 +1066,7 @@ export default function CheckIn() {
         </div>
       </div>
 
-      {/* Province Selection Modal Popup */}
+      {/* ໜ້າຕ່າງປັອບອັບເລືອກແຂວງ (Province Selection Modal Popup) */}
       {provinceModalOpen && (
         <div
           className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 animate-fade-in"
@@ -1073,7 +1077,7 @@ export default function CheckIn() {
             onClick={e => e.stopPropagation()}
             style={{ borderRadius: 0 }}
           >
-            {/* Modal Header — Dark Gray Bar */}
+            {/* ສ່ວນຫົວຂອງໜ້າຕ່າງເລືອກແຂວງ — ແຖບສີເທົາເຂັ້ມ */}
             <div className="bg-[#5D5D5D] px-5 sm:px-6 h-12 sm:h-14 flex items-center justify-between shrink-0 rounded-none">
               <div className="flex items-center gap-2.5">
                 <MapPin size={20} className="text-[#F9A825] shrink-0" />
@@ -1091,12 +1095,12 @@ export default function CheckIn() {
               </button>
             </div>
 
-            {/* Red Stripe */}
+            {/* ເສັ້ນແຖບສີແດງ */}
             <div className="h-[2px] bg-[#B02019] w-full shrink-0" />
 
-            {/* Modal Body */}
+            {/* ເນື້ອໃນຫຼັກຂອງໜ້າຕ່າງເລືອກແຂວງ */}
             <div className="bg-[#F8F9FA] p-3.5 sm:p-5 flex-1 overflow-y-auto">
-              {/* Quick Action / Status Bar */}
+              {/* ແຖບສະຖານະ ແລະ ປຸ່ມຄຳສັ່ງດ່ວນ */}
               <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-gray-200">
                 <span className="text-sm sm:text-[15px] font-bold text-gray-800">
                   ເລືອກແຂວງທີ່ລົດຂຶ້ນທະບຽນ (18 ແຂວງ):
@@ -1115,7 +1119,7 @@ export default function CheckIn() {
                 )}
               </div>
 
-              {/* Province Grid */}
+              {/* ຕາຕະລາງລາຍຊື່ແຂວງທັງໝົດ 18 ແຂວງ */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5">
                 {laosProvinces.map(p => {
                   const isSelected = plateProv === p;
@@ -1143,7 +1147,7 @@ export default function CheckIn() {
               </div>
             </div>
 
-            {/* Modal Footer */}
+            {/* ສ່ວນທ້າຍຂອງໜ້າຕ່າງເລືອກແຂວງ */}
             <div className="bg-white px-4 sm:px-5 py-3 flex items-center justify-between border-t border-gray-200 shrink-0">
               <div className="text-sm sm:text-[15px] font-bold text-gray-700 truncate">
                 ແຂວງທີ່ເລືອກ: <span className="text-black font-extrabold">{plateProv || 'ຍັງບໍ່ໄດ້ເລືອກ'}</span>
@@ -1165,14 +1169,14 @@ export default function CheckIn() {
         </div>
       )}
 
-      {/* ── History Selection Modal ── */}
+      {/* ── ໜ້າຕ່າງປັອບອັບເລືອກລົດຈາກປະຫວັດເກົ່າ (History Selection Modal) ── */}
       {historyModalOpen && historyResults.length > 0 && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 animate-fade-in">
           <div
             className="bg-white max-w-2xl w-full shadow-2xl rounded-none border-0 overflow-hidden flex flex-col"
             style={{ borderRadius: 0, border: 'none' }}
           >
-            {/* Header */}
+            {/* ສ່ວນຫົວຂອງໜ້າຕ່າງປັອບອັບປະຫວັດ */}
             <div
               className="bg-[#545454] px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between text-white rounded-none shrink-0"
               style={{ borderRadius: 0 }}
@@ -1198,10 +1202,10 @@ export default function CheckIn() {
               </button>
             </div>
 
-            {/* Top Red Stripe */}
+            {/* ເສັ້ນແຖບສີແດງດ້ານເທິງ */}
             <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-            {/* Body: List of matching history items */}
+            {/* ເນື້ອໃນຫຼັກ: ລາຍການລົດໃນປະຫວັດທີ່ກົງກັບຄຳຄົ້ນຫາ */}
             <div className="p-3.5 sm:p-4 bg-gray-50 max-h-[60vh] overflow-y-auto flex flex-col gap-2.5">
               {historyResults.map((t, idx) => {
                 const vType = t.vehicleType?.label || types.find(x => x.id === t.vehicleTypeId)?.label || 'ລົດ';

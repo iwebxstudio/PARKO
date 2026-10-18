@@ -1,7 +1,7 @@
 # ==============================================================================
-# PARKO — Development Override Compose
-# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
-# Enables live Vite hot-module-reloading and host volume mounting
+# PARKO — ຟາຍກຳນົດຄ່າ Compose ເພີ່ມເຕີມສຳລັບສະພາບແວດລ້ອມການພັດທະນາ (Development Override)
+# ວິທີການໃຊ້ງານ: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+# ເປີດໃຊ້ງານລະບົບ Vite Hot-Module-Reloading (HMR) ແບບສົດໆ ພ້ອມທັງ Mount ໂຟນເດີໂຄ້ດຈາກເຄື່ອງ Host ເຂົ້າ Container
 # ==============================================================================
 
 services:

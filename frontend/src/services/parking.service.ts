@@ -1,6 +1,6 @@
 // ============================================
-// PARKO — Parking Service
-// Encapsulates check-in, check-out, calculation, and active parking APIs
+// ລະບົບ PARKO — Parking Service (ການບໍລິການຈັດການບ່ອນຈອດລົດ)
+// ເຊື່ອມຕໍ່ API ສຳລັບ Check-in, Check-out, ຄິດໄລ່ຄ່າທຳນຽມ ແລະ ດຶງຂໍ້ມູນລົດທີ່ກຳລັງຈອດ
 // ============================================
 import api from '../api/client';
 

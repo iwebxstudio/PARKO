@@ -1,6 +1,6 @@
 // ============================================
-// PARKO — usePagination Hook
-// Manages paginated state, page changes, and bounds
+// ລະບົບ PARKO — usePagination Hook (ເຄື່ອງມືຈັດການການແບ່ງໜ້າ)
+// ຄວບຄຸມສະຖານະໜ້າປັດຈຸບັນ, ຄິດໄລ່ຈຳນວນໜ້າທັງໝົດ, ແລະ ປ້ອງກັນການເລື່ອນໜ້າກາຍຂອບເຂດ
 // ============================================
 import { useState, useMemo, useCallback } from 'react';
 

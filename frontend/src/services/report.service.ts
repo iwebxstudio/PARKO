@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — Reports and Statistics Service
+// ລະບົບ PARKO — Reports and Statistics Service (ການບໍລິການລາຍງານ ແລະ ສະຖິຕິ)
+// ເຊື່ອມຕໍ່ API ດຶງສະຖິຕິລວມ, ສະຫຼຸບປະຈຳວັນ, ລາຍຮັບ ແລະ ສົ່ງອອກໄຟລ໌ Excel
 // ============================================
 import api from '../api/client';
 

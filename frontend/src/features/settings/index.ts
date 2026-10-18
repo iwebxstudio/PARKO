@@ -1,4 +1,5 @@
 // ============================================
-// PARKO — Settings Feature Module
+// ລະບົບ PARKO — Settings Feature Module (ໂມດູນການຕັ້ງຄ່າລະບົບ)
+// ສົ່ງອອກ Service ສຳລັບການຈັດການການຕັ້ງຄ່າ ແລະ ລາຄາຄ່າທຳນຽມ
 // ============================================
 export * from '../../services/settings.service';

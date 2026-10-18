@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Root Application Module
-// Wires all feature modules together
-// ============================================
+// ==============================================================================
+// PARKO — ໂມດູນຫຼັກຂອງແອັບພລິເຄຊັນ (Root Application Module)
+// ເຮັດໜ້າທີ່ເຊື່ອມຕໍ່ທຸກໆ Feature Modules, ລະບົບຄວາມປອດໄພ, Guard ແລະ Interceptor ເຂົ້ານຳກັນ
+// ==============================================================================
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
@@ -29,14 +29,14 @@ import { MembershipModule } from './modules/membership/membership.module';
 
 @Module({
   imports: [
-    // Configuration with fail-fast startup validation
+    // ໂມດູນຈັດການ Environment Variables ພ້ອມລະບົບກວດສອບຄວາມຖືກຕ້ອງຕັ້ງແຕ່ເລີ່ມຕົ້ນ (Fail-fast Startup Validation)
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
       validate,
     }),
 
-    // Rate limiting — 100 requests per 60 seconds per IP
+    // ລະບົບຈຳກັດອັດຕາການຮຽກໃຊ້ງານ (Rate Limiting) — 100 ຄຳຮ້ອງຂໍຕໍ່ 60 ວິນາທີ ຕໍ່ 1 IP Address
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
@@ -44,25 +44,25 @@ import { MembershipModule } from './modules/membership/membership.module';
       },
     ]),
 
-    // Serve uploaded files statically
+    // ໃຫ້ບໍລິການໄຟລ໌ static ສຳລັບຮູບພາບທີ່ຖືກອັບໂຫຼດໃນໂຟນເດີ uploads
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
     }),
 
-    // Core modules
+    // ໂມດູນຫຼັກລະດັບໂຄງສ້າງພື້ນຖານ (Core Infrastructure Modules)
     HealthModule,
     PrismaModule,
     AuthModule,
     UsersModule,
 
-    // Business modules
+    // ໂມດູນຫຼັກສຳລັບການດຳເນີນງານທາງທຸລະກິດ (Core Business Modules)
     ParkingModule,
     LostTicketModule,
     PricingModule,
     MembershipModule,
 
-    // Supporting modules
+    // ໂມດູນສະໜັບສະໜູນການເຮັດວຽກຂອງລະບົບ (Supporting & Utility Modules)
     ReportsModule,
     AuditModule,
     NotificationsModule,
@@ -71,17 +71,17 @@ import { MembershipModule } from './modules/membership/membership.module';
     PrinterModule,
   ],
   providers: [
-    // Global rate limiting guard
+    // Guard ລະດັບ Global ສຳລັບປ້ອງກັນການຮຽກໃຊ້ງານຖີ່ເກີນໄປ (Rate Limiting Guard)
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
-    // Global response transform
+    // Interceptor ລະດັບ Global ສຳລັບຈັດຮູບແບບຂໍ້ມູນຕອບກັບ (Response Format) ໃຫ້ເປັນມາດຕະຖານດຽວກັນ
     {
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
     },
-    // Global audit logging
+    // Interceptor ລະດັບ Global ສຳລັບບັນທຶກປະຫວັດການເຄື່ອນໄຫວ ແລະ ທຸລະກຳ (Audit Logging)
     {
       provide: APP_INTERCEPTOR,
       useClass: AuditInterceptor,

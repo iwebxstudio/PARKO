@@ -41,7 +41,7 @@ const getVehicleTheme = (t: any) => {
   const typeName = (t.vehicleType?.name || '').toLowerCase();
   const label = (t.vehicleType?.label || '').toLowerCase();
 
-  // 1. EV Motorcycle / Electric (Emerald Green)
+  // 1. ລົດຈັກໄຟຟ້າ / ພະລັງງານໄຟຟ້າ (EV Motorcycle) — ກຳນົດໂທນສີຂຽວມໍລະກົດ (Emerald Green)
   if (typeName.includes('ev') || label.includes('ໄຟຟ້າ') || t.vehicleType?.icon?.includes('⚡')) {
     return {
       bannerBg: 'bg-[#059669]',
@@ -49,7 +49,7 @@ const getVehicleTheme = (t: any) => {
       iconRaw: zapIcon,
     };
   }
-  // 2. Motorcycle / Bike / ລົດຈັກ / ລົດຖີບ (Royal Blue / Sky Blue)
+  // 2. ລົດຈັກທຳມະດາ / ລົດຖີບ (Motorcycle / Bike) — ກຳນົດໂທນສີຟ້າເຂັ້ມ ຫຼື ສີຟ້າຄາມ (Royal Blue / Sky Blue)
   if (
     typeName.includes('motorcycle') ||
     typeName.includes('bike') ||
@@ -65,7 +65,7 @@ const getVehicleTheme = (t: any) => {
       iconRaw: isBicycle ? bikeIcon : motorbikeIcon,
     };
   }
-  // 3. Truck / ລົດບັນທຸກ (Purple)
+  // 3. ລົດບັນທຸກຂະໜາດໃຫຍ່ (Truck) — ກຳນົດໂທນສີມ່ວງ (Purple)
   if (typeName.includes('truck') || label.includes('ບັນທຸກ') || t.vehicleType?.icon?.includes('🚚')) {
     return {
       bannerBg: 'bg-[#7C3AED]',
@@ -73,7 +73,7 @@ const getVehicleTheme = (t: any) => {
       iconRaw: truckIcon,
     };
   }
-  // 4. Car / ລົດໃຫຍ່ (Deep Red)
+  // 4. ລົດໃຫຍ່ / ລົດເກັງ / ລົດກະບະ (Car) — ກຳນົດໂທນສີແດງເຂັ້ມ (Deep Red)
   return {
     bannerBg: 'bg-[#B02019]',
     btnBg: 'bg-[#B02019] hover:bg-[#961b15]',
@@ -111,7 +111,7 @@ export default function HistoryPage() {
       else if (selectedTicket.membershipId || pt === 'CUSTOM') setReCheckInParkingType('CUSTOM');
       else setReCheckInParkingType('DAILY');
 
-      // Initialize custom dates
+      // ຕັ້ງຄ່າວັນທີເລີ່ມຕົ້ນ ແລະ ວັນທີສິ້ນສຸດສຳລັບຮູບແບບຝາກກຳນົດເອງ
       const today = new Date().toISOString().split('T')[0];
       setCustomStartDate(
         selectedTicket.customStart
@@ -128,27 +128,27 @@ export default function HistoryPage() {
     }
   }, [selectedTicket]);
 
-  // Custom filter dropdown state
+  // ສະຖານະການເປີດ-ປິດເມນູ Dropdown ສຳລັບກັ່ນຕອງປະເພດຍານພາຫະນະ
   const [filterOpen, setFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const [vehicleTypes, setVehicleTypes] = useState<any[]>([]);
   const [selectedVehicleType, setSelectedVehicleType] = useState<string>('ALL');
 
-  // Parking type filter state (ຝາກລາຍວັນ, ຝາກລາຍເດືອນ, ຝາກລາຍປີ, ຝາກມີກຳນົດ)
+  // ສະຖານະການເປີດ-ປິດເມນູກັ່ນຕອງຮູບແບບການຝາກ (ຝາກລາຍວັນ, ຝາກລາຍເດືອນ, ຝາກລາຍປີ, ຝາກມີກຳນົດ)
   const [parkingTypeFilterOpen, setParkingTypeFilterOpen] = useState(false);
   const parkingTypeFilterRef = useRef<HTMLDivElement>(null);
   const [selectedParkingType, setSelectedParkingType] = useState<string>('ALL');
 
-  // Confirmation Modals
+  // ສະຖານະການສະແດງ Modal ຢືນຢັນການລຶບ Ticket
   const [deleteConfirmTicket, setDeleteConfirmTicket] = useState<{ id: string; ticketNumber: string } | null>(null);
 
-  // Centered Success Popup State
+  // ສະຖານະກ່ອງແຈ້ງເຕືອນຄວາມສຳເລັດເຄິ່ງກາງໜ້າຈໍ (Centered Success Popup)
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const ITEMS_PER_PAGE = 20;
 
-  // Responsive max page buttons: 4 on Mobile (< 640px), 9 on Desktop
+  // ຈຳນວນປຸ່ມເລກໜ້າສູງສຸດຕາມຂະໜາດໜ້າຈໍ: 4 ປຸ່ມສຳລັບມືຖື (< 640px) ແລະ 9 ປຸ່ມສຳລັບ Desktop
   const [isMobile, setIsMobile] = useState<boolean>(() =>
     typeof window !== 'undefined' ? window.innerWidth < 640 : false
   );
@@ -178,7 +178,7 @@ export default function HistoryPage() {
     };
   }, []);
 
-  // Close filter dropdowns on outside click
+  // ຟັງຊັນກວດຈັບການຄລິກພາຍນອກ Dropdown ເພື່ອປິດເມນູກັ່ນຕອງທັງສອງອັດຕະໂນມັດ
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
@@ -195,7 +195,7 @@ export default function HistoryPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      // First try the new /parking/history endpoint
+      // ທຳອິດພະຍາຍາມດຶງຂໍ້ມູນຈາກ API ເສັ້ນທາງຫຼັກ /parking/history
       try {
         const { data } = await api.get('/parking/history?limit=100');
         const payload = data.data || data || [];
@@ -206,7 +206,7 @@ export default function HistoryPage() {
           : payload.data || [];
         setHistoryTickets(tickets);
       } catch {
-        // Fallback to /parking/recent and filter completed
+        // ຖ້າບໍ່ສຳເລັດ ໃຫ້ໃຊ້ Endpoint ສຳຮອງ /parking/recent ແລ້ວກັ່ນຕອງສະເພາະລົດທີ່ອອກແລ້ວ
         const { data } = await api.get('/parking/recent?limit=200');
         const payload = data.data || data || [];
         const tickets = Array.isArray(payload) ? payload : payload.data || [];
@@ -284,7 +284,7 @@ export default function HistoryPage() {
       showCenterSuccess(`ລົດເຂົ້າສຳເລັດ! Ticket: ${newTicket.ticketNumber}`);
       toast.success(`ລົດເຂົ້າສຳເລັດ! ປີ້ເລກທີ: ${newTicket.ticketNumber}`, { position: 'top-center' });
 
-      // Automatically send print command to Print Agent
+      // ສົ່ງຄຳສັ່ງພິມປີ້ໃໝ່ໄປຍັງ Print Agent ອັດຕະໂນມັດ
       try {
         await fetch('/print', {
           method: 'POST',
@@ -292,13 +292,13 @@ export default function HistoryPage() {
           body: JSON.stringify({ ticket: newTicket }),
         });
       } catch {
-        /* print agent silent fallback */
+        /* ກໍລະນີ Print Agent ບໍ່ຕອບສະໜອງ ໃຫ້ຂ້າມໄປໂດຍບໍ່ຂັດຈັງຫວະການເຮັດວຽກ */
       }
 
       setSelectedTicket(null);
       loadData();
 
-      // Navigate to Check-out page where the vehicle is now active!
+      // ນຳທາງຜູ້ໃຊ້ໄປຍັງໜ້າ Check-out ເຊິ່ງຍານພາຫະນະດັ່ງກ່າວຈະມີສະຖານະກຳລັງຈອດຢູ່
       navigate('/staff/check-out');
     } catch (err: any) {
       const errMsgs = err.response?.data?.message;
@@ -354,7 +354,7 @@ export default function HistoryPage() {
     }
   };
 
-  // Filter options
+  // ລາຍການຕົວເລືອກກັ່ນຕອງປະເພດຍານພາຫະນະ (Vehicle Filter Options)
   const fallbackFilterOptions = [
     { id: 'ALL', label: 'ປະເພດລົດ', iconRaw: funnelIcon },
     { id: '1', label: 'ລົດໃຫຍ່', iconRaw: carIcon },
@@ -419,12 +419,12 @@ export default function HistoryPage() {
     return 'ຝາກລາຍວັນ';
   };
 
-  // Filter list — Only completed tickets (Check-out completed)
+  // ກັ່ນຕອງລາຍການປີ້ — ສະແດງສະເພາະປີ້ທີ່ Check-out ສຳເລັດຮຽບຮ້ອຍແລ້ວ
   const filteredTickets = historyTickets.filter((t: any) => {
     const isCompleted = t.status === 'COMPLETED' || !!t.checkOutAt;
     if (!isCompleted) return false;
 
-    // Vehicle Type Filter
+    // ກັ່ນຕອງຕາມປະເພດຍານພາຫະນະ (Vehicle Type Filter)
     if (selectedVehicleType && selectedVehicleType !== 'ALL') {
       const vtId = String(t.vehicleTypeId || t.vehicleType?.id || '');
       const vtName = (t.vehicleType?.name || '').toLowerCase();
@@ -432,7 +432,7 @@ export default function HistoryPage() {
       if (vtId !== sel && vtName !== sel) return false;
     }
 
-    // Parking Type Filter (ຝາກລາຍວັນ, ຝາກລາຍເດືອນ, ຝາກລາຍປີ, ຝາກມີກຳນົດ)
+    // ກັ່ນຕອງຕາມຮູບແບບການຝາກ (ຝາກລາຍວັນ, ຝາກລາຍເດືອນ, ຝາກລາຍປີ, ຝາກມີກຳນົດ)
     if (selectedParkingType && selectedParkingType !== 'ALL') {
       const pType = (t.parkingType || '').toUpperCase();
       const memType = (t.membership?.memberType || '').toUpperCase();
@@ -454,7 +454,7 @@ export default function HistoryPage() {
       }
     }
 
-    // Search Query Filter
+    // ກັ່ນຕອງຕາມຄຳຄົ້ນຫາ (Search Query Filter)
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       const ticketMatch = (t.ticketNumber || '').toLowerCase().includes(q);
@@ -473,7 +473,7 @@ export default function HistoryPage() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentTickets = filteredTickets.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  // Compute visible pages (Mobile = 4 buttons, Desktop = 9 buttons)
+  // ຄຳນວນເລກໜ້າທີ່ຈະສະແດງ (ມືຖື = 4 ປຸ່ມ, Desktop = 9 ປຸ່ມ)
   const getVisiblePages = () => {
     if (totalPages <= maxPageButtons) {
       return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -492,17 +492,17 @@ export default function HistoryPage() {
 
   return (
     <div className="font-sans w-full flex flex-col pb-6">
-      {/* Main Container Card */}
+      {/* ກ່ອງຫຼັກສະແດງໜ້າປະຫວັດການຝາກຍານພາຫະນະ (Main Container Card) */}
       <div
         className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-visible w-full border-0 flex flex-col"
         style={{ borderRadius: 0 }}
       >
-        {/* Top Header Bar — Dark Gray (matching CheckOut.tsx) */}
+        {/* ແຖບຫົວຂໍ້ດ້ານເທິງ — ໂທນສີເທົາເຂັ້ມ (#5D5D5D) */}
         <div
           className="bg-[#5D5D5D] px-3 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 lg:gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Icon + Title */}
+          {/* ດ້ານຊ້າຍ: ໄອຄອນ ແລະ ຫົວຂໍ້ໜ້າປະຫວັດການຝາກ */}
           <div className="flex items-center gap-2.5 h-10 shrink-0">
             <History size={20} className="w-5 h-5 text-white shrink-0" />
             <h1 className="text-base md:text-[17px] font-bold text-white tracking-normal whitespace-nowrap">
@@ -510,9 +510,9 @@ export default function HistoryPage() {
             </h1>
           </div>
 
-          {/* Right: Search Box + Vehicle Filter */}
+          {/* ດ້ານຂວາ: ຊ່ອງຄົ້ນຫາ ແລະ ຕົວກັ່ນຕອງປະເພດລົດ / ຮູບແບບການຝາກ */}
           <div className="flex flex-col md:flex-row items-stretch md:items-center md:justify-end md:ml-auto gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 w-full md:w-auto shrink-0">
-            {/* Search Input Box */}
+            {/* ຊ່ອງປ້ອນຂໍ້ມູນຄົ້ນຫາ Ticket ID ຫຼື ປ້າຍທະບຽນລົດ */}
             <div className="flex items-center bg-white shadow-sm w-full md:w-[280px] lg:w-[315px] xl:w-[325px] rounded-l-none rounded-r-full overflow-hidden pl-3 sm:pl-3.5 h-10 min-h-[40px] shrink-0">
               <div className="flex items-center justify-center text-[#F9A825] shrink-0">
                 <Search size={18} className="w-[18px] h-[18px] text-[#F9A825]" />
@@ -551,9 +551,9 @@ export default function HistoryPage() {
               </button>
             </div>
 
-            {/* Filter Dropdowns: 2 Columns on Mobile, Flex on Desktop */}
+            {/* ເມນູ Dropdown ສຳລັບກັ່ນຕອງ: ແບ່ງ 2 ຖັນໃນມືຖື ແລະ ລຽງແນວນອນໃນ Desktop */}
             <div className="grid grid-cols-2 md:flex items-center gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 w-full md:w-auto shrink-0">
-              {/* Vehicle Type Filter Dropdown */}
+              {/* ເມນູເລືອກກັ່ນຕອງຕາມປະເພດຍານພາຫະນະ (Vehicle Type Filter) */}
               <div ref={filterRef} className="relative w-full md:w-[144px] lg:w-[150px]">
                 <button
                   type="button"
@@ -581,7 +581,7 @@ export default function HistoryPage() {
                   />
                 </button>
 
-                {/* Custom Dropdown Menu */}
+                {/* ລາຍການຕົວເລືອກປະເພດລົດໃນ Dropdown (Custom Dropdown Menu) */}
                 {filterOpen && (
                   <div
                     className="absolute top-full mt-1.5 left-0 w-max min-w-full max-w-[200px] bg-white shadow-[0_12px_28px_rgba(0,0,0,0.18)] z-50 py-1 border-0 rounded-none animate-fade-in"
@@ -623,7 +623,7 @@ export default function HistoryPage() {
                 )}
               </div>
 
-              {/* Parking Type Filter Dropdown */}
+              {/* ເມນູເລືອກກັ່ນຕອງຕາມຮູບແບບການຝາກ (Parking Type Filter) */}
               <div ref={parkingTypeFilterRef} className="relative w-full md:w-[152px] lg:w-[158px]">
                 <button
                   type="button"
@@ -651,7 +651,7 @@ export default function HistoryPage() {
                   />
                 </button>
 
-                {/* Custom Dropdown Menu */}
+                {/* ລາຍການຕົວເລືອກຮູບແບບການຝາກໃນ Dropdown (Custom Dropdown Menu) */}
                 {parkingTypeFilterOpen && (
                   <div
                     className="absolute top-full mt-1.5 left-0 w-max min-w-full max-w-[200px] bg-white shadow-[0_12px_28px_rgba(0,0,0,0.18)] z-50 py-1 border-0 rounded-none animate-fade-in"
@@ -696,10 +696,10 @@ export default function HistoryPage() {
           </div>
         </div>
 
-        {/* Top Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານເທິງ (#B02019) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Main Body — Orange Background */}
+        {/* ສ່ວນເນື້ອໃນຫຼັກ — ພື້ນຫຼັງສີເຫຼືອງສົ້ມ (#F9A825) */}
         <div className="bg-[#F9A825] p-3 flex flex-col justify-start">
           {loading ? (
             <div className="bg-white/95 p-12 text-center max-w-lg mx-auto shadow-md my-auto flex flex-col items-center">
@@ -707,7 +707,7 @@ export default function HistoryPage() {
               <p className="text-gray-800 font-bold text-base md:text-[17px]">ກຳລັງໂຫຼດປະຫວັດການຝາກ...</p>
             </div>
           ) : currentTickets.length > 0 ? (
-            /* Cards Grid */
+            /* ຕາໜ່າງກາດສະແດງລາຍການປີ້ປະຫວັດການຝາກ (Cards Grid) */
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-3.5 lg:gap-4 animate-fade-in">
               {currentTickets.map((t: any) => {
                 const theme = getVehicleTheme(t);
@@ -717,7 +717,7 @@ export default function HistoryPage() {
                     onClick={() => setSelectedTicket(t)}
                     className="bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.18)] transition-all flex flex-col rounded-none overflow-hidden cursor-pointer"
                   >
-                    {/* Top Card Header: Distinctive vehicle type color + compact vertical spacing */}
+                    {/* ສ່ວນຫົວຂອງກາດ: ສີພື້ນຫຼັງຕາມປະເພດລົດ ພ້ອມໄອຄອນ ແລະ ປຸ່ມລຶບ (ສຳລັບ Admin) */}
                     <div className={`${theme.bannerBg} py-2 sm:py-2.5 flex justify-center items-center shadow-inner transition-colors relative`}>
                       <SvgIcon raw={theme.iconRaw} className="w-9 h-9 sm:w-10 sm:h-10 text-white" />
                       {isAdmin && (
@@ -735,7 +735,7 @@ export default function HistoryPage() {
                       )}
                     </div>
 
-                    {/* Bottom Card Body: Compact, space-saving info */}
+                    {/* ສ່ວນເນື້ອໃນລາຍລະອຽດຂອງກາດ: ຂໍ້ມູນປີ້, ປ້າຍລົດ, ເວລາເຂົ້າ-ອອກ ແລະ ສະຖານະ */}
                     <div className="px-3 py-2 sm:px-3.5 sm:py-2.5 flex flex-col justify-between flex-1 bg-white">
                       <div className="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-0.5 text-[15px] sm:text-[15.5px] font-bold text-black mx-auto w-fit leading-tight my-0.5">
                         <span className="text-right">ປະເພດ</span>
@@ -791,7 +791,7 @@ export default function HistoryPage() {
                         </span>
                       </div>
 
-                      {/* Action Button: Re-Check In (ລົດເຂົ້າ) */}
+                      {/* ປຸ່ມດຳເນີນການ: ເອົາລົດເຂົ້າໃໝ່ (Re-Check In) */}
                       <div className="mt-2 sm:mt-2.5 w-full">
                         <button
                           type="button"
@@ -814,7 +814,7 @@ export default function HistoryPage() {
               })}
             </div>
           ) : (
-            /* Empty State Matching Members.tsx */
+            /* ສະແດງຂໍ້ຄວາມເມື່ອບໍ່ພົບຂໍ້ມູນປະຫວັດການຝາກ (Empty State) */
             <div className="py-12 sm:py-16 text-center flex flex-col items-center justify-center select-none">
               <h3 className="text-base sm:text-[18px] font-bold text-black mb-1">
                 {isSearching ? 'ບໍ່ພົບປະຫວັດລົດທີ່ຄົ້ນຫາ' : 'ບໍ່ມີປະຫວັດລົດທີ່ Check out ໃນຂະນະນີ້'}
@@ -828,15 +828,15 @@ export default function HistoryPage() {
           )}
         </div>
 
-        {/* Bottom Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານລຸ່ມ (#B02019) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Bottom Footer Bar — Dark Gray (matching CheckOut.tsx) */}
+        {/* ແຖບສະຫຼຸບ ແລະ ປຸ່ມປ່ຽນໜ້າດ້ານລຸ່ມ — ໂທນສີເທົາເຂັ້ມ (#5D5D5D) */}
         <div
           className="bg-[#5D5D5D] px-3 py-3 md:py-0 min-h-[60px] md:h-16 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Total Count Badge (Square w-10 h-10) */}
+          {/* ສ່ວນສະແດງຈຳນວນລາຍການທັງໝົດທີ່ກັ່ນຕອງໄດ້ (Total Count Badge) */}
           <div className="flex items-center gap-2 text-white font-bold text-base md:text-[17px]">
             <span>ຈຳນວນ</span>
             <span
@@ -848,7 +848,7 @@ export default function HistoryPage() {
             <span>ລາຍການ</span>
           </div>
 
-          {/* Right: Pagination Controls (Equal width buttons, square page buttons) */}
+          {/* ສ່ວນປຸ່ມຄວບຄຸມການປ່ຽນໜ້າ (Pagination Controls) */}
           <div className="flex items-center gap-1.5 sm:gap-2 max-w-full overflow-x-auto no-scrollbar py-1">
             <button
               type="button"
@@ -860,7 +860,7 @@ export default function HistoryPage() {
               ຖອຍກັບ
             </button>
 
-            {/* Page number buttons (Squares h-10 w-10) */}
+            {/* ປຸ່ມໝາຍເລກໜ້າຕ່າງໆ (Page Number Buttons) */}
             {visiblePages.map((p) => (
               <button
                 key={p}
@@ -891,14 +891,14 @@ export default function HistoryPage() {
         </div>
       </div>
 
-      {/* Ticket Details Modal */}
+      {/* ໜ້າຕ່າງ Modal ສະແດງລາຍລະອຽດປີ້ແບບເຕັມ (Ticket Details Modal) */}
       {selectedTicket && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
           <div
             className="bg-white w-full max-w-md shadow-2xl rounded-none overflow-hidden animate-scale-in border-0 flex flex-col max-h-[92vh]"
             style={{ borderRadius: 0 }}
           >
-            {/* Modal Header */}
+            {/* ສ່ວນຫົວຂອງ Modal: ຫົວຂໍ້ ແລະ ປຸ່ມປິດ */}
             <div className="bg-[#5D5D5D] px-4 sm:px-5 h-11 sm:h-12 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <SvgIcon raw={carIcon} className="w-5 h-5 text-white" />
@@ -916,10 +916,10 @@ export default function HistoryPage() {
               </button>
             </div>
 
-            {/* Red Stripe Divider */}
+            {/* ເສັ້ນຂັ້ນສີແດງ (#B02019) */}
             <div className="h-[2px] bg-[#B02019] w-full shrink-0" />
 
-            {/* Modal Body */}
+            {/* ສ່ວນເນື້ອໃນລາຍລະອຽດພາຍໃນ Modal */}
             <div className="px-4 sm:px-5 py-2.5 sm:py-3 space-y-2 bg-white overflow-y-auto">
               <div className="grid grid-cols-[auto_auto_1fr] gap-x-2.5 gap-y-0.5 sm:gap-y-1 text-[14px] font-bold text-black mx-auto w-fit leading-tight sm:leading-snug">
                 <span className="text-right">Ticket ID</span>
@@ -995,7 +995,7 @@ export default function HistoryPage() {
                 )}
               </div>
 
-              {/* Edit Parking Type for Re-Check In */}
+              {/* ສ່ວນເລືອກຮູບແບບການຝາກໃໝ່ສຳລັບການ Check-in ຄືນ */}
               <div className="mt-2 pt-2 border-t border-dashed border-gray-200">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[14px] font-bold text-gray-800">
@@ -1034,7 +1034,7 @@ export default function HistoryPage() {
                   })}
                 </div>
 
-                {/* Custom Date Range Picker when ຝາກມີກຳນົດ is selected */}
+                {/* ສ່ວນເລືອກຊ່ວງວັນທີເລີ່ມຕົ້ນ ແລະ ສິ້ນສຸດ ເມື່ອເລືອກຮູບແບບຝາກມີກຳນົດ */}
                 {reCheckInParkingType === 'CUSTOM' && (
                   <div className="mt-2 p-2.5 bg-amber-50/80 border border-amber-300/80 rounded-none animate-fade-in shadow-inner">
                     <div className="flex items-center justify-between mb-1.5">
@@ -1084,10 +1084,10 @@ export default function HistoryPage() {
               </div>
             </div>
 
-            {/* Red Stripe Divider */}
+            {/* ເສັ້ນຂັ້ນສີແດງ (#B02019) */}
             <div className="h-[2px] bg-[#B02019] w-full shrink-0" />
 
-            {/* Modal Footer — Centered Action Button, 16px Font Matching Header, High Contrast Yellow on Dark Gray */}
+            {/* ສ່ວນລຸ່ມຂອງ Modal: ປຸ່ມຢືນຢັນລົດເຂົ້າໃໝ່ (Check-in) */}
             <div className="bg-[#5D5D5D] px-4 py-2.5 flex items-center justify-center shrink-0">
               <button
                 type="button"
@@ -1105,7 +1105,7 @@ export default function HistoryPage() {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* ໜ້າຕ່າງ Modal ຢືນຢັນການລຶບ Ticket (Delete Confirmation Modal) */}
       {deleteConfirmTicket && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 animate-fade-in">
           <div
@@ -1152,7 +1152,7 @@ export default function HistoryPage() {
         </div>
       )}
 
-      {/* Centered Success Notification Popup (Dead Center of Screen) */}
+      {/* ກ່ອງແຈ້ງເຕືອນຄວາມສຳເລັດເຄິ່ງກາງໜ້າຈໍ (Centered Success Notification Popup) */}
       {successMsg && (
         <div className="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center p-4">
           <div

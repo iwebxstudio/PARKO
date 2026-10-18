@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Health Controller
-// Docker healthcheck endpoint
-// ============================================
+// ==============================================================================
+// PARKO — ໂມດູນຄວບຄຸມການກວດສອບສະຖານະລະບົບ (Health Controller)
+// Endpoint ສຳລັບການກວດສອບຄວາມພ້ອມໃຊ້ງານຂອງລະບົບ API ແລະ ການເຊື່ອມຕໍ່ຖານຂໍ້ມູນ (Docker Healthcheck)
+// ==============================================================================
 import { Controller, Get, ServiceUnavailableException } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { PrismaService } from '../database/prisma.service';

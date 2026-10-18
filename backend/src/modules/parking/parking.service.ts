@@ -1,6 +1,6 @@
 // ============================================
-// PARKO — Parking Service
-// Core business logic: check-in, check-out, pricing
+// ລະບົບ PARKO — Parking Service (ການບໍລິການຄຸ້ມຄອງບ່ອນຈອດລົດ)
+// ໂຄງສ້າງຫຼັກຂອງລະບົບທຸລະກິດ: ການບັນທຶກລົດເຂົ້າ (Check-in), ລົດອອກ (Check-out), ແລະ ການຄິດໄລ່ຄ່າທຳນຽມ
 // ============================================
 import {
   Injectable,
@@ -24,7 +24,8 @@ export class ParkingService {
   ) {}
 
   /**
-   * Generate a unique 5-digit ticket number
+   * ສ້າງເລກປີ້ລົດ 5 ຫຼັກແບບສຸ່ມທີ່ບໍ່ຊ້ຳກັນ (Unique 5-digit ticket number)
+   * ໂດຍລະບົບຈະກວດສອບກັບຖານຂໍ້ມູນຈົນກວ່າຈະໝັ້ນໃຈວ່າເລກປີ້ຍັງບໍ່ເຄີຍມີມາກ່ອນ
    */
   private async generateTicketNumber(): Promise<string> {
     let ticketNumber: string = '';
@@ -42,10 +43,10 @@ export class ParkingService {
   }
 
   /**
-   * Check-in a vehicle — with auto-charge (prepaid)
+   * ບັນທຶກລົດເຂົ້າບ່ອນຈອດ (Check-in) ພ້ອມກັບການຄິດໄລ່ ແລະ ເກັບເງິນລ່ວງໜ້າ (Auto-charge Prepaid)
    */
   async checkIn(dto: CheckInDto, userId: string) {
-    // Validate vehicle type exists
+    // ກວດສອບຄວາມຖືກຕ້ອງວ່າປະເພດພາຫະນະ (Vehicle Type) ທີ່ລະບຸມານັ້ນ ມີຢູ່ໃນຖານຂໍ້ມູນແທ້ຫຼືບໍ່
     const vehicleType = await this.prisma.vehicleType.findUnique({
       where: { id: dto.vehicleTypeId },
     });
@@ -53,7 +54,7 @@ export class ParkingService {
       throw new BadRequestException('Invalid vehicle type');
     }
 
-    // ── Prevent duplicate check-in: Composite Unique (vehicleType + province + letters + number) ──
+    // ── ປ້ອງກັນການນຳລົດເຂົ້າຊ້ຳຊ້ອນ: ໃຊ້ລະບົບລັອກຄ່າປະສົມ (Composite Unique: ປະເພດລົດ + ແຂວງ + ໝວດອັກສອນ + ເລກທະບຽນ) ──
     const plateNum = dto.plateNumber?.trim() || null;
     const plateLet = dto.plateLetters?.trim() || null;
     const plateProv = dto.plateProvince?.trim() || null;
@@ -88,10 +89,10 @@ export class ParkingService {
         }
       }
 
-      // Build combined plate string for membership lookup & display
+      // ສ້າງຂໍ້ຄວາມປ້າຍທະບຽນລົດແບບລວມ (Combined Plate) ເພື່ອໃຊ້ໃນການຄົ້ນຫາສະມາຊິກ ແລະ ສະແດງຜົນ
       const combinedPlate = [plateLet, plateNum].filter(Boolean).join(' ');
 
-      // ── Check Membership ──
+      // ── ກວດສອບສະຖານະສະມາຊິກ (Membership Validation) ──
       let membershipId: string | null = null;
       let isMember = false;
 
@@ -111,7 +112,7 @@ export class ParkingService {
         }
       }
 
-      // ── Auto-charge: look up pricing rule ──
+      // ── ຄິດໄລ່ຄ່າທຳນຽມອັດຕະໂນມັດ: ຄົ້ນຫາກົດລະບຽບລາຄາ (Pricing Rule) ຕາມປະເພດການຈອດ ──
       const parkingType = dto.parkingType || ParkingType.DAILY;
       let prepaidAmount: number | null = null;
       let isPrepaid = false;
@@ -137,12 +138,12 @@ export class ParkingService {
               prepaidAmount = Number(pricingRule.monthlyRate);
               break;
             default:
-              // Fallback for legacy HOURLY — no prepaid
+              // ກໍລະນີສຳຮອງສຳລັບການຈອດລາຍຊົ່ວໂມງແບບດັ້ງເດີມ — ບໍ່ມີການເກັບເງິນລ່ວງໜ້າ
               prepaidAmount = dto.prepaidAmount || null;
           }
         }
 
-        // Use explicit prepaidAmount from DTO if provided (override)
+        // ນຳໃຊ້ຍອດເງິນຊຳລະລ່ວງໜ້າທີ່ກຳນົດມາຈາກ DTO ຖ້າມີການລະບຸເຈາະຈົງ (Override ຄ່າອັດຕະໂນມັດ)
         if (dto.prepaidAmount && dto.prepaidAmount > 0) {
           prepaidAmount = Number(dto.prepaidAmount);
         }
@@ -156,7 +157,7 @@ export class ParkingService {
       for (let attempt = 0; attempt < 5; attempt++) {
         ticketNumber = await this.generateTicketNumber();
 
-        // QR code data contains all essential ticket info
+        // ສ້າງຂໍ້ມູນ QR Code ທີ່ບັນຈຸລາຍລະອຽດທີ່ຈຳເປັນທັງໝົດຂອງປີ້ລົດ ເພື່ອໃຊ້ສະແກນຕອນອອກ
         const qrCodeData = JSON.stringify({
           ticketNumber,
           vehicleType: vehicleType.name,
@@ -196,7 +197,7 @@ export class ParkingService {
               },
             });
 
-            // Create payment record for prepaid tickets atomically in the same transaction
+            // ບັນທຶກລາຍການຊຳລະເງິນສຳລັບປີ້ຈ່າຍລ່ວງໜ້າພາຍໃນ Transaction ດຽວກັນແບບ Atomic ເພື່ອຄວາມຖືກຕ້ອງຂອງຂໍ້ມູນ
             if (isPrepaid && prepaidAmount && prepaidAmount > 0) {
               await tx.payment.create({
                 data: {
@@ -211,14 +212,14 @@ export class ParkingService {
             return created;
           });
 
-          break; // successfully created
+          break; // ດຳເນີນການສ້າງປີ້ ແລະ ບັນທຶກຂໍ້ມູນສຳເລັດຮຽບຮ້ອຍແລ້ວ ອອກຈາກ Loop
         } catch (err: any) {
           if (
             err.code === 'P2002' &&
             err.meta?.target?.includes('ticket_number') &&
             attempt < 4
           ) {
-            continue; // retry with fresh ticket number
+            continue; // ຫາກເລກປີ້ຊ້ຳກັນ ໃຫ້ສຸ່ມເລກປີ້ໃໝ່ແລ້ວລອງສ້າງໃໝ່ອີກຄັ້ງ
           }
           throw err;
         }
@@ -226,7 +227,7 @@ export class ParkingService {
 
       this.logger.log(`Check-in: ${ticketNumber} | Type: ${vehicleType.name}`);
 
-      // Broadcast real-time update
+      // ສົ່ງສັນຍານແຈ້ງເຕືອນແບບ Real-time ຜ່ານ WebSocket ໄປຍັງທຸກໜ້າຈໍທີ່ກຳລັງເປີດຢູ່
       this.parkingGateway.broadcastUpdate({
         type: 'CHECK_IN',
         ticket: {
@@ -237,7 +238,7 @@ export class ParkingService {
         },
       });
 
-      // Soft Limit check
+      // ກວດສອບຈຳນວນລົດທຽບກັບຂີດຄວາມສາມາດຮອງຮັບສູງສຸດຂອງລານຈອດ (Soft Limit Capacity Check)
       const activeTickets = await this.prisma.parkingTicket.count({
         where: { status: TicketStatus.ACTIVE },
       });
@@ -271,7 +272,7 @@ export class ParkingService {
   }
 
   /**
-   * Find ticket by number, plate, or notes for check-out
+   * ຄົ້ນຫາປີ້ລົດດ້ວຍເລກປີ້, ປ້າຍທະບຽນ, ຫຼື ໝາຍເຫດ ເພື່ອກຽມດຳເນີນການເອົາລົດອອກ (Check-out)
    */
   async findTicket(identifier: string) {
     const q = identifier.trim();
@@ -279,25 +280,25 @@ export class ParkingService {
       throw new BadRequestException('ກະລຸນາໃສ່ຂໍ້ມູນຄົ້ນຫາ');
     }
 
-    // Build search conditions for maximum accuracy
+    // ສ້າງເງື່ອນໄຂການຄົ້ນຫາຫຼາຍຮູບແບບເພື່ອຄວາມຖືກຕ້ອງ ແລະ ວ່ອງໄວທີ່ສຸດ
     const orConditions: any[] = [
-      // 1. Exact ticket number match
+      // 1. ກວດສອບກົງກັບເລກປີ້ລົດແບບຊັດເຈນ (Exact ticket number match)
       { ticketNumber: q },
-      // 2. Plate number contains (e.g., "1234")
+      // 2. ຄົ້ນຫາເລກທະບຽນລົດທີ່ກົງກັນບາງສ່ວນ (ເຊັ່ນ: "1234")
       { plateNumber: { contains: q, mode: 'insensitive' } },
-      // 3. Plate letters contains (e.g., "ກຂ")
+      // 3. ຄົ້ນຫາໝວດອັກສອນປ້າຍທະບຽນ (ເຊັ່ນ: "ກຂ")
       { plateLetters: { contains: q, mode: 'insensitive' } },
-      // 4. Province contains (e.g., "ນະຄອນຫລວງ")
+      // 4. ຄົ້ນຫາຊື່ແຂວງຂອງປ້າຍທະບຽນ (ເຊັ່ນ: "ນະຄອນຫລວງ")
       { plateProvince: { contains: q, mode: 'insensitive' } },
-      // 5. Notes contains (e.g., "ລົດສີແດງ", phone number)
+      // 5. ຄົ້ນຫາຈາກໝາຍເຫດເພີ່ມເຕີມ (ເຊັ່ນ: "ລົດສີແດງ", ເບີໂທລະສັບ)
       { notes: { contains: q, mode: 'insensitive' } },
-      // 6. Member Code match (e.g., "M-0001", "0001")
+      // 6. ຄົ້ນຫາກົງກັບລະຫັດສະມາຊິກ (ເຊັ່ນ: "M-0001", "0001")
       { membership: { memberCode: { contains: q, mode: 'insensitive' } } },
-      // 7. Member Plate match
+      // 7. ຄົ້ນຫາກົງກັບທະບຽນລົດຂອງສະມາຊິກ
       { membership: { plateNumber: { contains: q, mode: 'insensitive' } } },
     ];
 
-    // If input has space, try combined plate search (e.g., "ກຂ 1234")
+    // ຖ້າຫາກຂໍ້ຄວາມຄົ້ນຫາມີຍະຫວ່າງ ໃຫ້ແຍກຄົ້ນຫາທັງໝວດອັກສອນ ແລະ ເລກທະບຽນພ້ອມກັນ (ເຊັ່ນ: "ກຂ 1234")
     const parts = q.split(/\s+/).filter(Boolean);
     if (parts.length >= 2) {
       orConditions.push({
@@ -332,7 +333,7 @@ export class ParkingService {
     });
 
     if (tickets.length === 0) {
-      // Check if it exists but is already completed
+      // ກວດສອບວ່າມີປີ້ລົດນີ້ໃນລະບົບຫຼືບໍ່ ແຕ່ໄດ້ດຳເນີນການອອກ (Completed) ໄປກ່ອນໜ້ານີ້ແລ້ວ
       const pastTicket = await this.prisma.parkingTicket.findFirst({
         where: {
           OR: [
@@ -375,7 +376,7 @@ export class ParkingService {
   }
 
   /**
-   * Check-out a vehicle
+   * ດຳເນີນການເອົາລົດອອກຈາກບ່ອນຈອດ (Check-out) ແລະ ບັນທຶກການຊຳລະເງິນ
    */
   async checkOut(dto: CheckOutDto, userId: string) {
     const cleanId = dto.identifier.trim();
@@ -431,9 +432,9 @@ export class ParkingService {
       dto.amountPaid !== undefined ? dto.amountPaid : calculatedTotal;
     const checkOutAt = new Date();
 
-    // Atomic transaction: re-verify active status and update ticket + payment
+    // ປະຕິບັດການຜ່ານ Transaction ແບບ Atomic: ກວດສອບສະຖານະ ACTIVE ຄືນໃໝ່ ແລະ ອັບເດດປີ້ລົດພ້ອມບັນທຶກການຊຳລະເງິນ
     const updatedTicket = await this.prisma.$transaction(async (tx) => {
-      // Re-query ticket inside transaction to prevent double checkout race condition
+      // ສອບຖາມຂໍ້ມູນປີ້ລົດຄືນໃໝ່ພາຍໃນ Transaction ເພື່ອປ້ອງກັນບັນຫາການກົດອອກຊ້ຳກັນໃນເວລາດຽວກັນ (Race Condition)
       const activeTicket = await tx.parkingTicket.findUnique({
         where: { id: ticket.id },
       });
@@ -461,7 +462,7 @@ export class ParkingService {
         },
       });
 
-      // Create payment record atomically in the same transaction
+      // ບັນທຶກປະຫວັດການຊຳລະເງິນພາຍໃນ Transaction ດຽວກັນແບບ Atomic
       const paymentAmount =
         dto.amountPaid !== undefined ? dto.amountPaid : totalAmount;
       if (paymentAmount > 0) {
@@ -483,7 +484,7 @@ export class ParkingService {
       `Check-out: ${ticket.ticketNumber} | Amount: ${totalAmount} LAK`,
     );
 
-    // Broadcast real-time update
+    // ສົ່ງສັນຍານແຈ້ງເຕືອນແບບ Real-time ໄປຍັງລະບົບຜ່ານ WebSocket ເພື່ອອັບເດດໜ້າຈໍ
     this.parkingGateway.broadcastUpdate({
       type: 'CHECK_OUT',
       ticket: {
@@ -503,7 +504,7 @@ export class ParkingService {
   }
 
   /**
-   * Calculate parking cost based on pricing rules
+   * ຄິດໄລ່ຄ່າທຳນຽມບ່ອນຈອດລົດຕາມກົດລະບຽບລາຄາ ແລະ ໄລຍະເວລາຈອດຕົວຈິງ
    */
   private async calculateCost(ticket: any): Promise<number> {
     const membership =
@@ -515,7 +516,7 @@ export class ParkingService {
         : null);
     const endDateRaw = ticket.customEnd || membership?.endDate;
 
-    // Check if membership or prepaid ticket (CUSTOM, WEEKLY, MONTHLY, or ticket with membershipId)
+    // ກວດສອບວ່າເປັນລົດສະມາຊິກ ຫຼື ປີ້ປະເພດຈ່າຍລ່ວງໜ້າຫຼືບໍ່ (CUSTOM, WEEKLY, MONTHLY, ຫຼື ປີ້ທີ່ມີ membershipId)
     if (
       ticket.membershipId ||
       ticket.parkingType === 'CUSTOM' ||
@@ -527,7 +528,7 @@ export class ParkingService {
         endDate.setHours(23, 59, 59, 999);
         const now = new Date();
         if (now.getTime() > endDate.getTime()) {
-          // Overdue past end date! Calculate overdue days
+          // ຈອດກາຍກຳນົດເວລາໝົດອາຍຸ! ຄິດໄລ່ຈຳນວນມື້ທີ່ກາຍກຳນົດເພື່ອປັບໃໝ ຫຼື ເກັບຄ່າທຳນຽມເພີ່ມ
           const diffMs = now.getTime() - endDate.getTime();
           const overdueDays = Math.max(
             1,
@@ -546,10 +547,10 @@ export class ParkingService {
           return Math.round(overdueDays * dailyRate);
         }
       }
-      return 0; // Within valid paid period, 0 extra fee
+      return 0; // ຍັງຢູ່ໃນກຳນົດເວລາທີ່ໄດ້ຈ່າຍໄວ້ຢ່າງຖືກຕ້ອງ ບໍ່ມີຄ່າທຳນຽມເພີ່ມເຕີມ
     }
 
-    // If prepaid (weekly/monthly), return prepaid amount
+    // ຖ້າຫາກເປັນປີ້ທີ່ຈ່າຍລ່ວງໜ້າແລ້ວ (ລາຍອາທິດ/ລາຍເດືອນ) ໃຫ້ສົ່ງຄືນຍອດເງິນທີ່ໄດ້ຈ່າຍໄວ້
     if (ticket.prepaidAmount !== null && Number(ticket.prepaidAmount) > 0) {
       return Number(ticket.prepaidAmount);
     }
@@ -573,7 +574,7 @@ export class ParkingService {
     const diffHours = Math.ceil(diffMs / (1000 * 60 * 60));
     const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
-    // Free period
+    // ໄລຍະເວລາຍົກເວັ້ນຄ່າທຳນຽມ (ຈອດຟຣີຕາມກຳນົດເວລາທີ່ຕັ້ງໄວ້)
     if (diffMinutes <= pricingRule.freeMinutes) {
       return 0;
     }
@@ -601,7 +602,7 @@ export class ParkingService {
   }
 
   /**
-   * Calculate human-readable duration
+   * ຄິດໄລ່ໄລຍະເວລາການຈອດລົດ ແລະ ແປງເປັນຮູບແບບທີ່ອ່ານເຂົ້າໃຈງ່າຍ (ຊົ່ວໂມງ ແລະ ນາທີ)
    */
   private calculateDuration(checkIn: Date, checkOut: Date) {
     const diffMs = checkOut.getTime() - new Date(checkIn).getTime();
@@ -611,7 +612,7 @@ export class ParkingService {
   }
 
   /**
-   * Get parking statistics for dashboard
+   * ດຶງຂໍ້ມູນສະຖິຕິການຈອດລົດລວມສຳລັບສະແດງຜົນເທິງ Dashboard
    */
   async getDashboardStats() {
     const today = new Date();
@@ -624,27 +625,27 @@ export class ParkingService {
       todayRevenue,
       vehicleTypeStats,
     ] = await Promise.all([
-      // Currently parked vehicles
+      // ຈຳນວນລົດທີ່ກຳລັງຈອດຢູ່ໃນປັດຈຸບັນ
       this.prisma.parkingTicket.count({
         where: { status: TicketStatus.ACTIVE },
       }),
-      // Today's check-ins
+      // ຈຳນວນລົດທີ່ເຂົ້າມາຈອດໃນມື້ນີ້
       this.prisma.parkingTicket.count({
         where: { checkInAt: { gte: today } },
       }),
-      // Today's check-outs
+      // ຈຳນວນລົດທີ່ອອກຈາກບ່ອນຈອດໃນມື້ນີ້
       this.prisma.parkingTicket.count({
         where: {
           checkOutAt: { gte: today },
           status: TicketStatus.COMPLETED,
         },
       }),
-      // Today's revenue
+      // ລາຍຮັບລວມທັງໝົດທີ່ໄດ້ຮັບໃນມື້ນີ້
       this.prisma.payment.aggregate({
         where: { paidAt: { gte: today } },
         _sum: { amount: true },
       }),
-      // Vehicles by type (active)
+      // ສະຖິຕິຈຳນວນລົດທີ່ກຳລັງຈອດ ໂດຍແຍກຕາມແຕ່ລະປະເພດພາຫະນະ
       this.prisma.parkingTicket.groupBy({
         by: ['vehicleTypeId'],
         where: { status: TicketStatus.ACTIVE },
@@ -652,7 +653,7 @@ export class ParkingService {
       }),
     ]);
 
-    // Get vehicle type names
+    // ດຶງຊື່ ແລະ ໄອຄອນຂອງປະເພດພາຫະນະທັງໝົດມາສ້າງເປັນຕາຕະລາງອ້າງອີງ (Map)
     const vehicleTypes = await this.prisma.vehicleType.findMany();
     const typeMap = new Map(vehicleTypes.map((vt) => [vt.id, vt]));
 
@@ -673,7 +674,7 @@ export class ParkingService {
   }
 
   /**
-   * Get recent activity
+   * ດຶງລາຍການການເຄື່ອນໄຫວຫຼ້າສຸດຂອງບ່ອນຈອດລົດ
    */
   async getRecentActivity(limit = 10) {
     return this.prisma.parkingTicket.findMany({
@@ -688,7 +689,7 @@ export class ParkingService {
   }
 
   /**
-   * Get all active tickets
+   * ດຶງລາຍການປີ້ລົດທັງໝົດທີ່ກຳລັງຈອດຢູ່ (Active Tickets) ພ້ອມລະບົບແບ່ງໜ້າ (Pagination)
    */
   async getActiveTickets(page = 1, limit = 20, vehicleTypeId?: number) {
     const skip = (page - 1) * limit;
@@ -736,7 +737,7 @@ export class ParkingService {
   }
 
   /**
-   * Get all completed/checked out tickets (History)
+   * ດຶງປະຫວັດປີ້ລົດທີ່ດຳເນີນການສຳເລັດແລ້ວ (ອອກຈາກບ່ອນຈອດແລ້ວ) ພ້ອມລະບົບຄົ້ນຫາ ແລະ ແບ່ງໜ້າ
    */
   async getHistoryTickets(
     page = 1,
@@ -804,7 +805,7 @@ export class ParkingService {
   }
 
   /**
-   * Delete a parking ticket completely (Admin only)
+   * ລຶບຂໍ້ມູນປີ້ລົດ ແລະ ປະຫວັດການເງິນທີ່ກ່ຽວຂ້ອງອອກຈາກລະບົບຢ່າງຖາວອນ (ສະເພາະຜູ້ດູແລລະບົບ Admin ເທົ່ານັ້ນ)
    */
   async deleteTicket(id: string) {
     const ticket = await this.prisma.parkingTicket.findUnique({
@@ -815,19 +816,19 @@ export class ParkingService {
       throw new NotFoundException('Ticket not found');
     }
 
-    // First delete any associated payments
+    // ຂັ້ນຕອນທີ 1: ລຶບລາຍການຊຳລະເງິນທັງໝົດທີ່ກ່ຽວຂ້ອງກັບປີ້ລົດນີ້ກ່ອນ ເພື່ອບໍ່ໃຫ້ຕິດ Foreign Key Constraint
     await this.prisma.payment.deleteMany({
       where: { ticketId: id },
     });
 
-    // Then delete the ticket
+    // ຂັ້ນຕອນທີ 2: ລຶບຂໍ້ມູນປີ້ລົດອອກຈາກຖານຂໍ້ມູນ
     await this.prisma.parkingTicket.delete({
       where: { id },
     });
 
     this.logger.log(`Ticket deleted by Admin: ${ticket.ticketNumber}`);
 
-    // Broadcast refresh so dashboard updates
+    // ສົ່ງສັນຍານແຈ້ງເຕືອນໃຫ້ທຸກໜ້າຈໍ Dashboard ອັບເດດຂໍ້ມູນສະຖິຕິໃໝ່ທັນທີ
     this.parkingGateway.broadcastUpdate({ type: 'stats_refresh' });
 
     return { success: true, message: 'Ticket deleted successfully' };

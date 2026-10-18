@@ -1,4 +1,8 @@
-// PARKO — User Management (Admin)
+/**
+ * ໂມດູນຈັດການຂໍ້ມູນຜູ້ໃຊ້ງານລະບົບ PARKO (User Management Page)
+ * ສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ງານສະເພາະລະດັບຜູ້ບໍລິຫານ (Admin) ເພື່ອຄົ້ນຫາ, ເພີ່ມ, ແກ້ໄຂ,
+ * ປ່ຽນລະຫັດຜ່ານ, ກຳນົດສິດທິການນຳໃຊ້ (ADMIN/STAFF) ແລະ ລຶບບັນຊີຜູ້ໃຊ້ງານໃນລະບົບ.
+ */
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../api/client';
@@ -102,15 +106,15 @@ export default function UsersPage() {
 
   return (
     <div className="font-sans w-full flex flex-col">
-      {/* Main Container Card */}
+      {/* ກາດບັນຈຸຫຼັກຂອງໜ້າຈັດການຜູ້ໃຊ້ງານ (Main Container Card) */}
       <div className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-hidden bg-[#FFFAEE] border-0 flex flex-col" style={{ borderRadius: 0 }}>
         
-        {/* Header Bar */}
+        {/* ແຖບຫົວດ້ານເທິງ (Header Bar) ພື້ນຫຼັງສີເທົາເຂັ້ມ (#5D5D5D) */}
         <div
           className="bg-[#5D5D5D] px-3 sm:px-4 md:px-6 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Top Row on Mobile / Left Section on Desktop: Icon + Title */}
+          {/* ສ່ວນຫົວຂໍ້ດ້ານຊ້າຍ: ໄອຄອນ ແລະ ຊື່ໜ້າຈັດການ */}
           <div className="flex items-center justify-between w-full md:w-auto h-10 shrink-0">
             <div className="flex items-center gap-2.5">
               <SvgIcon raw={usersIcon} className="w-5 h-5 text-white shrink-0" />
@@ -120,9 +124,9 @@ export default function UsersPage() {
             </div>
           </div>
 
-          {/* Right: Search Box & Add User Button */}
+          {/* ສ່ວນດ້ານຂວາ: ກ່ອງຄົ້ນຫາ ແລະ ປຸ່ມເພີ່ມຜູ້ໃຊ້ງານໃໝ່ */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 w-full md:w-auto shrink-0">
-            {/* Search Input Box */}
+            {/* ກ່ອງປ້ອນຂໍ້ຄວາມຄົ້ນຫາຜູ້ໃຊ້ງານ (Search Input Box) */}
             <div className="flex items-center bg-white shadow-sm w-full md:w-[280px] lg:w-[315px] xl:w-[325px] rounded-l-none rounded-r-full overflow-hidden pl-3 sm:pl-3.5 h-10 min-h-[40px] shrink-0">
               <div className="flex items-center justify-center text-[#F9A825] shrink-0">
                 <SvgIcon raw={userSearchIcon} className="w-5 h-5 text-[#F9A825]" />
@@ -173,7 +177,7 @@ export default function UsersPage() {
               </button>
             </div>
 
-            {/* Add User Button */}
+            {/* ປຸ່ມເພີ່ມຜູ້ໃຊ້ງານໃໝ່ (Add User Button) */}
             <button
               onClick={() => {
                 setShowForm(true);
@@ -188,10 +192,10 @@ export default function UsersPage() {
           </div>
         </div>
 
-        {/* Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງ (Red Stripe Divider) */}
         <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-        {/* Table Content */}
+        {/* ສ່ວນຕາຕະລາງສະແດງລາຍການຜູ້ໃຊ້ງານ (Table Content) */}
         <div className="overflow-x-auto no-scrollbar">
           <table className="w-full text-center border-collapse">
             <thead>
@@ -226,34 +230,34 @@ export default function UsersPage() {
                       key={u.id}
                       className={`${rowBg} hover:bg-[#EAD0A0] transition-colors duration-150 text-base md:text-[17px] font-bold text-gray-800 h-14 cursor-default`}
                     >
-                      {/* Column 1: ລ/ດ */}
+                      {/* ຖັນທີ 1: ລຳດັບ (Column 1: No.) */}
                       <td className={`px-3 ${borderClass} text-base md:text-[17px] font-bold align-middle`}>
                         {rowNumber}
                       </td>
 
-                      {/* Column 2: ຜູ້ໃຊ້ */}
+                      {/* ຖັນທີ 2: ຊື່ຜູ້ໃຊ້ງານ (Column 2: DisplayName / Username) */}
                       <td className={`px-6 ${borderClass} truncate max-w-[200px] text-base md:text-[17px] font-bold align-middle text-left`}>
                         {u.displayName || u.username}
                       </td>
 
-                      {/* Column 3: ອີເມວ */}
+                      {/* ຖັນທີ 3: ທີ່ຢູ່ອີເມວ (Column 3: Email) */}
                       <td className={`px-6 ${borderClass} truncate max-w-[240px] text-base md:text-[17px] font-bold align-middle text-left`}>
                         {u.email || '-'}
                       </td>
 
-                      {/* Column 4: ສິດ */}
+                      {/* ຖັນທີ 4: ສິດທິການນຳໃຊ້ (Column 4: Role) */}
                       <td className={`px-4 ${borderClass} text-base md:text-[17px] font-bold align-middle`}>
                         {u.role}
                       </td>
 
-                      {/* Column 5: ສະຖານະ */}
+                      {/* ຖັນທີ 5: ສະຖານະການໃຊ້ງານ (Column 5: Active Status) */}
                       <td className={`px-4 ${borderClass} text-base md:text-[17px] font-bold align-middle`}>
                         <span className={u.isActive !== false ? 'text-gray-800' : 'text-red-500'}>
                           {u.isActive !== false ? 'Active' : 'Disabled'}
                         </span>
                       </td>
 
-                      {/* Column 6: ຈັດການ (Action Icons) */}
+                      {/* ຖັນທີ 6: ປຸ່ມຈັດການ ແກ້ໄຂ ແລະ ລຶບ (Column 6: Action Buttons) */}
                       <td className="px-4 align-middle">
                         <div className="flex items-center justify-center gap-2">
                           <button
@@ -280,15 +284,15 @@ export default function UsersPage() {
           </table>
         </div>
 
-        {/* Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງ (Red Stripe Divider) */}
         <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-        {/* Footer / Pagination Bar */}
+        {/* ແຖບສ່ວນທ້າຍ ແລະ ປຸ່ມປ່ຽນໜ້າ (Footer / Pagination Bar) */}
         <div
           className="bg-[#5D5D5D] px-3 sm:px-4 md:px-6 py-3 md:py-0 min-h-[60px] md:h-16 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Total Count */}
+          {/* ດ້ານຊ້າຍ: ສະແດງຈຳນວນລາຍການຜູ້ໃຊ້ງານທັງໝົດ */}
           <div className="flex items-center gap-2 text-white font-bold text-base md:text-[17px]">
             <span>ຈຳນວນ</span>
             <span
@@ -300,7 +304,7 @@ export default function UsersPage() {
             <span>ລາຍການ</span>
           </div>
 
-          {/* Right: Pagination Controls */}
+          {/* ດ້ານຂວາ: ປຸ່ມຄວບຄຸມການປ່ຽນໜ້າ (Pagination Controls) */}
           <div className="flex items-center gap-1.5 sm:gap-2 max-w-full overflow-x-auto no-scrollbar py-1">
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
@@ -345,7 +349,7 @@ export default function UsersPage() {
         </div>
       </div>
 
-      {/* Add / Edit User Modal */}
+      {/* ໜ້າຕ່າງປັອບອັບ ເພີ່ມ ຫຼື ແກ້ໄຂຂໍ້ມູນຜູ້ໃຊ້ງານ (Add / Edit User Modal) */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div
@@ -353,7 +357,7 @@ export default function UsersPage() {
             style={{ borderRadius: 0 }}
             onClick={e => e.stopPropagation()}
           >
-            {/* Modal Header */}
+            {/* ແຖບຫົວໜ້າຕ່າງປັອບອັບ (Modal Header) */}
             <div className="bg-[#5D5D5D] px-6 h-16 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <SvgIcon raw={userPlusIcon} className="w-5 h-5 text-white" />
@@ -371,16 +375,16 @@ export default function UsersPage() {
               </button>
             </div>
 
-            {/* Red Stripe Divider */}
+            {/* ເສັ້ນຂັ້ນສີແດງ (Red Stripe Divider) */}
             <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-            {/* Modal Form */}
+            {/* ຟອມປ້ອນຂໍ້ມູນຜູ້ໃຊ້ງານ (Modal Form) */}
             <form
               onSubmit={e => { e.preventDefault(); handleSave(); }}
               autoComplete="off"
             >
               <div className="p-6 space-y-4">
-                {/* 1. UserName */}
+                {/* 1. ຊື່ເຂົ້າສູ່ລະບົບ (UserName) */}
                 {!editing && (
                   <div>
                     <label className="block text-base font-bold text-[#333333] mb-1.5">
@@ -403,7 +407,7 @@ export default function UsersPage() {
                   </div>
                 )}
 
-                {/* 2. DisplayName */}
+                {/* 2. ຊື່ສະແດງຂອງຜູ້ໃຊ້ (DisplayName) */}
                 <div>
                   <label className="block text-base font-bold text-[#333333] mb-1.5">
                     DisplayName
@@ -424,7 +428,7 @@ export default function UsersPage() {
                   </div>
                 </div>
 
-                {/* 3. Email */}
+                {/* 3. ອີເມວຕິດຕໍ່ (Email) */}
                 <div>
                   <label className="block text-base font-bold text-[#333333] mb-1.5">
                     Email
@@ -445,7 +449,7 @@ export default function UsersPage() {
                   </div>
                 </div>
 
-                {/* 4. PassWord */}
+                {/* 4. ລະຫັດຜ່ານ (Password) */}
                 <div>
                   <label className="block text-base font-bold text-[#333333] mb-1.5">
                     PassWord
@@ -466,7 +470,7 @@ export default function UsersPage() {
                   </div>
                 </div>
 
-                {/* 5. Role */}
+                {/* 5. ສິດທິການນຳໃຊ້ (Role: STAFF ຫຼື ADMIN) */}
                 <div>
                   <label className="block text-base font-bold text-[#333333] mb-1.5">
                     Role
@@ -485,10 +489,10 @@ export default function UsersPage() {
                 </div>
               </div>
 
-              {/* Red Stripe Divider */}
+              {/* ເສັ້ນຂັ້ນສີແດງ (Red Stripe Divider) */}
               <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-              {/* Modal Footer */}
+              {/* ສ່ວນທ້າຍໜ້າຕ່າງປັອບອັບ ພ້ອມປຸ່ມບັນທຶກ (Modal Footer) */}
               <div className="bg-[#5D5D5D] px-6 h-16 flex items-center justify-center">
                 <button
                   type="submit"
@@ -504,7 +508,7 @@ export default function UsersPage() {
         </div>
       )}
 
-      {/* Delete Confirmation Modal (Centered on Screen) */}
+      {/* ໜ້າຕ່າງປັອບອັບຢືນຢັນການລຶບຜູ້ໃຊ້ງານ (Delete Confirmation Modal) */}
       {deleteConfirm && (
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-4"

@@ -1,4 +1,7 @@
-// PARKO — Lost Ticket Page
+// ============================================
+// PARKO — ໜ້າຈັດການແຈ້ງປີ້ລົດເສຍ (Lost Ticket Page)
+// ໜ້າທີ່: ຈັດການການບັນທຶກກໍລະນີປີ້ລົດເສຍ, ຄົ້ນຫາຂໍ້ມູນລົດ, ຖ່າຍຮູບຫຼັກຖານ (ຄົນຂັບ, ບັດ, ເອກະສານ, ລົດ) ແລະ ຄິດໄລ່ຄ່າປັບໃໝ
+// ============================================
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -65,12 +68,12 @@ export default function LostTicket() {
     }
   };
 
-  // Camera & Image Picker State
+  // ສະຖານະການເປີດກ້ອງຖ່າຍຮູບ ແລະ ເລືອກຮູບພາບ (Camera & Image Picker State)
   const [cameraSlot, setCameraSlot] = useState<{ key: string; label: string } | null>(null);
   const [choiceSlot, setChoiceSlot] = useState<{ key: string; label: string } | null>(null);
   const [previewImage, setPreviewImage] = useState<{ url: string; label: string } | null>(null);
 
-  // Live Camera stream state
+  // ສະຖານະການສະແດງພາບສົດຈາກກ້ອງ (Live Camera Stream State)
   const videoRef = React.useRef<HTMLVideoElement | null>(null);
   const streamRef = React.useRef<MediaStream | null>(null);
   const [cameraLoading, setCameraLoading] = useState(false);
@@ -338,12 +341,12 @@ export default function LostTicket() {
   if (done) {
     return (
       <div className="font-sans w-full flex flex-col">
-        {/* Main Card */}
+        {/* ບັດຫຼັກສະແດງຜົນການບັນທຶກສຳເລັດ */}
         <div
           className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-visible w-full border-0 flex flex-col"
           style={{ borderRadius: 0 }}
         >
-          {/* Header Bar — Dark Gray */}
+          {/* ແຖບຫົວຂໍ້ດ້ານເທິງ — ສີເທົາເຂັ້ມ */}
           <div
             className="bg-[#5D5D5D] px-3 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 rounded-none"
             style={{ borderRadius: 0 }}
@@ -356,16 +359,16 @@ export default function LostTicket() {
             </div>
           </div>
 
-          {/* Top Red Stripe */}
+          {/* ເສັ້ນແບ່ງແຖບສີແດງດ້ານເທິງ */}
           <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-          {/* Body — Orange */}
+          {/* ສ່ວນເນື້ອໃນ — ພື້ນຫຼັງສີສົ້ມ */}
           <div className="bg-[#F9A825] p-3 sm:p-6 py-8 sm:py-14 flex justify-center items-center">
             <div className="bg-white p-6 sm:p-9 text-center shadow-2xl max-w-lg w-full rounded-none border border-amber-200/80 animate-scale-in relative overflow-hidden">
-              {/* Top Accent Strip */}
+              {/* ເສັ້ນແຖບສີຕົກແຕ່ງດ້ານເທິງສຸດຂອງບັດ */}
               <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500" />
 
-              {/* Animated Double-Ring Success Icon */}
+              {/* ໄອຄອນສະແດງຜົນສຳເລັດພ້ອມແອນິເມຊັນວົງແຫວນຄູ່ */}
               <div className="relative w-20 h-20 mx-auto mb-4 flex items-center justify-center">
                 <div className="absolute inset-0 rounded-full bg-emerald-100/70 animate-ping opacity-40" />
                 <div className="w-18 h-18 rounded-full bg-emerald-50 border-2 border-emerald-200 flex items-center justify-center shadow-inner">
@@ -375,7 +378,7 @@ export default function LostTicket() {
                 </div>
               </div>
 
-              {/* Headings */}
+              {/* ຫົວຂໍ້ແຈ້ງເຕືອນຜົນສຳເລັດ */}
               <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mb-1.5 tracking-tight">
                 ບັນທຶກສຳເລັດ!
               </h2>
@@ -383,7 +386,7 @@ export default function LostTicket() {
                 ບັນທຶກກໍລະນີປີ້ລົດເສຍຮຽບຮ້ອຍແລ້ວ
               </p>
 
-              {/* Receipt / Case Info Summary Card */}
+              {/* ບັດສະຫຼຸບຂໍ້ມູນໃບຮັບເງິນ / ກໍລະນີປີ້ເສຍ */}
               {submittedData && (
                 <div className="bg-[#FFFAEE] border border-amber-200/80 p-4 sm:p-5 mb-6 text-left shadow-2xs divide-y divide-amber-200/60">
                   <div className="flex items-center justify-between pb-2.5">
@@ -410,7 +413,7 @@ export default function LostTicket() {
                 </div>
               )}
 
-              {/* Action Buttons */}
+              {/* ປຸ່ມຄຳສັ່ງດຳເນີນການຕໍ່ */}
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   type="button"
@@ -432,10 +435,10 @@ export default function LostTicket() {
             </div>
           </div>
 
-          {/* Bottom Red Stripe */}
+          {/* ເສັ້ນແບ່ງແຖບສີແດງດ້ານລຸ່ມ */}
           <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-          {/* Footer Bar — Dark Gray */}
+          {/* ແຖບທ້າຍລຸ່ມສຸດ — ສີເທົາເຂັ້ມ */}
           <div
             className="bg-[#5D5D5D] px-3 py-3 md:py-0 min-h-[60px] md:h-16"
             style={{ borderRadius: 0 }}
@@ -453,17 +456,17 @@ export default function LostTicket() {
 
   return (
     <div className="font-sans w-full flex flex-col">
-      {/* Main Card */}
+      {/* ບັດຫຼັກຂອງໜ້າແຈ້ງປີ້ລົດເສຍ */}
       <div
         className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-visible w-full border-0 flex flex-col"
         style={{ borderRadius: 0 }}
       >
-        {/* Header Bar — Dark Gray */}
+        {/* ແຖບຫົວຂໍ້ດ້ານເທິງ — ສີເທົາເຂັ້ມ */}
         <div
           className="bg-[#5D5D5D] px-3 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Top Row on Mobile / Left Section on Desktop: Icon + Title */}
+          {/* ແຖວເທິງໃນຈໍມືຖື / ສ່ວນຊ້າຍໃນຈໍຄອມພິວເຕີ: ໄອຄອນ ແລະ ຫົວຂໍ້ */}
           <div className="flex items-center justify-between w-full md:w-auto h-10 shrink-0">
             <div className="flex items-center gap-2 sm:gap-2.5">
               <AlertTriangle size={20} className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-white shrink-0" />
@@ -473,7 +476,7 @@ export default function LostTicket() {
             </div>
           </div>
 
-          {/* Right: Search Input Box */}
+          {/* ດ້ານຂວາ: ຊ່ອງປ້ອນຂໍ້ມູນຄົ້ນຫາປີ້ລົດ */}
           <div className="flex items-center gap-2 sm:gap-3 justify-end w-full md:w-auto shrink-0">
             <div className="flex items-center bg-white shadow-sm w-full md:w-[280px] lg:w-[315px] xl:w-[325px] rounded-l-none rounded-r-full overflow-hidden pl-3 sm:pl-3.5 h-10 min-h-[40px] shrink-0">
               <div className="flex items-center justify-center text-[#F9A825] shrink-0">
@@ -517,12 +520,12 @@ export default function LostTicket() {
           </div>
         </div>
 
-        {/* Top Red Stripe */}
+        {/* ເສັ້ນແບ່ງແຖບສີແດງດ້ານເທິງ */}
         <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-        {/* Body — Orange */}
+        {/* ສ່ວນເນື້ອໃນ — ພື້ນຫຼັງສີສົ້ມ/ເຫຼືອງ */}
         <div className="bg-[#F9A825] p-3 sm:p-4 md:p-5 flex flex-col justify-start">
-          {/* Not Found Banner if search returned no results */}
+          {/* ແຖບແຈ້ງເຕືອນກໍລະນີຄົ້ນຫາບໍ່ພົບຂໍ້ມູນ */}
           {notFound && (
             <div className="bg-white/95 border-l-4 border-[#B02019] p-3 sm:p-3.5 mb-3 sm:mb-3.5 shadow-md flex items-center justify-between text-black font-bold text-sm sm:text-base animate-fade-in">
               <div className="flex items-center gap-2">
@@ -539,32 +542,32 @@ export default function LostTicket() {
             </div>
           )}
 
-          {/* Vehicle Info Card — Shown When Ticket is Found (Image Layout) */}
+          {/* ບັດສະແດງຂໍ້ມູນລົດ — ຈະສະແດງເມື່ອຄົ້ນພົບ Ticket ແລ້ວ */}
           {ticket && (
             <div className="bg-white shadow-md rounded-none w-full py-4 sm:py-5 px-3 sm:px-4 mb-3 sm:mb-4 animate-scale-in">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 items-center gap-3 sm:gap-2 lg:gap-0 lg:divide-x-2 divide-gray-700">
-                {/* Col 1: Ticket ID */}
+                {/* ຖັນ 1: ລະຫັດປີ້ (Ticket ID) */}
                 <div className="flex items-center justify-center px-3 text-center">
                   <span className="text-base sm:text-[17px] md:text-lg font-bold text-black whitespace-nowrap">
                     Ticket ID : {ticket.ticketNumber || ticket.id}
                   </span>
                 </div>
 
-                {/* Col 2: ສະຖານະ */}
+                {/* ຖັນ 2: ສະຖານະການຈອດ */}
                 <div className="flex items-center justify-center px-3 text-center">
                   <span className="text-base sm:text-[17px] md:text-lg font-bold text-black whitespace-nowrap">
                     ສະຖານະ : {ticket.status === 'ACTIVE' ? 'ກຳລັງຈອດ' : (ticket.status || 'ກຳລັງຈອດ')}
                   </span>
                 </div>
 
-                {/* Col 3: ປະເພດ */}
+                {/* ຖັນ 3: ປະເພດລົດ */}
                 <div className="flex items-center justify-center px-3 text-center">
                   <span className="text-base sm:text-[17px] md:text-lg font-bold text-black whitespace-nowrap">
                     ປະເພດ : {ticket.vehicleType?.label || '-'}
                   </span>
                 </div>
 
-                {/* Col 4: ທະບຽນ */}
+                {/* ຖັນ 4: ປ້າຍທະບຽນລົດ */}
                 <div className="flex items-center justify-center px-3 text-center">
                   <span className="text-base sm:text-[17px] md:text-lg font-bold text-black whitespace-nowrap">
                     ທະບຽນ : {plateText}
@@ -574,7 +577,7 @@ export default function LostTicket() {
             </div>
           )}
 
-          {/* Multiple Tickets Selector */}
+          {/* ສ່ວນເລືອກລົດ ກໍລະນີພົບລົດຫຼາຍກວ່າ 1 ຄັນ */}
           {multipleTickets.length > 0 && !ticket && (
             <div className="bg-white p-3 sm:p-3.5 mb-3 sm:mb-3.5 shadow-md rounded-none animate-fade-in">
               <p className="font-bold text-black text-sm sm:text-base mb-2 sm:mb-2.5">
@@ -602,14 +605,14 @@ export default function LostTicket() {
             </div>
           )}
 
-          {/* Section: Evidence (ຫຼັກຖານ) */}
+          {/* ສ່ວນອັບໂຫຼດຮູບຫຼັກຖານ (Evidence) */}
           <div className="flex items-center justify-between mb-3.5 sm:mb-4">
             <p className="text-sm sm:text-base md:text-[17px] font-bold text-black leading-tight">
               ຫຼັກຖານ
             </p>
           </div>
 
-          {/* 4 Photo Upload Boxes */}
+          {/* ກ່ອງອັບໂຫຼດຮູບພາບ 4 ຊ່ອງ */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-3.5 md:gap-4 mb-3.5 sm:mb-4">
             {photoSlots.map((slot) => {
               const photoUrl = photos[slot.key];
@@ -696,7 +699,7 @@ export default function LostTicket() {
             })}
           </div>
 
-          {/* Hidden File Inputs for Device & Native Camera */}
+          {/* ຊ່ອງເລືອກໄຟລ໌ທີ່ເຊື່ອງໄວ້ ສຳລັບອັບໂຫຼດຈາກເຄື່ອງ ຫຼື ເອີ້ນໃຊ້ກ້ອງລະບົບມືຖື */}
           {photoSlots.map((slot) => (
             <React.Fragment key={`inputs-${slot.key}`}>
               <input
@@ -725,9 +728,9 @@ export default function LostTicket() {
             </React.Fragment>
           ))}
 
-          {/* Section: Fine Amount & Remarks (2 Columns) */}
+          {/* ສ່ວນກຳນົດຄ່າປັບໃໝ ແລະ ໝາຍເຫດ (2 ຖັນ) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5 md:gap-4 mb-0">
-            {/* Column 1: ຄ່າປັບໃໝ */}
+            {/* ຖັນ 1: ຄ່າປັບໃໝ */}
             <div>
               <p className="text-sm sm:text-base md:text-[17px] font-bold text-black leading-tight mb-2 sm:mb-2.5">
                 ຄ່າປັບໃໝ
@@ -743,7 +746,7 @@ export default function LostTicket() {
               />
             </div>
 
-            {/* Column 2: ໝາຍເຫດ */}
+            {/* ຖັນ 2: ໝາຍເຫດ */}
             <div>
               <p className="text-sm sm:text-base md:text-[17px] font-bold text-black leading-tight mb-2 sm:mb-2.5">
                 ໝາຍເຫດ
@@ -760,15 +763,15 @@ export default function LostTicket() {
           </div>
         </div>
 
-        {/* Bottom Red Stripe */}
+        {/* ເສັ້ນແບ່ງແຖບສີແດງດ້ານລຸ່ມ */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Footer Bar — Dark Gray with Centered Action Buttons (Save and Cancel) */}
+        {/* ແຖບທ້າຍລຸ່ມສຸດ — ສີເທົາເຂັ້ມ ພ້ອມປຸ່ມບັນທຶກ ແລະ ຍົກເລີກ */}
         <div
           className="bg-[#5D5D5D] px-3 py-3 md:py-0 min-h-[60px] md:h-16 flex items-center justify-center gap-3 sm:gap-4 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Save Button */}
+          {/* ປຸ່ມກົດບັນທຶກ */}
           <button
             type="button"
             onClick={handleSubmit}
@@ -784,7 +787,7 @@ export default function LostTicket() {
             <span className="whitespace-nowrap">ບັນທຶກ</span>
           </button>
 
-          {/* Cancel Button */}
+          {/* ປຸ່ມກົດຍົກເລີກ */}
           <button
             type="button"
             onClick={handleCancel}
@@ -799,14 +802,14 @@ export default function LostTicket() {
         </div>
       </div>
 
-      {/* ── Camera Capture Modal ── */}
+      {/* ── ໜ້າຕ່າງປັອບອັບຖ່າຍຮູບຜ່ານກ້ອງສົດ (Camera Capture Modal) ── */}
       {cameraSlot && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 animate-fade-in">
           <div
             className="bg-white max-w-2xl w-full shadow-2xl rounded-none border-0 overflow-hidden flex flex-col"
             style={{ borderRadius: 0, border: 'none' }}
           >
-            {/* Header */}
+            {/* ສ່ວນຫົວຂອງໜ້າຕ່າງຖ່າຍຮູບ */}
             <div
               className="bg-[#545454] px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between text-white rounded-none"
               style={{ borderRadius: 0 }}
@@ -830,13 +833,13 @@ export default function LostTicket() {
               </button>
             </div>
 
-            {/* Top Red Stripe */}
+            {/* ເສັ້ນແບ່ງແຖບສີແດງດ້ານເທິງ */}
             <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-            {/* Camera Viewport */}
+            {/* ພື້ນທີ່ສະແດງພາບກ້ອງ (Camera Viewport) */}
             <div className="relative aspect-[4/3] bg-black flex items-center justify-center overflow-hidden">
               {capturedDataUrl ? (
-                // Frozen captured snapshot
+                // ສະແດງພາບທີ່ຖ່າຍແລ້ວເພື່ອໃຫ້ຜູ້ໃຊ້ກວດສອບ
                 <div className="w-full h-full relative flex items-center justify-center bg-black">
                   <img
                     src={capturedDataUrl}
@@ -848,7 +851,7 @@ export default function LostTicket() {
                   </div>
                 </div>
               ) : (
-                // Live Stream View
+                // ສະແດງພາບສົດຈາກກ້ອງ (Live Stream View)
                 <>
                   <video
                     ref={videoRef}
@@ -858,7 +861,7 @@ export default function LostTicket() {
                     className="w-full h-full object-cover"
                   />
 
-                  {/* Framing Guide Box */}
+                  {/* ກອບເສັ້ນປະແນະນຳຕຳແໜ່ງການວາງວັດຖຸ */}
                   <div className="absolute inset-6 sm:inset-10 border-2 border-dashed border-white/60 pointer-events-none flex flex-col justify-between p-2">
                     <div className="flex justify-between">
                       <div className="w-4 h-4 border-t-2 border-l-2 border-white" />
@@ -875,7 +878,7 @@ export default function LostTicket() {
                     </div>
                   </div>
 
-                  {/* Switch camera button */}
+                  {/* ປຸ່ມສະຫຼັບກ້ອງໜ້າ ແລະ ກ້ອງຫຼັງ */}
                   <div className="absolute top-3 right-3 flex items-center gap-2">
                     <button
                       type="button"
@@ -890,7 +893,7 @@ export default function LostTicket() {
                 </>
               )}
 
-              {/* Loading State */}
+              {/* ສະຖານະກຳລັງເປີດກ້ອງ */}
               {cameraLoading && (
                 <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center text-white z-20">
                   <RefreshCw size={32} className="animate-spin text-[#F9A825] mb-2" />
@@ -898,7 +901,7 @@ export default function LostTicket() {
                 </div>
               )}
 
-              {/* Error State */}
+              {/* ສະຖານະເກີດຂໍ້ຜິດພາດໃນການເປີດກ້ອງ */}
               {cameraError && !cameraLoading && (
                 <div className="absolute inset-0 bg-black/90 p-6 flex flex-col items-center justify-center text-center text-white z-20">
                   <AlertCircle size={40} className="text-[#B02019] mb-3" />
@@ -930,13 +933,13 @@ export default function LostTicket() {
               )}
             </div>
 
-            {/* Bottom Red Stripe */}
+            {/* ເສັ້ນແບ່ງແຖບສີແດງດ້ານລຸ່ມ */}
             <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-            {/* Footer Bar */}
+            {/* ແຖບທ້າຍຄວບຄຸມການຖ່າຍຮູບ */}
             <div className="bg-[#5D5D5D] px-4 py-3 flex items-center justify-between text-white">
               {capturedDataUrl ? (
-                // Actions after photo is snapped
+                // ປຸ່ມຄຳສັ່ງຫຼັງຈາກຖ່າຍຮູບແລ້ວ: ຖ່າຍໃໝ່ ຫຼື ຕົກລົງໃຊ້ຮູບ
                 <>
                   <button
                     type="button"
@@ -961,7 +964,7 @@ export default function LostTicket() {
                   </button>
                 </>
               ) : (
-                // Live Stream Controls
+                // ປຸ່ມຄວບຄຸມຂະນະເປີດກ້ອງສົດ
                 <>
                   <button
                     type="button"
@@ -972,7 +975,7 @@ export default function LostTicket() {
                     <span className="hidden sm:inline">ເລືອກໃນເຄື່ອງ</span>
                   </button>
 
-                  {/* Circular Shutter Button */}
+                  {/* ປຸ່ມຊັດເຕີກົດຖ່າຍຮູບ (Circular Shutter Button) */}
                   <button
                     type="button"
                     onClick={captureSnapshot}
@@ -1001,14 +1004,14 @@ export default function LostTicket() {
         </div>
       )}
 
-      {/* ── Method Choice Modal ── */}
+      {/* ── ໜ້າຕ່າງປັອບອັບເລືອກວິທີເພີ່ມຮູບພາບ (Method Choice Modal) ── */}
       {choiceSlot && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
           <div
             className="bg-white max-w-md w-full shadow-2xl rounded-none border-0 overflow-hidden flex flex-col"
             style={{ borderRadius: 0, border: 'none' }}
           >
-            {/* Header */}
+            {/* ສ່ວນຫົວຂອງໜ້າຕ່າງເລືອກວິທີເພີ່ມຮູບ */}
             <div
               className="bg-[#545454] px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between text-white rounded-none"
               style={{ borderRadius: 0 }}
@@ -1029,15 +1032,15 @@ export default function LostTicket() {
               </button>
             </div>
 
-            {/* Top Red Stripe */}
+            {/* ເສັ້ນແບ່ງແຖບສີແດງດ້ານເທິງ */}
             <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-            {/* Body */}
+            {/* ເນື້ອໃນ: ຕົວເລືອກວິທີການເພີ່ມຮູບ */}
             <div
               className="p-4 sm:p-5 bg-white flex flex-col gap-3 rounded-none"
               style={{ borderRadius: 0 }}
             >
-              {/* Option 1: Live Camera */}
+              {/* ຕົວເລືອກ 1: ຖ່າຍຮູບສົດດ້ວຍກ້ອງ */}
               <button
                 type="button"
                 onClick={() => {
@@ -1061,7 +1064,7 @@ export default function LostTicket() {
                 </div>
               </button>
 
-              {/* Option 2: Upload from Device */}
+              {/* ຕົວເລືອກ 2: ເລືອກຮູບຈາກເຄື່ອງ ຫຼື ຄັງຮູບ */}
               <button
                 type="button"
                 onClick={() => triggerDeviceUpload(choiceSlot.key)}
@@ -1085,7 +1088,7 @@ export default function LostTicket() {
         </div>
       )}
 
-      {/* ── Image Lightbox Modal ── */}
+      {/* ── ໜ້າຕ່າງສະແດງພາບຂະໜາດເຕັມ (Image Lightbox Modal) ── */}
       {previewImage && (
         <div
           className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-fade-in"
@@ -1096,7 +1099,7 @@ export default function LostTicket() {
             style={{ borderRadius: 0, border: 'none' }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
+            {/* ສ່ວນຫົວຂອງໜ້າຕ່າງສະແດງຮູບ */}
             <div
               className="bg-[#545454] px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between text-white rounded-none"
               style={{ borderRadius: 0 }}
@@ -1114,10 +1117,10 @@ export default function LostTicket() {
               </button>
             </div>
 
-            {/* Red Stripe */}
+            {/* ເສັ້ນແບ່ງແຖບສີແດງ */}
             <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-            {/* Image Preview Container */}
+            {/* ກ່ອງສະແດງຮູບພາບເຕັມ */}
             <div className="bg-black flex items-center justify-center p-2 min-h-[300px] max-h-[75vh] overflow-hidden">
               <img
                 src={previewImage.url}
@@ -1126,10 +1129,10 @@ export default function LostTicket() {
               />
             </div>
 
-            {/* Red Stripe */}
+            {/* ເສັ້ນແບ່ງແຖບສີແດງ */}
             <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-            {/* Footer */}
+            {/* ສ່ວນທ້າຍພ້ອມປຸ່ມປິດ */}
             <div className="bg-[#5D5D5D] px-4 py-2.5 flex items-center justify-end">
               <button
                 type="button"

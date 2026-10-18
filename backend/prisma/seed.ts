@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Database Seed
-// Creates default admin, vehicle types, pricing, settings
-// ============================================
+// ==============================================================================
+// PARKO — ສະຄຣິບສຳລັບການສ້າງຂໍ້ມູນເລີ່ມຕົ້ນຂອງຖານຂໍ້ມູນ (Database Seed)
+// ເຮັດໜ້າທີ່ສ້າງບັນຊີຜູ້ບໍລິຫານ (Admin), ພະນັກງານ (Staff), ປະເພດລົດ, ອັດຕາລາຄາ ແລະ ການຕັ້ງຄ່າລະບົບ
+// ==============================================================================
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 
@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Seeding database...');
 
-  // ─── Create Admin User ────────────────────
+  // ─── ສ້າງບັນຊີຜູ້ດູແລລະບົບຂັ້ນສູງ (Admin User) ────────────────────
   const adminPassword = await bcrypt.hash('admin123', 12);
   const admin = await prisma.user.upsert({
     where: { username: 'admin' },
@@ -29,7 +29,7 @@ async function main() {
   });
   console.log(`✅ Admin user created: ${admin.username}`);
 
-  // ─── Create Staff Users ───────────────────
+  // ─── ສ້າງບັນຊີຜູ້ໃຊ້ງານລະດັບພະນັກງານປະຈຳປ້ອມ (Staff Users) ───────────────────
   const staffPassword = await bcrypt.hash('staff123', 12);
   const staff01 = await prisma.user.upsert({
     where: { username: 'staff01' },
@@ -65,7 +65,7 @@ async function main() {
   });
   console.log(`✅ Staff user created: ${staff.username}`);
 
-  // ─── Vehicle Types ───────────────────────
+  // ─── ກຳນົດປະເພດຍານພາຫະນະເລີ່ມຕົ້ນ (Vehicle Types) ───────────────────────
   const vehicleTypes = [
     { name: 'car', label: 'ລົດໃຫຍ່', icon: '🚗', description: 'Car / ລົດໃຫຍ່', sortOrder: 1 },
     { name: 'motorcycle', label: 'ລົດຈັກ', icon: '🏍️', description: 'Motorcycle / ລົດຈັກ', sortOrder: 2 },
@@ -82,10 +82,10 @@ async function main() {
   }
   console.log('✅ Vehicle types created');
 
-  // ─── Get vehicle types for pricing ──────
+  // ─── ດຶງຂໍ້ມູນປະເພດຍານພາຫະນະທັງໝົດເພື່ອມານຳໃຊ້ໃນການຕັ້ງຄ່າລາຄາ ──────
   const allTypes = await prisma.vehicleType.findMany();
 
-  // ─── Default Pricing Rules (LAK) ────────
+  // ─── ອັດຕາຄ່າບໍລິການຈອດລົດເລີ່ມຕົ້ນເປັນສະກຸນເງິນກີບ (Default Pricing Rules - LAK) ────────
   const defaultPricing = [
     { name: 'car', hourly: 5000, daily: 30000, weekly: 150000, monthly: 500000, free: 15 },
     { name: 'motorcycle', hourly: 3000, daily: 15000, weekly: 80000, monthly: 250000, free: 15 },
@@ -97,7 +97,7 @@ async function main() {
     const vt = allTypes.find((t) => t.name === dp.name);
     if (!vt) continue;
 
-    // Check if pricing rule already exists
+    // ກວດສອບເບິ່ງວ່າກົດລະບຽບລາຄາສຳລັບປະເພດລົດນີ້ມີຢູ່ແລ້ວຫຼືບໍ່ ເພື່ອຫຼີກລ່ຽງການສ້າງຊ້ຳ
     const existing = await prisma.pricingRule.findFirst({
       where: { vehicleTypeId: vt.id, isActive: true },
     });
@@ -120,7 +120,7 @@ async function main() {
   }
   console.log('✅ Default pricing rules created (LAK)');
 
-  // ─── System Settings ────────────────────
+  // ─── ການຕັ້ງຄ່າລະບົບທົ່ວໄປ (System Settings) ────────────────────
   const settings = [
     {
       key: 'parking_name',

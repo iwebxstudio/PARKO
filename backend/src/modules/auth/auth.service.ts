@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Auth Service
-// Handles JWT authentication & refresh tokens
-// ============================================
+// ==============================================================================
+// PARKO — ບໍລິການລະບົບຢືນຢັນຕົວຕົນ (Auth Service)
+// ຈັດການຂະບວນການກວດສອບຄວາມຖືກຕ້ອງ, ອອກ Access/Refresh Token ແລະ Token Rotation ເພື່ອຄວາມປອດໄພສູງສຸດ
+// ==============================================================================
 import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -20,7 +20,7 @@ export class AuthService {
   ) {}
 
   /**
-   * Validate user credentials
+   * ກວດສອບຄວາມຖືກຕ້ອງຂອງບັນຊີຜູ້ໃຊ້ງານ (ຊື່ຜູ້ໃຊ້, ອີເມວ ຫຼື ເບີໂທລະສັບ ແລະ ລະຫັດຜ່ານ)
    */
   async validateUser(usernameOrContact: string, pass: string): Promise<any> {
     const user = await this.prisma.user.findFirst({
@@ -54,7 +54,7 @@ export class AuthService {
   }
 
   /**
-   * Login — generate access + refresh tokens
+   * ເຂົ້າສູ່ລະບົບ (Login) — ສ້າງ Access Token ແລະ Refresh Token ພ້ອມບັນທຶກລົງຖານຂໍ້ມູນ
    */
   async login(username: string, password: string) {
     const user = await this.validateUser(username, password);
@@ -72,12 +72,12 @@ export class AuthService {
     const refreshToken = randomUUID();
     const refreshExpiration = this.configService.get('jwt.refreshExpiration');
 
-    // Calculate expiration date for refresh token
+    // ຄິດໄລ່ວັນໝົດອາຍຸຂອງ Refresh Token ຕາມຄ່າທີ່ກຳນົດໄວ້ໃນລະບົບ
     const expiresAt = new Date();
     const days = parseInt(refreshExpiration) || 7;
     expiresAt.setDate(expiresAt.getDate() + days);
 
-    // Save refresh token to database
+    // ບັນທຶກ Refresh Token ໃໝ່ລົງໃນຖານຂໍ້ມູນ
     await this.prisma.refreshToken.create({
       data: {
         userId: user.id,
@@ -101,8 +101,7 @@ export class AuthService {
   }
 
   /**
-   * Refresh access token using refresh token
-   * Implements token rotation for security
+   * ຕໍ່ອາຍຸ Access Token ໂດຍໃຊ້ Refresh Token (ຮອງຮັບລະບົບ Token Rotation ເພື່ອຄວາມປອດໄພ)
    */
   async refreshAccessToken(refreshTokenStr: string) {
     const storedToken = await this.prisma.refreshToken.findUnique({
@@ -122,13 +121,13 @@ export class AuthService {
       throw new UnauthorizedException('Account disabled');
     }
 
-    // Revoke old refresh token (rotation)
+    // ຍົກເລີກ Refresh Token ເກົ່າທັນທີ (Token Rotation) ເພື່ອປ້ອງກັນການນຳກັບມາໃຊ້ຊ້ຳ
     await this.prisma.refreshToken.update({
       where: { id: storedToken.id },
       data: { isRevoked: true },
     });
 
-    // Generate new tokens
+    // ສ້າງ Access Token ແລະ Refresh Token ຊຸດໃໝ່
     const payload = {
       sub: storedToken.user.id,
       username: storedToken.user.username,
@@ -166,7 +165,7 @@ export class AuthService {
   }
 
   /**
-   * Logout — revoke refresh token
+   * ອອກຈາກລະບົບ (Logout) — ຍົກເລີກສະຖານະການໃຊ້ງານຂອງ Refresh Token ໃນຖານຂໍ້ມູນ
    */
   async logout(refreshToken: string) {
     await this.prisma.refreshToken.update({
@@ -199,7 +198,7 @@ export class AuthService {
         phoneNumber: dto.phoneNumber,
         displayName: dto.displayName || dto.username,
         passwordHash,
-        role: 'STAFF', // Default to STAFF
+        role: 'STAFF', // ກຳນົດບົດບາດເລີ່ມຕົ້ນໃຫ້ເປັນ STAFF
       },
     });
     const result = { ...user };
@@ -208,7 +207,7 @@ export class AuthService {
   }
 
   /**
-   * Revoke all refresh tokens for a user
+   * ຍົກເລີກ Refresh Token ທັງໝົດຂອງຜູ້ໃຊ້ງານ (ເມື່ອປ່ຽນລະຫັດຜ່ານ ຫຼື ຖືກລະງັບບັນຊີ)
    */
   async revokeAllTokens(userId: string) {
     await this.prisma.refreshToken.updateMany({

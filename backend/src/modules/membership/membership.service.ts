@@ -1,6 +1,7 @@
-// ============================================
-// PARKO — Membership Service
-// ============================================
+// ==============================================================================
+// PARKO — ບໍລິການລະບົບສະມາຊິກ (Membership Service)
+// ຈັດການຂໍ້ມູນສະມາຊິກລານຈອດລົດ, ສ້າງລະຫັດສະມາຊິກ M-XXXXX, Check-in ອັດຕະໂນມັດ ແລະ ຕັດອາຍຸອັດຕະໂນມັດ
+// ==============================================================================
 import {
   Injectable,
   NotFoundException,
@@ -55,7 +56,7 @@ export class MembershipService {
   }
 
   async create(dto: CreateMembershipDto, userId: string) {
-    // Validate vehicle type
+    // ກວດສອບຄວາມຖືກຕ້ອງຂອງປະເພດຍານພາຫະນະ (vehicleTypeId)
     const vehicleType = await this.prisma.vehicleType.findUnique({
       where: { id: dto.vehicleTypeId },
     });
@@ -64,7 +65,7 @@ export class MembershipService {
       throw new BadRequestException('Invalid vehicle type');
     }
 
-    // ── Composite Unique check (vehicleType + province + letters + plateNumber) ──
+    // ── ກວດສອບການຊ້ຳຊ້ອນແບບປະສົມປະສານ (ປະເພດລົດ + ແຂວງ + ຕົວອັກສອນ + ໝາຍເລກທະບຽນ) ──
     const plateNum = dto.plateNumber?.trim() || null;
     const plateLet = dto.plateLetters?.trim() || null;
     const plateProv = dto.plateProvince?.trim() || null;
@@ -99,7 +100,7 @@ export class MembershipService {
         }
       }
 
-      // Build combined plate for membership storage (backward compat)
+      // ສ້າງໝາຍເລກທະບຽນລວມ (ຕົວອັກສອນ + ຕົວເລກ) ສຳລັບເກັບກຳໃນລະບົບສະມາຊິກ (Backward Compatibility)
       const combinedPlate = [plateLet, plateNum].filter(Boolean).join(' ');
 
       let parkingType: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'CUSTOM' = 'CUSTOM';
@@ -176,7 +177,7 @@ export class MembershipService {
               },
             });
 
-            // Create payment record for prepaid amount in the same transaction
+            // ບັນທຶກປະຫວັດການຊຳລະເງິນຄ່າສະມາຊິກລ່ວງໜ້າ (Prepaid) ໃນ Transaction ດຽວກັນ
             if (dto.paidAmount && Number(dto.paidAmount) > 0) {
               await tx.payment.create({
                 data: {
@@ -304,8 +305,8 @@ export class MembershipService {
   }
 
   /**
-   * Check if a plate number has an active membership.
-   * Auto-expires memberships if their end date has passed.
+   * ກວດສອບສະຖານະສະມາຊິກຈາກໝາຍເລກທະບຽນລົດ
+   * ປັບປ່ຽນສະຖານະເປັນ EXPIRED (ໝົດອາຍຸ) ອັດຕະໂນມັດ ຖ້າຫາກກາຍກຳນົດວັນທີສິ້ນສຸດແລ້ວ
    */
   async checkByPlate(plateNumber: string) {
     if (!plateNumber || plateNumber.trim() === '') {
@@ -329,10 +330,10 @@ export class MembershipService {
 
     const now = new Date();
 
-    // Find the first active one that hasn't expired
+    // ຄົ້ນຫາສະມາຊິກລາຍການທຳອິດທີ່ຍັງມີຜົນບັງຄັບໃຊ້ ແລະ ຍັງບໍ່ທັນໝົດອາຍຸ
     for (const membership of memberships) {
       if (membership.endDate < now) {
-        // Auto-expire
+        // ປັບປ່ຽນສະຖານະເປັນໝົດອາຍຸ (Auto-expire)
         await this.prisma.membership.update({
           where: { id: membership.id },
           data: { status: MemberStatus.EXPIRED },
@@ -340,7 +341,7 @@ export class MembershipService {
         continue;
       }
 
-      // Found valid active membership
+      // ພົບຂໍ້ມູນສະມາຊິກທີ່ຖືກຕ້ອງ ແລະ ຍັງໃຊ້ງານໄດ້
       return {
         isMember: true,
         membership,

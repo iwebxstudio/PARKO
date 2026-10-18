@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Load environment variables
+# ໂຫຼດຄ່າຕົວປ່ຽນສະພາບແວດລ້ອມຈາກຟາຍ .env
 if [ -f .env ]; then
   export $(grep -v '^#' .env | xargs)
 fi
@@ -23,10 +23,10 @@ fi
 
 echo "🔄 Restoring database from $BACKUP_FILE..."
 
-# Recreate public schema to ensure clean slate
+# ລຶບ ແລະ ສ້າງ public schema ໃໝ່ ເພື່ອລ້າງຂໍ້ມູນເກົ່າອອກໃຫ້ສະອາດກ່ອນ Restore
 docker compose exec -T postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
 
-# Pipe file into postgres psql
+# ສົ່ງຂໍ້ມູນຈາກຟາຍ .sql ເຂົ້າໄປ Execute ໃນ PostgreSQL ຜ່ານຄຳສັ່ງ psql
 docker compose exec -T postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" < "$BACKUP_FILE"
 
 if [ $? -eq 0 ]; then

@@ -1,6 +1,6 @@
 // ============================================
-// PARKO — Users Service
-// User CRUD operations
+// ລະບົບ PARKO — Users Service (ການບໍລິການຈັດການບັນຊີຜູ້ໃຊ້ງານ)
+// ປະຕິບັດການ CRUD, ການຈັດການລະຫັດຜ່ານ ແລະ ການກຳນົດສິດທິຜູ້ໃຊ້ງານລະບົບ
 // ============================================
 import {
   Injectable,
@@ -25,10 +25,10 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Create a new user
+   * ສ້າງບັນຊີຜູ້ໃຊ້ງານໃໝ່ໃນລະບົບ (Create User)
    */
   async create(dto: CreateUserDto) {
-    // Check for existing username or email
+    // ກວດສອບຄວາມຊ້ຳຊ້ອນຂອງຊື່ຜູ້ໃຊ້ (Username) ຫຼື ອີເມວ (Email) ວ່າເຄີຍມີໃນລະບົບແລ້ວຫຼືບໍ່
     const existing = await this.prisma.user.findFirst({
       where: {
         OR: [{ username: dto.username }, { email: dto.email }],
@@ -65,7 +65,7 @@ export class UsersService {
   }
 
   /**
-   * Get all users with pagination
+   * ດຶງລາຍຊື່ຜູ້ໃຊ້ງານທັງໝົດໃນລະບົບ ພ້ອມດ້ວຍການແບ່ງໜ້າ (Pagination)
    */
   async findAll(page = 1, limit = 20) {
     const skip = (page - 1) * limit;
@@ -101,7 +101,7 @@ export class UsersService {
   }
 
   /**
-   * Get user by ID
+   * ຄົ້ນຫາ ແລະ ດຶງຂໍ້ມູນຜູ້ໃຊ້ງານຕາມລະຫັດປະຈຳຕົວ (User ID)
    */
   async findById(id: string) {
     const user = await this.prisma.user.findUnique({
@@ -123,7 +123,7 @@ export class UsersService {
   }
 
   /**
-   * Update user details
+   * ອັບເດດຂໍ້ມູນລາຍລະອຽດຂອງຜູ້ໃຊ້ງານ
    */
   async update(id: string, dto: UpdateUserDto) {
     await this.findById(id);
@@ -144,7 +144,7 @@ export class UsersService {
   }
 
   /**
-   * Change own password
+   * ປ່ຽນລະຫັດຜ່ານຂອງຕົນເອງ ໂດຍຕ້ອງຢືນຢັນລະຫັດຜ່ານເດີມກ່ອນ
    */
   async changePassword(userId: string, dto: ChangePasswordDto) {
     const user = await this.prisma.user.findUnique({
@@ -171,7 +171,7 @@ export class UsersService {
   }
 
   /**
-   * Admin reset password for user
+   * ຜູ້ດູແລລະບົບ (Admin) ຣີເຊັດລະຫັດຜ່ານໃໝ່ໃຫ້ກັບຜູ້ໃຊ້ງານ
    */
   async resetPassword(userId: string, dto: ResetPasswordDto) {
     await this.findById(userId);
@@ -187,7 +187,7 @@ export class UsersService {
   }
 
   /**
-   * Delete a user (soft delete via isActive)
+   * ປິດການໃຊ້ງານບັນຊີຜູ້ໃຊ້ (Soft Delete ໂດຍການປ່ຽນຄ່າ isActive ເປັນ false)
    */
   async remove(id: string) {
     await this.findById(id);

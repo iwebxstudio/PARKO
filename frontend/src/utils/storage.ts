@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — Safe LocalStorage Utility
+// ລະບົບ PARKO — Safe LocalStorage Utility (ເຄື່ອງມືຈັດການ LocalStorage ແບບປອດໄພ)
+// ຫໍ່ຫຸ້ມການເຮັດວຽກຂອງ LocalStorage ພ້ອມການຈັດການ JSON parsing ແລະ ຂໍ້ຜິດພາດ (Error Handling)
 // ============================================
 
 export const storage = {

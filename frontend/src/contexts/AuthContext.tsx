@@ -1,6 +1,6 @@
 // ============================================
-// PARKO — Auth Context
-// Global authentication state management
+// ລະບົບ PARKO — Auth Context (ລະບົບບໍລິຫານສະຖານະການຢັ້ງຢືນຕົວຕົນ)
+// ຈັດການສະຖານະການເຂົ້າສູ່ລະບົບ (Authentication State) ທົ່ວທັງແອັບພລິເຄຊັນ
 // ============================================
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../api/client';
@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize auth state from localStorage
+  // ດຶງຂໍ້ມູນຜູ້ໃຊ້ງານ ແລະ Token ຈາກ LocalStorage ມາຕັ້ງຄ່າເລີ່ມຕົ້ນເມື່ອໂຫຼດໜ້າເວັບ
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     const token = localStorage.getItem('accessToken');
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await api.post('/auth/logout', { refreshToken });
       }
     } catch {
-      // Ignore logout API errors
+      // ລະເລີຍຂໍ້ຜິດພາດຈາກ API ຕອນອອກຈາກລະບົບ ເພື່ອໃຫ້ລຶບຂໍ້ມູນໃນເຄື່ອງໄດ້ສະເໝີ
     } finally {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');

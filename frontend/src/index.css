@@ -19,8 +19,8 @@
 @tailwind utilities;
 
 /* ============================================
-   PARKO — Global Styles
-   Premium Parking Management UI
+   ລະບົບ PARKO — Global Styles (ຮູບແບບການສະແດງຜົນລວມທົ່ວລະບົບ)
+   ການອອກແບບສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ (UI) ລະດັບພຣີມຽມ ສຳລັບລະບົບຄຸ້ມຄອງບ່ອນຈອດລົດ
    ============================================ */
 
 @layer base {
@@ -40,7 +40,7 @@
     padding: 0;
   }
 
-  /* Hide default gray scrollbar, allow smooth mouse wheel scroll */
+  /* ເຊື່ອງແຖບເລື່ອນ (Scrollbar) ສີເທົາເລີ່ມຕົ້ນ ແຕ່ຍັງຄົງຮອງຮັບການເລື່ອນດ້ວຍ Mouse Wheel ຢ່າງຄ່ອງແຄ້ວ */
   ::-webkit-scrollbar {
     width: 0px;
     height: 0px;
@@ -63,7 +63,7 @@
     scrollbar-width: none;
   }
 
-  /* Table Responsive Horizontal Scrollbar — High Performance, Gray Modern Theme */
+  /* ແຖບເລື່ອນແນວນອນສຳລັບຕາຕະລາງ (Responsive Horizontal Scrollbar) ໂທນສີເທົາທັນສະໄໝ ແລະ ປະສິດທິພາບສູງ */
   .table-responsive-scrollbar {
     overflow-x: auto !important;
     overflow-y: hidden;
@@ -100,7 +100,7 @@
     background: #4B5563 !important;
   }
 
-  /* Admin & Staff Sidebar: Hide scrollbar, allow smooth Scroll Wheel */
+  /* ແຖບເມນູດ້ານຂ້າງ (Sidebar) ຂອງ Admin ແລະ Staff: ເຊື່ອງແຖບເລື່ອນ ເພື່ອຄວາມສວຍງາມ ແລະ ສະອາດຕາ */
   .sidebar-scrollbar,
   .staff-sidebar-scrollbar {
     -ms-overflow-style: none !important;
@@ -114,7 +114,7 @@
     height: 0px !important;
   }
 
-  /* Solid Borders for Admin and Staff — 8px (prominent border matching user request) */
+  /* ຂອບເສັ້ນຂາວທຶບຂະໜາດ 8px ສຳລັບແຖບເມນູດ້ານຂ້າງຂອງ Admin ແລະ Staff ເພື່ອແບ່ງສັດສ່ວນໜ້າຈໍຢ່າງຈະແຈ້ງ */
   .admin-sidebar-border {
     border-right: 8px solid #ffffff !important;
   }
@@ -126,15 +126,15 @@
 
 @layer components {
 
-  /* White Card */
+  /* ກາດສະແດງຂໍ້ມູນພື້ນຫຼັງສີຂາວ (Card Component) ພ້ອມເງົາລະດັບພຣີມຽມ */
   .glass-card {
     @apply bg-white rounded-none shadow-lg;
   }
 
-  /* Gradient backgrounds */
+  /* ໂທນສີພື້ນຫຼັງແບບໄລ່ລະດັບສີ (Gradient Backgrounds) */
   .gradient-primary {
     background: linear-gradient(135deg, #34d399 0%, #059669 100%);
-    /* Emerald */
+    /* ໂທນສີຂຽວມໍລະກົດ (Emerald) */
   }
 
   .gradient-success {
@@ -143,7 +143,7 @@
 
   .gradient-warning {
     background: linear-gradient(135deg, #fcd34d 0%, #d97706 100%);
-    /* Amber */
+    /* ໂທນສີເຫຼືອງອຳພັນ (Amber) */
   }
 
   .gradient-danger {
@@ -152,7 +152,7 @@
 
   .gradient-purple {
     background: linear-gradient(135deg, #7dd3fc 0%, #0284c7 100%);
-    /* Sky Blue */
+    /* ໂທນສີຟ້າທ້ອງຟ້າ (Sky Blue) */
   }
 
   .gradient-mesh {
@@ -162,7 +162,7 @@
       radial-gradient(at 0% 50%, rgba(251, 191, 36, 0.05) 0px, transparent 50%);
   }
 
-  /* Button styles */
+  /* ຮູບແບບປຸ່ມກົດປະເພດຕ່າງໆ (Button Styles) ພ້ອມ Effect ເວລາກົດ ແລະ ເອົາເມົາສ໌ມາວາງ */
   .btn-primary {
     @apply px-6 py-3 rounded-2xl font-bold text-white transition-all duration-200 bg-primary-500 hover:bg-primary-600 active:scale-95 shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30;
   }
@@ -179,12 +179,12 @@
     @apply px-6 py-3 rounded-2xl font-bold text-white transition-all duration-200 bg-red-500 hover:bg-red-600 active:scale-95 shadow-md shadow-red-500/20;
   }
 
-  /* Input styles */
+  /* ຮູບແບບຊ່ອງປ້ອນຂໍ້ມູນ (Input Field Styles) */
   .input-field {
     @apply w-full px-4 py-3 rounded-2xl bg-white border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 shadow-sm;
   }
 
-  /* Vehicle type card for check-in */
+  /* ກາດເລືອກປະເພດພາຫະນະສຳລັບໜ້າ Check-in */
   .vehicle-card {
     @apply flex flex-col items-center justify-center p-6 md:p-8 rounded-none bg-white border-2 border-gray-100 cursor-pointer transition-all duration-200 hover:border-primary-300 hover:bg-primary-50 hover:shadow-md active:scale-95 select-none;
   }
@@ -193,12 +193,12 @@
     @apply border-primary-500 bg-primary-50 shadow-md shadow-primary-500/10 text-primary-700;
   }
 
-  /* Stat card */
+  /* ກາດສະແດງຕົວເລກສະຖິຕິເທິງ Dashboard (Stat Card) */
   .stat-card {
     @apply glass-card p-6 flex flex-col gap-2 animate-fade-in;
   }
 
-  /* Table styles */
+  /* ຮູບແບບຕາຕະລາງຂໍ້ມູນຫຼັກ (Data Table Styles) */
   .data-table {
     @apply w-full text-left text-sm;
   }
@@ -219,7 +219,7 @@
     @apply hover:bg-gray-50 transition-colors;
   }
 
-  /* Status badges */
+  /* ປ້າຍສະແດງສະຖານະຕ່າງໆ (Status Badges) ເຊັ່ນ: ກຳລັງຈອດ, ສຳເລັດ, ປີ້ເສຍ, ຊຳລະແລ້ວ */
   .badge {
     @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold;
   }
@@ -244,18 +244,18 @@
     @apply bg-accent-100 text-accent-700;
   }
 
-  /* Number pad button */
+  /* ປຸ່ມກົດແປ້ນພິມຕົວເລກສຳຜັດ (Touch Number Pad Button) ສຳລັບໜ້າຈໍ Touchscreen */
   .numpad-btn {
     @apply flex items-center justify-center w-full aspect-square rounded-xl bg-sky-400 text-white font-bold text-2xl shadow-md shadow-sky-400/25 transition-all duration-150 select-none hover:bg-sky-500 active:scale-90 active:shadow-sm;
   }
 
-  /* Plate color selection button */
+  /* ປຸ່ມເລືອກສີປ້າຍທະບຽນລົດ (Plate Color Selection) */
   .plate-color-btn {
     @apply px-5 py-2.5 rounded-xl text-sm font-bold border-2 cursor-pointer transition-all duration-200 select-none hover:opacity-90 active:scale-95;
   }
 }
 
-/* Touch-friendly for mobile */
+/* ປັບແຕ່ງຂະໜາດປຸ່ມ ແລະ ກາດໃຫ້ເໝາະສົມກັບການສຳຜັດເທິງອຸປະກອນມືຖື (Touch-friendly) */
 @media (max-width: 768px) {
   .vehicle-card {
     @apply p-4;
@@ -270,10 +270,10 @@
 }
 
 /* ============================================
-   QR Scanner Styles
+   ຮູບແບບການສະແດງຜົນຂອງລະບົບສະແກນ QR Code (QR Scanner Styles)
    ============================================ */
 
-/* Scanning line animation */
+/* ແອນິເມຊັນເສັ້ນແສງສະແກນເຄື່ອນໄຫວຂຶ້ນ-ລົງ (Scanning Line Animation) */
 @keyframes scanLine {
   0% {
     top: 8px;
@@ -295,7 +295,7 @@
   position: absolute;
 }
 
-/* Override html5-qrcode default styles */
+/* ປັບແຕ່ງຮູບແບບເລີ່ມຕົ້ນຂອງ library html5-qrcode ໃຫ້ເຂົ້າກັບ Design System ຂອງ PARKO */
 #qr-reader {
   border: none !important;
   border-radius: 0 !important;
@@ -326,7 +326,7 @@
 }
 
 /* ============================================
-   PARKO — Auth Responsive Layout (Login & Register)
+   ລະບົບ PARKO — ໂຄງສ້າງໜ້າຈໍເຂົ້າສູ່ລະບົບ ແລະ ລົງທະບຽນແບບ Responsive (Login & Register Layout)
    ============================================ */
 .auth-page-wrapper {
   min-height: 100dvh;
@@ -405,7 +405,7 @@
   line-height: 1.4;
 }
 
-/* Mobile Responsive Mode (Screens <= 768px) */
+/* ຮູບແບບການສະແດງຜົນເທິງອຸປະກອນມືຖື (ຂະໜາດໜ້າຈໍນ້ອຍກວ່າ ຫຼື ເທົ່າກັບ 768px) */
 @media (max-width: 768px) {
   .auth-page-wrapper {
     padding: 16px 12px;
@@ -473,7 +473,7 @@
 }
 
 /* ============================================
-   React Hot Toast — Centered Flat Notification Standard
+   React Hot Toast — ມາດຕະຖານການສະແດງກ່ອງແຈ້ງເຕືອນແບບຮາບພຽງຢູ່ເຄິ່ງກາງໜ້າຈໍ
    ============================================ */
 div[data-rht-toaster] {
   top: 50% !important;

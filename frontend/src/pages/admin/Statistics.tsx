@@ -1,4 +1,8 @@
-// PARKO — Statistics / ສະຖິຕິ (Admin & Staff)
+/**
+ * ໂມດູນຫນ້າສະຖິຕິລະບົບ PARKO (Statistics Page)
+ * ສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ງານລະດັບຜູ້ບໍລິຫານ (Admin) ແລະ ພະນັກງານ (Staff) ເພື່ອສະແດງກຣາຟ ແລະ ບັດສະຖິຕິ
+ * ສະຫຼຸບລົດເຂົ້າ, ລົດອອກ, ລາຍຮັບ ແລະ ປະເພດພາຫະນະຕ່າງໆໃນລະບົບບ່ອນຈອດລົດ.
+ */
 import React, { useState, useEffect } from 'react';
 import {
   Wallet, Loader2, RefreshCw,
@@ -44,7 +48,7 @@ const StatCard = ({ title, value, unit, icon: Icon, iconRaw, bannerBg, className
     className={`bg-white rounded-none shadow-[0_4px_16px_rgba(0,0,0,0.14)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.22)] hover:-translate-y-1 transition-all duration-200 flex flex-col h-full overflow-hidden select-none ${className}`}
     style={{ borderRadius: 0 }}
   >
-    {/* Top solid colored banner with centered icon (No border, No gradient) */}
+    {/* ແຖບຫົວກາດສີທຶບພ້ອມໄອຄອນຢູ່ເຄິ່ງກາງ (Top Solid Colored Banner) ບໍ່ມີເສັ້ນຂອບ ແລະ ບໍ່ມີສີໄລ່ລະດັບ */}
     <div
       className={`${bannerBg} py-2.5 sm:py-3 flex justify-center items-center text-white shrink-0`}
       style={{ borderRadius: 0 }}
@@ -56,7 +60,7 @@ const StatCard = ({ title, value, unit, icon: Icon, iconRaw, bannerBg, className
       ) : null}
     </div>
 
-    {/* Body content */}
+    {/* ສ່ວນເນື້ອໃນຫຼັກຂອງກາດສະຖິຕິ (StatCard Body Content) ສະແດງຫົວຂໍ້, ຕົວເລກສະຖິຕິ ແລະ ຫົວໜ່ວຍ */}
     <div className="p-3 sm:p-3.5 text-center flex flex-col items-center justify-center flex-1 bg-white">
       <p className="text-xs sm:text-[13px] font-bold text-gray-700 leading-snug mb-1 text-center">{title}</p>
       <div className="flex items-baseline justify-center mt-0.5">
@@ -182,17 +186,17 @@ export default function Statistics() {
 
   return (
     <div className="font-sans w-full flex flex-col pb-6">
-      {/* Main Container Card */}
+      {/* ກາດບັນຈຸຫຼັກຂອງໜ້າສະຖິຕິ (Main Container Card) */}
       <div
         className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-visible w-full border-0 flex flex-col"
         style={{ borderRadius: 0 }}
       >
-        {/* Top Header Bar — Dark Gray (#5D5D5D) */}
+        {/* ແຖບຫົວດ້ານເທິງສຸດ (Top Header Bar) ພື້ນຫຼັງສີເທົາເຂັ້ມ (#5D5D5D) */}
         <div
           className="bg-[#5D5D5D] px-3 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 lg:gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Icon + Title */}
+          {/* ດ້ານຊ້າຍ: ໄອຄອນ ແລະ ຊື່ໜ້າສະຖິຕິ */}
           <div className="flex items-center justify-between w-full md:w-auto h-10">
             <div className="flex items-center gap-2.5">
               <BarChart3 size={20} className="w-5 h-5 text-white shrink-0" />
@@ -202,7 +206,7 @@ export default function Statistics() {
             </div>
           </div>
 
-          {/* Right: Refresh button */}
+          {/* ດ້ານຂວາ: ປຸ່ມໂຫຼດຂໍ້ມູນຄືນໃໝ່ (Refresh Button) */}
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
@@ -217,12 +221,12 @@ export default function Statistics() {
           </div>
         </div>
 
-        {/* Top Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານເທິງ (Top Red Stripe Divider) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Main Body — Orange Background */}
+        {/* ສ່ວນເນື້ອໃນຫຼັກ (Main Body) ພື້ນຫຼັງສີສົ້ມເຫຼືອງ (#F9A825) */}
         <div className="bg-[#F9A825] p-3.5 flex flex-col justify-start space-y-3.5">
-          {/* SECTION 1: CHECK IN */}
+          {/* ໝວດທີ 1: ສະຖິຕິລົດເຂົ້າ (Section 1: Check In Statistics) */}
           <div>
             <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
               <LogIn size={20} className="text-black shrink-0" />
@@ -238,7 +242,7 @@ export default function Statistics() {
             <ChartBox title="ກຣາຟສະຖິຕິລົດເຂົ້າ" icon={BarChart3} colorClass="bg-blue-50 text-blue-600" chartData={chartVehIn} unit="ຄັນ" loading={loading} />
           </div>
 
-          {/* SECTION 2: CHECK OUT */}
+          {/* ໝວດທີ 2: ສະຖິຕິລົດອອກ (Section 2: Check Out Statistics) */}
           <div>
             <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
               <LogOut size={20} className="text-black shrink-0 rotate-180" />
@@ -253,7 +257,7 @@ export default function Statistics() {
             <ChartBox title="ກຣາຟສະຖິຕິລົດອອກ" icon={BarChart3} colorClass="bg-orange-50 text-orange-600" chartData={chartVehOut} unit="ຄັນ" loading={loading} />
           </div>
 
-          {/* SECTION 3: REVENUE */}
+          {/* ໝວດທີ 3: ສະຖິຕິລາຍຮັບ (Section 3: Revenue Statistics) */}
           {isAdmin && (
             <div>
               <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
@@ -270,7 +274,7 @@ export default function Statistics() {
             </div>
           )}
 
-          {/* SECTION 4: VEHICLE TYPES */}
+          {/* ໝວດທີ 4: ສະຖິຕິແຍກຕາມປະເພດພາຫະນະ (Section 4: Vehicle Types Statistics) */}
           <div>
             <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
               <BarChart3 size={20} className="text-black shrink-0" />
@@ -299,15 +303,15 @@ export default function Statistics() {
           </div>
         </div>
 
-        {/* Bottom Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານລຸ່ມ (Bottom Red Stripe Divider) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Bottom Footer Bar — Dark Gray (matching CheckOut footer) */}
+        {/* ແຖບສ່ວນທ້າຍດ້ານລຸ່ມສຸດ (Bottom Footer Bar) ພື້ນຫຼັງສີເທົາເຂັ້ມ ສະແດງຈຳນວນລົດກຳລັງຈອດ ແລະ ເວລາອັບເດດລ່າສຸດ */}
         <div
           className="bg-[#5D5D5D] px-3 py-3 md:py-0 min-h-[60px] md:h-16 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Parked count badge (Square w-10 h-10) */}
+          {/* ດ້ານຊ້າຍ: ປ້າຍສະແດງຈຳນວນລົດທີ່ກຳລັງຈອດຢູ່ໃນປັດຈຸບັນ */}
           <div className="flex items-center gap-2 text-white font-bold text-base md:text-[17px]">
             <span>ລົດກຳລັງຈອດ</span>
             <span
@@ -319,7 +323,7 @@ export default function Statistics() {
             <span>ຄັນ</span>
           </div>
 
-          {/* Right: Summary info */}
+          {/* ດ້ານຂວາ: ຂໍ້ຄວາມສະແດງວັນທີ ແລະ ເວລາອັບເດດຂໍ້ມູນລ່າສຸດ */}
           <div className="flex items-center gap-2 text-white font-bold text-base md:text-[17px]">
             <span>ອັບເດດລ່າສຸດ: {lastUpdated.toLocaleDateString('lo-LA')} {lastUpdated.toLocaleTimeString('lo-LA')}</span>
           </div>

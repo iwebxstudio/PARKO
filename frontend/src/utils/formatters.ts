@@ -1,9 +1,10 @@
 // ============================================
-// PARKO — Formatting Utility Functions
+// ລະບົບ PARKO — Formatting Utility Functions (ຟັງຊັນຊ່ວຍຈັດຮູບແບບຂໍ້ມູນ)
+// ຈັດຮູບແບບສະກຸນເງິນ, ໄລຍະເວລາ, ວັນທີ ແລະ ເວລາ ໃຫ້ຖືກຕ້ອງ ແລະ ອ່ານງ່າຍ
 // ============================================
 
 /**
- * Formats a number as currency string with commas
+ * ຈັດຮູບແບບຕົວເລກຈຳນວນເງິນໃຫ້ມີເຄື່ອງໝາຍຈຸດ (Commas) ພ້ອມກັບສະກຸນເງິນ (ເຊັ່ນ: "10,000 ₭")
  */
 export function formatCurrency(amount: number | string | null | undefined, currency: string = '₭'): string {
   if (amount === null || amount === undefined || isNaN(Number(amount))) {
@@ -14,7 +15,7 @@ export function formatCurrency(amount: number | string | null | undefined, curre
 }
 
 /**
- * Formats duration in minutes to human-readable string (e.g. "2 ชม. 15 นาที")
+ * ຈັດຮູບແບບໄລຍະເວລານາທີໃຫ້ເປັນຂໍ້ຄວາມທີ່ອ່ານງ່າຍ (ເຊັ່ນ: "2 ຊົ່ວໂມງ 15 ນາທີ")
  */
 export function formatDuration(minutes: number | null | undefined): string {
   if (!minutes || minutes <= 0) return '0 นาที';
@@ -26,7 +27,7 @@ export function formatDuration(minutes: number | null | undefined): string {
 }
 
 /**
- * Formats date/time string to localized readable format
+ * ຈັດຮູບແບບວັນທີ ແລະ ເວລາໃຫ້ເປັນຮູບແບບທ້ອງຖິ່ນທີ່ອ່ານງ່າຍ
  */
 export function formatDateTime(dateInput: string | Date | null | undefined): string {
   if (!dateInput) return '-';
@@ -43,7 +44,7 @@ export function formatDateTime(dateInput: string | Date | null | undefined): str
 }
 
 /**
- * Formats date to YYYY-MM-DD
+ * ຈັດຮູບແບບວັນທີໃຫ້ເປັນ ປີ-ເດືອນ-ວັນ (YYYY-MM-DD)
  */
 export function formatDate(dateInput: string | Date | null | undefined): string {
   if (!dateInput) return '-';
@@ -57,7 +58,7 @@ export function formatDate(dateInput: string | Date | null | undefined): string 
 }
 
 /**
- * Formats time to HH:mm:ss
+ * ຈັດຮູບແບບເວລາໃຫ້ເປັນ ຊົ່ວໂມງ:ນາທີ:ວິນາທີ (HH:mm:ss)
  */
 export function formatTime(dateInput: string | Date | null | undefined): string {
   if (!dateInput) return '-';

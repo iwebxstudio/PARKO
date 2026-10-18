@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — User DTOs
+// ລະບົບ PARKO — User DTOs (Data Transfer Objects ສຳລັບການຈັດການຜູ້ໃຊ້)
+// ກຳນົດໂຄງສ້າງຂໍ້ມູນ ແລະ ກົດເກນການກວດສອບ (Validation) ສຳລັບບັນຊີຜູ້ໃຊ້ງານ
 // ============================================
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {

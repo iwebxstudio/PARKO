@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Lost Ticket Service
-// Handles lost ticket cases with evidence
-// ============================================
+// ==============================================================================
+// PARKO — ບໍລິການຈັດການກໍລະນີປີ້ເສຍ (Lost Ticket Service)
+// ຈັດການຂະບວນການບັນທຶກຫຼັກຖານປີ້ເສຍ, ປັບປ່ຽນສະຖານະປີ້ ແລະ ຄິດໄລ່ຄ່າປັບໃໝຜ່ານ Transaction
+// ==============================================================================
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateLostTicketDto, ResolveLostTicketDto } from './dto';
@@ -14,17 +14,17 @@ export class LostTicketService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Create a lost ticket case
+   * ສ້າງລາຍການແຈ້ງປີ້ເສຍໃໝ່ ພ້ອມຮູບພາບຫຼັກຖານລົດ, ຄົນຂັບ ແລະ ບັດປະຈຳຕົວ
    */
   async create(dto: CreateLostTicketDto, staffId: string) {
-    // Verify ticket exists
+    // ກວດສອບເບິ່ງວ່າປີ້ຈອດລົດໝາຍເລກນີ້ມີຢູ່ໃນລະບົບແທ້ຫຼືບໍ່
     const ticket = await this.prisma.parkingTicket.findUnique({
       where: { id: dto.ticketId },
     });
 
     if (!ticket) throw new NotFoundException('Ticket not found');
 
-    // Atomic transaction: mark ticket as LOST and create case record
+    // ດຳເນີນການແບບ Transaction: ປ່ຽນສະຖານະປີ້ເປັນ LOST ແລະ ສ້າງຂໍ້ມູນ Lost Ticket Case
     const lostCase = await this.prisma.$transaction(async (tx) => {
       await tx.parkingTicket.update({
         where: { id: dto.ticketId },
@@ -55,7 +55,7 @@ export class LostTicketService {
   }
 
   /**
-   * Get all lost ticket cases with optional search
+   * ດຶງລາຍການກໍລະນີປີ້ເສຍທັງໝົດ ພ້ອມຮອງຮັບການຄົ້ນຫາ ແລະ ແບ່ງໜ້າ (Pagination)
    */
   async findAll(page = 1, limit = 20, search?: string) {
     const skip = (page - 1) * limit;
@@ -96,7 +96,7 @@ export class LostTicketService {
   }
 
   /**
-   * Delete a lost ticket case (Admin only)
+   * ລຶບຂໍ້ມູນກໍລະນີປີ້ເສຍອອກຈາກລະບົບ (ອະນຸຍາດສະເພາະ ADMIN ເທົ່ານັ້ນ)
    */
   async remove(id: string) {
     const existing = await this.prisma.lostTicketCase.findUnique({
@@ -111,7 +111,7 @@ export class LostTicketService {
   }
 
   /**
-   * Get a single lost ticket case
+   * ດຶງຂໍ້ມູນລາຍລະອຽດຂອງກໍລະນີປີ້ເສຍຕາມ ID
    */
   async findOne(id: string) {
     const lostCase = await this.prisma.lostTicketCase.findUnique({
@@ -128,12 +128,12 @@ export class LostTicketService {
   }
 
   /**
-   * Resolve a lost ticket case
+   * ແກ້ໄຂ/ປິດກໍລະນີປີ້ເສຍ (Resolve) ພ້ອມທັງເກັບຄ່າປັບໃໝ ແລະ ປ່ຽນສະຖານະປີ້ເປັນ COMPLETED
    */
   async resolve(id: string, dto: ResolveLostTicketDto, resolvedById: string) {
     const lostCase = await this.findOne(id);
 
-    // Atomic transaction: update case resolution, complete ticket, and record payment
+    // ດຳເນີນການແບບ Transaction: ອັບເດດຜົນການແກ້ໄຂ, ປິດປີ້ຈອດລົດ ແລະ ບັນທຶກການຊຳລະເງິນຄ່າປັບ
     const updated = await this.prisma.$transaction(async (tx) => {
       const caseRecord = await tx.lostTicketCase.update({
         where: { id },
@@ -150,7 +150,7 @@ export class LostTicketService {
         },
       });
 
-      // If resolved, complete the ticket and record payment for penalty
+      // ຖ້າຫາກແກ້ໄຂສຳເລັດ (RESOLVED) ຈະທຳການປິດປີ້ຈອດລົດ ແລະ ບັນທຶກການຊຳລະເງິນຄ່າປັບໃໝ
       if (dto.resolution === 'RESOLVED') {
         const penalty = dto.penaltyAmount || 0;
         await tx.parkingTicket.update({

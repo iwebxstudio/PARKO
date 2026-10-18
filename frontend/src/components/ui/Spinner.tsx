@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — Spinner Loading Component
+// PARKO — ສ່ວນປະກອບສະແດງການໂຫຼດຂໍ້ມູນ (Spinner Loading Component)
+// ໜ້າທີ່: ສະແດງໄອຄອນໝູນວຽນ (Spinner) ເພື່ອແຈ້ງເຕືອນໃຫ້ຜູ້ໃຊ້ຮູ້ວ່າລະບົບກຳລັງດຳເນີນການ ຫຼື ດຶງຂໍ້ມູນຢູ່
 // ============================================
 import React from 'react';
 import { Loader2 } from 'lucide-react';

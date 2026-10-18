@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — File Upload Service
-// Secure image upload for lost ticket evidence
-// ============================================
+// ==============================================================================
+// PARKO — ບໍລິການອັບໂຫຼດໄຟລ໌ (File Upload Service)
+// ລະບົບອັບໂຫຼດຮູບພາບຫຼັກຖານປີ້ເສຍ ຫຼື ຮູບພາບລົດ ພ້ອມລະບົບກວດສອບ Magic Bytes ເພື່ອຄວາມປອດໄພສູງສຸດ
+// ==============================================================================
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
@@ -12,11 +12,11 @@ function detectImageType(
   buffer: Buffer,
 ): 'image/jpeg' | 'image/png' | 'image/webp' | null {
   if (!buffer || buffer.length < 12) return null;
-  // JPEG: FF D8 FF
+  // ຮູບແບບ JPEG: ເລີ່ມຕົ້ນດ້ວຍ Magic Bytes ຄື FF D8 FF
   if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
     return 'image/jpeg';
   }
-  // PNG: 89 50 4E 47 0D 0A 1A 0A
+  // ຮູບແບບ PNG: ເລີ່ມຕົ້ນດ້ວຍ Magic Bytes ຄື 89 50 4E 47 0D 0A 1A 0A
   if (
     buffer[0] === 0x89 &&
     buffer[1] === 0x50 &&
@@ -29,7 +29,7 @@ function detectImageType(
   ) {
     return 'image/png';
   }
-  // WebP: RIFF (bytes 0-3) and WEBP (bytes 8-11)
+  // ຮູບແບບ WebP: ປະກອບດ້ວຍ RIFF (ໄບຕ໌ 0-3) ແລະ WEBP (ໄບຕ໌ 8-11)
   if (
     buffer[0] === 0x52 &&
     buffer[1] === 0x49 &&
@@ -58,21 +58,21 @@ export class FileUploadService {
 
   constructor(private configService: ConfigService) {
     this.uploadDir = configService.get('upload.dir') || './uploads';
-    // Ensure upload directory exists
+    // ກວດສອບ ແລະ ສ້າງໂຟນເດີ uploads ຖ້າຍັງບໍ່ທັນມີຢູ່ໃນລະບົບ
     if (!fs.existsSync(this.uploadDir)) {
       fs.mkdirSync(this.uploadDir, { recursive: true });
     }
   }
 
   /**
-   * Save uploaded file and return URL path
+   * ບັນທຶກໄຟລ໌ຮູບພາບທີ່ອັບໂຫຼດລົງໃນ Server ແລະ ສົ່ງຄືນ URL Path ສຳລັບເຂົ້າເຖິງ
    */
   async saveFile(file: Express.Multer.File): Promise<string> {
     if (!file || !file.buffer) {
       throw new BadRequestException('No file uploaded or file buffer is empty');
     }
 
-    // Validate file type header
+    // ກວດສອບປະເພດ MIME Type ຈາກ Header ວ່າຢູ່ໃນລາຍການທີ່ອະນຸຍາດຫຼືບໍ່
     const allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedMimes.includes(file.mimetype)) {
       throw new BadRequestException(
@@ -80,7 +80,7 @@ export class FileUploadService {
       );
     }
 
-    // Deep inspection: verify file signature (magic bytes)
+    // ກວດສອບລົງເລິກເຖິງໂຄງສ້າງໄຟລ໌ຕົວຈິງ (Magic Bytes) ເພື່ອປ້ອງກັນການປອມແປງນາມສະກຸນ
     const detectedType = detectImageType(file.buffer);
     if (!detectedType || detectedType !== file.mimetype) {
       throw new BadRequestException(
@@ -88,7 +88,7 @@ export class FileUploadService {
       );
     }
 
-    // Validate file size (5MB default)
+    // ກວດສອບຂະໜາດໄຟລ໌ບໍ່ໃຫ້ເກີນກຳນົດ (ຄ່າເລີ່ມຕົ້ນສູງສຸດ 5MB)
     const maxSize = this.configService.get('upload.maxFileSize') || 5242880;
     if (file.size > maxSize) {
       throw new BadRequestException(
@@ -96,7 +96,7 @@ export class FileUploadService {
       );
     }
 
-    // Strict extension mapping from validated MIME type (never trust client originalname)
+    // ກຳນົດນາມສະກຸນໄຟລ໌ຈາກ MIME Type ທີ່ຜ່ານການກວດສອບ Magic Bytes ແທ້ຈິງ (ບໍ່ເຊື່ອຖື originalname ຈາກ Client)
     const ext = MIME_TO_EXTENSION[detectedType];
     const filename = `${randomUUID()}${ext}`;
     const filepath = path.join(this.uploadDir, filename);

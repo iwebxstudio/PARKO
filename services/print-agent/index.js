@@ -5,7 +5,7 @@ const PrinterTypes = require('node-thermal-printer').types;
 
 const app = express();
 
-// Restrict CORS to localhost/local desktop apps
+// ຈຳກັດສິດ CORS ອະນຸຍາດສະເພາະ localhost ແລະ ແອັບພລິເຄຊັນເທິງເຄື່ອງທ້ອງຖິ່ນ (Local Desktop Apps)
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
@@ -26,22 +26,22 @@ function validatePrinterInterface(pInterface) {
 
   const trimmed = pInterface.trim();
 
-  // OS printer name e.g. printer:Auto or printer:MyPrinter
+  // ຊື່ເຄື່ອງພິມຕາມລະບົບປະຕິບັດການ (OS Printer Name) ເຊັ່ນ printer:Auto ຫຼື printer:MyPrinter
   if (/^printer:[a-zA-Z0-9_\-\s.]+$/i.test(trimmed)) {
     return trimmed;
   }
 
-  // Windows parallel / serial ports e.g. \\.\LPT1, \\.\COM1
+  // ພອດ Parallel ຫຼື Serial ເທິງ Windows ເຊັ່ນ \\.\LPT1, \\.\COM1
   if (/^\\\\\.\\(LPT|COM)\d+$/i.test(trimmed)) {
     return trimmed;
   }
 
-  // Linux USB/serial devices e.g. /dev/usb/lp0, /dev/ttyUSB0
+  // ອຸປະກອນ USB ຫຼື Serial ເທິງ Linux ເຊັ່ນ /dev/usb/lp0, /dev/ttyUSB0
   if (/^\/dev\/(usb\/lp\d+|tty(USB|S|ACM)\d+)$/i.test(trimmed)) {
     return trimmed;
   }
 
-  // TCP network printer: strictly private IPv4 addresses and standard printer ports
+  // ເຄື່ອງພິມຜ່ານລະບົບເຄືອຂ່າຍ TCP: ອະນຸຍາດສະເພາະ IP ແບບ Private IPv4 ພາຍໃນເຄືອຂ່າຍທ້ອງຖິ່ນ ແລະ ພອດມາດຕະຖານເທົ່ານັ້ນ
   const tcpMatch = trimmed.match(/^tcp:\/\/([a-zA-Z0-9\.\-]+)(?::(\d+))?$/i);
   if (tcpMatch) {
     const host = tcpMatch[1];
@@ -83,9 +83,9 @@ app.post('/print', async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 
-  // Default configuration
+  // ກຳນົດຄ່າເລີ່ມຕົ້ນຂອງເຄື່ອງພິມຕາມປະເພດ USB ຫຼື Serial/Network
   const pType = printerConfig?.type === 'usb' ? PrinterTypes.EPSON : PrinterTypes.STAR;
-  const pWidth = printerConfig?.paperWidth === 80 ? 48 : 42; // Characters per line
+  const pWidth = printerConfig?.paperWidth === 80 ? 48 : 42; // ຈຳນວນຕົວອັກສອນຕໍ່ແຖວຕາມຂະໜາດເຈ້ຍ (80mm ຫຼື 58mm)
 
   try {
     let printer = new ThermalPrinter({
@@ -102,7 +102,7 @@ app.post('/print', async (req, res) => {
     const isConnected = await printer.isPrinterConnected();
     if (!isConnected) {
       console.warn('Printer not connected! Simulating print...');
-      // In development, we simulate the print to avoid crashing
+      // ໃນສະພາບແວດລ້ອມການພັດທະນາ ຈະຈຳລອງການພິມ (Simulate) ເພື່ອປ້ອງກັນບໍ່ໃຫ້ເກີດ Error ເມື່ອບໍ່ໄດ້ເຊື່ອມຕໍ່ເຄື່ອງພິມຕົວຈິງ
     }
 
     printer.alignCenter();

@@ -1,6 +1,6 @@
 // ============================================
-// PARKO — Settings Service
-// System settings key-value store
+// ລະບົບ PARKO — Settings Service (ການບໍລິການຈັດການການຕັ້ງຄ່າລະບົບ)
+// ຈັດການການບັນທຶກ ແລະ ສອບຖາມຄ່າການຕັ້ງຄ່າລະບົບໃນຮູບແບບ Key-Value Store
 // ============================================
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';

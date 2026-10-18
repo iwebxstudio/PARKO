@@ -1,6 +1,6 @@
 // ============================================
-// PARKO — Printer Service
-// Dispatches print requests to local print agent or thermal printer
+// ລະບົບ PARKO — Printer Service (ການບໍລິການສັ່ງພິມໃບບິນ ແລະ ປີ້ລົດ)
+// ສົ່ງຄຳຂໍພິມປີ້ ແລະ ໃບບິນຮັບເງິນໄປຍັງ Print Agent ທ້ອງຖິ່ນ ຫຼື ເຄື່ອງພິມຄວາມຮ້ອນ
 // ============================================
 import api from '../api/client';
 

@@ -1,7 +1,7 @@
 # ==============================================================================
-# PARKO — Parking Management System
-# Production Docker Compose Configuration (Enterprise Standard)
-# Zero-Config, Self-Healing, High-Performance Native Speed
+# PARKO — ລະບົບຄຸ້ມຄອງລານຈອດລົດອັດສະລິຍະ (Parking Management System)
+# ຟາຍກຳນົດຄ່າ Docker Compose ສຳລັບສະພາບແວດລ້ອມ Production ຕາມມາດຕະຖານ Enterprise
+# ລະບົບພ້ອມໃຊ້ງານທັນທີ, ມີລະບົບກວດສອບ ແລະ ຟື້ນຟູຕົວເອງອັດຕະໂນມັດ (Self-Healing) ພ້ອມປະສິດທິພາບສູງ
 # ==============================================================================
 
 x-logging: &default-logging
@@ -13,9 +13,9 @@ x-logging: &default-logging
 
 services:
 
-  # ──────────────────────────────────────────────────────────
-  # 1. PostgreSQL 16 (High-Performance Tuned Database)
-  # ──────────────────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────────────────
+  # 1. PostgreSQL 16 (ລະບົບຈັດການຖານຂໍ້ມູນຫຼັກ ພ້ອມການປັບແຕ່ງປະສິດທິພາບສູງ Tuned Database)
+  # ──────────────────────────────────────────────────────────────────────────
   postgres:
     image: postgres:16-alpine
     container_name: parko-postgres
@@ -65,9 +65,9 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  # ──────────────────────────────────────────────────────────
-  # 2. Redis 7 (In-Memory Cache & Session Store)
-  # ──────────────────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────────────────
+  # 2. Redis 7 (ລະບົບແຄຊໃນໜ່ວຍຄວາມຈຳສຳລັບ Session, Rate Limiting ແລະ Realtime Store)
+  # ──────────────────────────────────────────────────────────────────────────
   redis:
     image: redis:7-alpine
     container_name: parko-redis
@@ -95,9 +95,9 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  # ──────────────────────────────────────────────────────────
-  # 3. NestJS Backend (Core Business API & WebSockets)
-  # ──────────────────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────────────────
+  # 3. NestJS Backend (ລະບົບ API ຫຼັກປະມວນຜົນທຸລະກຳ ແລະ WebSocket Gateway)
+  # ──────────────────────────────────────────────────────────────────────────
   backend:
     build:
       context: ./backend
@@ -152,9 +152,9 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  # ──────────────────────────────────────────────────────────
-  # 4. React Frontend (High-Performance Nginx Static Server)
-  # ──────────────────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────────────────
+  # 4. React Frontend (ລະບົບໜ້າຈໍຜູ້ໃຊ້ງານ UI ທີ່ຖືກ Build ແລະ ໃຫ້ບໍລິການຜ່ານ Nginx Static Server)
+  # ──────────────────────────────────────────────────────────────────────────
   frontend:
     build:
       context: ./frontend
@@ -180,9 +180,9 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  # ──────────────────────────────────────────────────────────
-  # 5. Local Thermal Print Agent
-  # ──────────────────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────────────────
+  # 5. Local Thermal Print Agent (ບໍລິການສຳລັບເຊື່ອມຕໍ່ ແລະ ສັ່ງພິມປີ້ຈອດລົດ/ໃບບິນຜ່ານເຄື່ອງພິມຄວາມຮ້ອນ)
+  # ──────────────────────────────────────────────────────────────────────────
   print-agent:
     build:
       context: ./services/print-agent
@@ -211,9 +211,9 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  # ──────────────────────────────────────────────────────────
-  # 6. Nginx Gateway & SSL Reverse Proxy (Single Entrypoint)
-  # ──────────────────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────────────────
+  # 6. Nginx Gateway & SSL Reverse Proxy (ປະຕູເຊື່ອມຕໍ່ຫຼັກຈຸດດຽວ ພ້ອມລະບົບຄວາມປອດໄພ SSL/TLS)
+  # ──────────────────────────────────────────────────────────────────────────
   nginx:
     build:
       context: ./infra/nginx
@@ -250,9 +250,9 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  # ──────────────────────────────────────────────────────────
-  # 7. Database Automated Backup Service
-  # ──────────────────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────────────────
+  # 7. Database Automated Backup Service (ບໍລິການສຳຮອງຂໍ້ມູນຖານຂໍ້ມູນ PostgreSQL ແບບອັດຕະໂນມັດ)
+  # ──────────────────────────────────────────────────────────────────────────
   backup:
     image: postgres:16-alpine
     container_name: parko-backup
@@ -271,7 +271,7 @@ services:
       sh -c '
       mkdir -p /backup
       echo "PARKO Automated Backup service initialized" > /backup/backup.log
-      # Wait 60s initially for database migration to settle
+      # ລໍຖ້າ 60 ວິນາທີໃນຕອນເລີ່ມຕົ້ນ ເພື່ອໃຫ້ຖານຂໍ້ມູນທຳການ Migrate ໂຄງສ້າງຕາຕະລາງໃຫ້ສຳເລັດຮຽບຮ້ອຍ
       sleep 60
       while true; do
         timestamp=$$(date +%Y%m%d_%H%M%S)
@@ -283,7 +283,7 @@ services:
         find /backup -name "backup_*.sql" -mtime +$${BACKUP_RETENTION_DAYS} -delete
         echo "[$$] Backup completed: $$timestamp" >> /backup/backup.log
         
-        # Backup interval: 12 hours (43200 seconds)
+        # ໄລຍະຫ່າງຂອງການສຳຮອງຂໍ້ມູນອັດຕະໂນມັດ: ທຸກໆ 12 ຊົ່ວໂມງ (43,200 ວິນາທີ)
         sleep 43200
       done
       '

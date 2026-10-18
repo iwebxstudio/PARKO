@@ -1,11 +1,14 @@
-// PARKO SYSTEM — App Router
+// ============================================
+// ລະບົບ PARKO — App Router (ຕົວຈັດການເສັ້ນທາງລະບົບຫຼັກ)
+// ກຳນົດເສັ້ນທາງການເຂົ້າເຖິງ (Routing) ແລະ ຄວບຄຸມສິດທິການເຂົ້າເຖິງລະຫວ່າງພະນັກງານ ແລະ ຜູ້ດູແລລະບົບ
+// ============================================
 import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AppLayout from './components/layout/AppLayout';
 
-// Lazy load pages for fast initial loads
+// ໂຫຼດໜ້າຕ່າງໆ ແບບ Lazy Loading ເພື່ອເພີ່ມຄວາມໄວໃນການໂຫຼດໜ້າເວັບຄັ້ງທຳອິດ
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 const CheckIn = lazy(() => import('./pages/staff/CheckIn'));
@@ -50,13 +53,13 @@ function AppRoutes() {
         <Route path="/login" element={isAuthenticated ? <Navigate to="/staff/check-in" replace /> : <Login />} />
         <Route path="/register" element={isAuthenticated ? <Navigate to="/staff/check-in" replace /> : <Register />} />
         <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-          {/* Staff routes */}
+          {/* ເສັ້ນທາງສຳລັບພະນັກງານປະຈຳການ (Staff Routes) */}
           <Route path="staff/check-in" element={<CheckIn />} />
           <Route path="staff/check-out" element={<CheckOut />} />
           <Route path="staff/lost-ticket" element={<LostTicket />} />
           <Route path="staff/lost-ticket-history" element={<LostTicketHistory />} />
           <Route path="admin/lost-tickets" element={<LostTicketHistory />} />
-          {/* Admin routes */}
+          {/* ເສັ້ນທາງສຳລັບຜູ້ດູແລລະບົບ (Admin Routes) */}
           <Route path="admin/dashboard" element={<Navigate to="/staff/check-out" replace />} />
           <Route path="admin/history" element={<History />} />
           <Route path="admin/users" element={<ProtectedRoute adminOnly><Users /></ProtectedRoute>} />
@@ -66,7 +69,7 @@ function AppRoutes() {
           <Route path="admin/reports" element={<ProtectedRoute adminOnly><Reports /></ProtectedRoute>} />
           <Route path="admin/settings" element={<ProtectedRoute adminOnly><Settings /></ProtectedRoute>} />
           <Route path="admin/audit-log" element={<ProtectedRoute adminOnly><AuditLog /></ProtectedRoute>} />
-          {/* Default redirect */}
+          {/* ກຳນົດເສັ້ນທາງເລີ່ມຕົ້ນ (Default Redirect) ໄປຍັງໜ້າ Check-in */}
           <Route index element={<Navigate to="/staff/check-in" replace />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

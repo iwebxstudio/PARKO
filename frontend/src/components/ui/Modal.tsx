@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — Modal Dialog Component
+// ລະບົບ PARKO — Modal Dialog Component (ໜ້າຕ່າງ Pop-up Modal)
+// ຮອງຮັບການປິດດ້ວຍປຸ່ມ Escape, ຄລິກພື້ນຫຼັງ (Backdrop) ແລະ ການລັອກແຖບເລື່ອນຂອງໜ້າເວັບ
 // ============================================
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
@@ -49,13 +50,13 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
+      {/* ພື້ນຫຼັງມືດໂປ່ງໃສ (Backdrop) */}
       <div
         className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
-      {/* Modal Dialog Content */}
+      {/* ເນື້ອຫາຫຼັກຂອງໜ້າຕ່າງ Modal Dialog */}
       <div
         className={`relative w-full ${maxWidthStyles[maxWidth]} rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden z-10 transition-all animate-in fade-in zoom-in-95 duration-150`}
       >

@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — Common Types
+// ລະບົບ PARKO — Common Types (ປະເພດຂໍ້ມູນທົ່ວໄປທີ່ໃຊ້ຮ່ວມກັນ)
+// ກຳນົດ Interface ມາດຕະຖານສຳລັບ ApiResponse ແລະ PaginatedResponse
 // ============================================
 
 export interface ApiResponse<T = any> {

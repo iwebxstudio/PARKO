@@ -21,7 +21,7 @@ describe('AuthService Security Regressions', () => {
   };
 
   beforeAll(async () => {
-    // Generate valid bcrypt hash for testing
+    // ສ້າງລະຫັດຜ່ານແບບເຂົ້າລະຫັດ bcrypt hash ທີ່ຖືກຕ້ອງສຳລັບການທົດສອບຄວາມປອດໄພ
     mockActiveUser.passwordHash = await bcrypt.hash('CorrectPassword123!', 10);
   });
 

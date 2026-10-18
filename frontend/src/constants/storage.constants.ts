@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — LocalStorage Key Constants
+// ລະບົບ PARKO — LocalStorage Key Constants (ຄ່າຄົງທີ່ຊື່ Key ໃນ LocalStorage)
+// ກຳນົດຊື່ Key ມາດຕະຖານສຳລັບການຈັດເກັບຂໍ້ມູນລົງໃນ LocalStorage ຂອງບຣາວເຊີ
 // ============================================
 
 export const STORAGE_KEYS = {

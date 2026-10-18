@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Parking WebSocket Gateway
-// Real-time dashboard updates via Socket.IO
-// ============================================
+// ==============================================================================
+// PARKO — ເກດເວການສື່ສານແບບສົດໆ (Parking WebSocket Gateway)
+// ສົ່ງຕໍ່ຂໍ້ມູນການອັບເດດລານຈອດລົດ ແລະ ສະຖິຕິ Dashboard ໄປຍັງທຸກໜ້າຈໍແບບ Real-time ຜ່ານ Socket.IO
+// ==============================================================================
 import {
   WebSocketGateway,
   WebSocketServer,
@@ -47,7 +47,7 @@ export class ParkingGateway
   }
 
   /**
-   * Broadcast parking update to all connected clients
+   * ກະຈາຍຂໍ້ມູນການອັບເດດປີ້ຈອດລົດ (Check-in / Check-out) ໄປຍັງ Client ທຸກຄົນທີ່ເຊື່ອມຕໍ່ຢູ່
    */
   broadcastUpdate(data: any) {
     this.server.emit('parking_update', {
@@ -57,7 +57,7 @@ export class ParkingGateway
   }
 
   /**
-   * Broadcast dashboard stats refresh
+   * ກະຈາຍສັນຍານໃຫ້ທຸກໜ້າຈໍຣີເຟຣຊຂໍ້ມູນສະຖິຕິ Dashboard ໃໝ່
    */
   broadcastStatsRefresh(stats: any) {
     this.server.emit('stats_refresh', {

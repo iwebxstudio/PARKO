@@ -43,7 +43,7 @@ describe('ParkingService Data Integrity & Transaction Regressions', () => {
       membership: {
         findFirst: jest.fn().mockResolvedValue(null),
       },
-      // $transaction executes the callback with the mock tx client
+      // ຈຳລອງການເຮັດວຽກຂອງ $transaction ໂດຍການຮຽກໃຊ້ callback ພ້ອມກັບສົ່ງ mock tx client ເພື່ອທົດສອບຄວາມຖືກຕ້ອງຂອງ transaction
       $transaction: jest.fn((callback: (tx: any) => Promise<any>) =>
         callback(prismaMock),
       ),
@@ -75,7 +75,7 @@ describe('ParkingService Data Integrity & Transaction Regressions', () => {
       prismaMock.parkingTicket.findFirst.mockResolvedValue(null);
       prismaMock.parkingTicket.findUnique.mockResolvedValue(null);
 
-      // Ticket creation succeeds
+      // ຈຳລອງສະຖານະການທີ່ການສ້າງປີ້ລົດ (ticket creation) ສຳເລັດລົງດ້ວຍດີ
       prismaMock.parkingTicket.create.mockResolvedValue({
         id: 'ticket-uuid-1',
         ticketNumber: '12345',
@@ -83,7 +83,7 @@ describe('ParkingService Data Integrity & Transaction Regressions', () => {
         checkInAt: new Date(),
       });
 
-      // Payment creation fails (e.g. database constraint error)
+      // ຈຳລອງສະຖານະການທີ່ການບັນທຶກການຊຳລະເງິນເກີດຄວາມຜິດພາດ (ເຊັ່ນ: ຂໍ້ຜິດພາດຈາກ Database Constraint) ເພື່ອກວດສອບການ Rollback
       prismaMock.payment.create.mockRejectedValue(
         new Error('Payment constraint violation'),
       );
@@ -100,7 +100,7 @@ describe('ParkingService Data Integrity & Transaction Regressions', () => {
         ),
       ).rejects.toThrow('Payment constraint violation');
 
-      // Verify that $transaction was called
+      // ກວດສອບ ແລະ ຢັ້ງຢືນວ່າລະບົບໄດ້ມີການຮຽກໃຊ້ງານ $transaction ແທ້ ເພື່ອຮັບປະກັນຄວາມສົມບູນຂອງຂໍ້ມູນ
       expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
     });
 
@@ -151,7 +151,7 @@ describe('ParkingService Data Integrity & Transaction Regressions', () => {
 
   describe('checkOut Concurrency & Race Condition Defense', () => {
     it('should reject double check-out if another cashier completed the ticket concurrently', async () => {
-      // Step 1: Initial query finds ticket active
+      // ຂັ້ນຕອນທີ 1: ສອບຖາມຂໍ້ມູນເບື້ອງຕົ້ນແລ້ວພົບວ່າປີ້ຍັງຢູ່ໃນສະຖານະກຳລັງຈອດ (ACTIVE)
       prismaMock.parkingTicket.findFirst.mockResolvedValue({
         id: 'ticket-uuid-1',
         ticketNumber: '12345',
@@ -161,11 +161,11 @@ describe('ParkingService Data Integrity & Transaction Regressions', () => {
         vehicleType: { name: 'CAR', pricingRules: [] },
       });
 
-      // Step 2: Inside transaction, ticket is found to be ALREADY COMPLETED (concurrently finished)
+      // ຂັ້ນຕອນທີ 2: ເມື່ອເຂົ້າສູ່ transaction ກວດພົບວ່າປີ້ຖືກດຳເນີນການອອກໄປແລ້ວ (COMPLETED) ຈາກພະນັກງານຄົນອື່ນໃນເວລາດຽວກັນ (Race Condition)
       prismaMock.parkingTicket.findUnique.mockResolvedValue({
         id: 'ticket-uuid-1',
         ticketNumber: '12345',
-        status: TicketStatus.COMPLETED, // Already checked out!
+        status: TicketStatus.COMPLETED, // ສະຖານະຖືກປ່ຽນເປັນດຳເນີນການສຳເລັດແລ້ວ (ອອກຈາກບ່ອນຈອດແລ້ວ)
       });
 
       await expect(
@@ -179,7 +179,7 @@ describe('ParkingService Data Integrity & Transaction Regressions', () => {
         ),
       ).rejects.toThrow(BadRequestException);
 
-      // Verify payment was NOT created for the duplicate checkout
+      // ກວດສອບ ແລະ ຢັ້ງຢືນວ່າລະບົບຈະຕ້ອງບໍ່ສ້າງລາຍການຊຳລະເງິນຊ້ຳຊ້ອນ ຖ້າຫາກເກີດກໍລະນີດຳເນີນການອອກຊ້ຳກັນ
       expect(prismaMock.payment.create).not.toHaveBeenCalled();
     });
 

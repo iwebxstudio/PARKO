@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — Button Component
+// ລະບົບ PARKO — Button Component (ປຸ່ມກົດມາດຕະຖານ)
+// ຮອງຮັບການສະແດງຜົນຫຼາຍຮູບແບບ (Variants), ຂະໜາດ, ໄອຄອນ ແລະ ສະຖານະກຳລັງໂຫຼດ (Loading State)
 // ============================================
 import React from 'react';
 import { Loader2 } from 'lucide-react';

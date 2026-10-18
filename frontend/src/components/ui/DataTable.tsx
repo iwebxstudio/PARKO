@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — DataTable Component
+// ລະບົບ PARKO — DataTable Component (ຕາຕະລາງສະແດງຂໍ້ມູນ)
+// ຕາຕະລາງຂໍ້ມູນທີ່ຮອງຮັບການສະແດງຜົນແບບ Responsive, ສະຖານະກຳລັງໂຫຼດ ແລະ ຂໍ້ຄວາມເມື່ອບໍ່ມີຂໍ້ມູນ
 // ============================================
 import React from 'react';
 import { Spinner } from './Spinner';
@@ -24,7 +25,7 @@ export function DataTable<T extends Record<string, any>>({
   columns,
   data,
   isLoading = false,
-  emptyMessage = 'ไม่พบข้อมูลในระบบ',
+  emptyMessage = 'ບໍ່ພົບຂໍ້ມູນໃນລະບົບ',
   onRowClick,
   className = '',
 }: DataTableProps<T>) {
@@ -45,7 +46,7 @@ export function DataTable<T extends Record<string, any>>({
             {isLoading ? (
               <tr>
                 <td colSpan={columns.length} className="px-4 py-12 text-center">
-                  <Spinner size="lg" label="กำลังโหลดข้อมูล..." />
+                  <Spinner size="lg" label="ກຳລັງໂຫຼດຂໍ້ມູນ..." />
                 </td>
               </tr>
             ) : data.length === 0 ? (

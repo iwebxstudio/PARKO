@@ -1,3 +1,7 @@
+// ============================================
+// PARKO — ໜ້າບັນທຶກລົດອອກບ່ອນຈອດ (Check-Out Page)
+// ໜ້າທີ່: ຈັດການການກວດສອບລົດອອກ, ສະແກນປີ້ຜ່ານ QR Code ຫຼື ຄົ້ນຫາປ້າຍທະບຽນ, ຄິດໄລ່ຄ່າຈອດລົດ ແລະ ຢືນຢັນການອອກລົດ
+// ============================================
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import {
@@ -54,7 +58,7 @@ export default function CheckOut() {
   const [payMethod, setPayMethod] = useState('CASH');
   const [payStatus, setPayStatus] = useState('PAID');
 
-  // Autocomplete state
+  // ສະຖານະການແນະນຳຄຳຄົ້ນຫາອັດຕະໂນມັດ (Autocomplete State)
   const [suggestions, setSuggestions] = useState<ParkingTicket[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -63,16 +67,16 @@ export default function CheckOut() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
 
-  // Custom filter dropdown state
+  // ສະຖານະເມນູເລືອກກັ່ນຕອງປະເພດລົດ (Custom Filter Dropdown State)
   const [filterOpen, setFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
-  // Parking type filter state (ຝາກລາຍວັນ, ຝາກລາຍເດືອນ, ຝາກລາຍປີ, ຝາກມີກຳນົດ)
+  // ສະຖານະເມນູເລືອກກັ່ນຕອງຮູບແບບການຈອດ (ຝາກລາຍວັນ, ຝາກລາຍເດືອນ, ຝາກລາຍປີ, ຝາກມີກຳນົດ)
   const [parkingTypeFilterOpen, setParkingTypeFilterOpen] = useState(false);
   const parkingTypeFilterRef = useRef<HTMLDivElement>(null);
   const [selectedParkingType, setSelectedParkingType] = useState<string>('ALL');
 
-  // Camera scanner refs
+  // ຕົວອ້າງອີງສຳລັບກ້ອງສະແກນລະຫັດ QR Code
   const [scanning, setScanning] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scannerContainerRef = useRef<HTMLDivElement>(null);
@@ -80,7 +84,7 @@ export default function CheckOut() {
 
   const ITEMS_PER_PAGE = 20;
 
-  // Responsive max page buttons: 4 on Mobile (< 640px), 9 on Desktop
+  // ກຳນົດຈຳນວນປຸ່ມເລກໜ້າສູງສຸດຕາມຂະໜາດໜ້າຈໍ: 4 ປຸ່ມໃນມືຖື (< 640px) ແລະ 9 ປຸ່ມໃນຄອມພິວເຕີ
   const [isMobile, setIsMobile] = useState<boolean>(() =>
     typeof window !== 'undefined' ? window.innerWidth < 640 : false
   );
@@ -98,7 +102,7 @@ export default function CheckOut() {
   const [vehicleTypes, setVehicleTypes] = useState<any[]>([]);
   const [selectedVehicleType, setSelectedVehicleType] = useState<string>('ALL');
 
-  // Centered Success Popup State
+  // ສະຖານະປັອບອັບແຈ້ງເຕືອນລົດອອກສຳເລັດກາງໜ້າຈໍ (Centered Success Popup State)
   const [checkoutSuccessMsg, setCheckoutSuccessMsg] = useState<string | null>(null);
   const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -141,7 +145,7 @@ export default function CheckOut() {
 
       setActiveTickets(tickets);
 
-      // If current page is empty and it's not the first page, go back
+      // ຖ້າໜ້າປັດຈຸບັນບໍ່ມີຂໍ້ມູນ ແລະ ບໍ່ແມ່ນໜ້າທຳອິດ ໃຫ້ກັບໄປໜ້າກ່ອນໜ້າ
       if (tickets.length === 0 && page > 1) {
         fetchActiveTickets(page - 1, vType);
       }
@@ -177,18 +181,18 @@ export default function CheckOut() {
     fetchActiveTickets(1, newType);
   };
 
-  // ── QR Camera Scanner ─────────────────────
+  // ── ລະບົບກ້ອງສະແກນລະຫັດ QR Code (QR Camera Scanner) ─────────────────────
   const stopScanner = useCallback(async () => {
     if (scannerRef.current) {
       try {
         const state = scannerRef.current.getState();
-        if (state === 2) { // SCANNING
+        if (state === 2) { // ສະຖານະກຳລັງສະແກນຢູ່ (SCANNING)
           await scannerRef.current.stop();
         }
-      } catch { /* ignore */ }
+      } catch { /* ລະເວັ້ນຂໍ້ຜິດພາດ */ }
       try {
         scannerRef.current.clear();
-      } catch { /* ignore */ }
+      } catch { /* ລະເວັ້ນຂໍ້ຜິດພາດ */ }
       scannerRef.current = null;
     }
     setScanning(false);
@@ -254,14 +258,14 @@ export default function CheckOut() {
           try {
             const parsed = JSON.parse(decodedText);
             if (parsed.ticketNumber) searchQuery = parsed.ticketNumber;
-          } catch { /* not JSON, use raw text */ }
+          } catch { /* ກໍລະນີບໍ່ແມ່ນ JSON ໃຫ້ໃຊ້ຂໍ້ຄວາມດິບໂດຍກົງ */ }
 
           setQuery(searchQuery);
           searchTicket(searchQuery);
           setMode('manual');
           stopScanner();
         },
-        () => { /* ignore scan errors */ }
+        () => { /* ລະເວັ້ນຂໍ້ຜິດພາດຂະນະກຳລັງຊອກຫາ QR */ }
       );
     } catch (err: any) {
       toast.error('ບໍ່ສາມາດເປີດກ້ອງ: ' + (err?.message || 'Permission denied'), { position: 'top-center' });
@@ -270,7 +274,7 @@ export default function CheckOut() {
     }
   }, [stopScanner]);
 
-  // Auto-start camera when mode = camera
+  // ເປີດກ້ອງອັດຕະໂນມັດເມື່ອເລືອກໂໝດ camera
   useEffect(() => {
     if (mode === 'camera') {
       const t = setTimeout(() => startScanner(), 300);
@@ -300,7 +304,7 @@ export default function CheckOut() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Real-time Autocomplete Debounce
+  // ການຄົ້ນຫາແນະນຳແບບ Real-time ພ້ອມໜ່ວງເວລາ (Debounce)
   useEffect(() => {
     if (!query || query.trim().length < 2) {
       setSuggestions([]);
@@ -342,7 +346,7 @@ export default function CheckOut() {
   const handleCheckOutDirect = async (targetTicket: ParkingTicket) => {
     setProcessingTicketId(targetTicket.id);
     try {
-      // If it's a membership ticket, calculate overdue fee if overdue, or 0 if within duration
+      // ຖ້າເປັນລົດສະມາຊິກ ໃຫ້ຄິດໄລ່ຄ່າປັບໃໝກໍລະນີກາຍກຳນົດ, ແຕ່ຖ້າຍັງຢູ່ໃນກຳນົດຈະຄິດໄລ່ເປັນ 0 ກີບ
       let amountPaid = targetTicket.calculatedCost || 0;
       if (targetTicket.membershipId || (targetTicket as any).membership) {
         const endRaw = (targetTicket as any).customEnd || (targetTicket as any).membership?.endDate;
@@ -376,7 +380,7 @@ export default function CheckOut() {
         channel.close();
       } catch {}
 
-      // Remove instantly from active state so it vanishes from this screen immediately
+      // ລຶບອອກຈາກລາຍການລົດທີ່ກຳລັງຈອດຢູ່ທັນທີ ເພື່ອບໍ່ໃຫ້ສະແດງໃນໜ້ານີ້ອີກ
       setActiveTickets(prev => prev.filter(t => t.id !== targetTicket.id && t.ticketNumber !== targetTicket.ticketNumber));
       setSuggestions(prev => prev.filter(t => t.id !== targetTicket.id && t.ticketNumber !== targetTicket.ticketNumber));
       setMultipleTickets(prev => prev.filter(t => t.id !== targetTicket.id && t.ticketNumber !== targetTicket.ticketNumber));
@@ -449,7 +453,7 @@ export default function CheckOut() {
     const typeName = (t.vehicleType?.name || '').toLowerCase();
     const label = (t.vehicleType?.label || '').toLowerCase();
 
-    // 1. EV Motorcycle / Electric (Emerald Green)
+    // 1. ລົດຈັກໄຟຟ້າ / ພະລັງງານໄຟຟ້າ (ສີຂຽວມໍລະກົດ)
     if (typeName.includes('ev') || label.includes('ໄຟຟ້າ') || t.vehicleType?.icon?.includes('⚡')) {
       return {
         bannerBg: 'bg-[#059669]',
@@ -457,7 +461,7 @@ export default function CheckOut() {
         iconRaw: zapIcon,
       };
     }
-    // 2. Motorcycle / Bike / ລົດຈັກ / ລົດຖີບ (Royal Blue / Sky Blue)
+    // 2. ລົດຈັກ / ລົດຖີບ (ສີຟ້າເຂັ້ມ / ສີຟ້າສະຫວ່າງ)
     if (
       typeName.includes('motorcycle') ||
       typeName.includes('bike') ||
@@ -473,7 +477,7 @@ export default function CheckOut() {
         iconRaw: isBicycle ? bikeIcon : motorbikeIcon,
       };
     }
-    // 3. Truck / ລົດບັນທຸກ (Purple)
+    // 3. ລົດບັນທຸກ (ສີມ່ວງ)
     if (typeName.includes('truck') || label.includes('ບັນທຸກ') || t.vehicleType?.icon?.includes('🚚')) {
       return {
         bannerBg: 'bg-[#7C3AED]',
@@ -481,7 +485,7 @@ export default function CheckOut() {
         iconRaw: truckIcon,
       };
     }
-    // 4. Car / ລົດໃຫຍ່ (Deep Red)
+    // 4. ລົດໃຫຍ່ / ລົດເກັງ (ສີແດງເຂັ້ມ)
     return {
       bannerBg: 'bg-[#B02019]',
       btnBg: 'bg-[#B02019] hover:bg-[#961b15]',
@@ -524,10 +528,10 @@ export default function CheckOut() {
     : (hasQuery ? suggestions : activeTickets);
 
   const displayTickets = rawTickets.filter((t: any) => {
-    // Only display active parked vehicles (completed tickets are recorded in History)
+    // ສະແດງສະເພາະລົດທີ່ກຳລັງຈອດຢູ່ເທົ່ານັ້ນ (ACTIVE), ສ່ວນລົດທີ່ອອກແລ້ວຈະຖືກບັນທຶກໄວ້ໃນປະຫວັດ
     if (t.status && t.status !== 'ACTIVE') return false;
 
-    // 1. Vehicle Type Filter
+    // 1. ການກັ່ນຕອງຕາມປະເພດລົດ
     if (selectedVehicleType && selectedVehicleType !== 'ALL') {
       const vtId = String(t.vehicleTypeId || t.vehicleType?.id || '');
       const vtName = (t.vehicleType?.name || '').toLowerCase();
@@ -535,7 +539,7 @@ export default function CheckOut() {
       if (vtId !== sel && vtName !== sel) return false;
     }
 
-    // 2. Parking Type Filter (ຝາກລາຍວັນ, ຝາກລາຍເດືອນ, ຝາກລາຍປີ, ຝາກມີກຳນົດ)
+    // 2. ການກັ່ນຕອງຕາມຮູບແບບການຈອດ (ຝາກລາຍວັນ, ຝາກລາຍເດືອນ, ຝາກລາຍປີ, ຝາກມີກຳນົດ)
     if (selectedParkingType && selectedParkingType !== 'ALL') {
       const pType = (t.parkingType || '').toUpperCase();
       const memType = (t.membership?.memberType || '').toUpperCase();
@@ -562,7 +566,7 @@ export default function CheckOut() {
 
   const currentCount = isSearching ? displayTickets.length : totalCount;
 
-  // Compute visible pages (Mobile = 4 buttons, Desktop = 9 buttons)
+  // ຄິດໄລ່ລາຍຊື່ປຸ່ມໜ້າທີ່ຈະສະແດງ (ຈໍມືຖື = 4 ປຸ່ມ, ຈໍຄອມພິວເຕີ = 9 ປຸ່ມ)
   const getVisiblePages = () => {
     if (totalPages <= maxPageButtons) {
       return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -610,17 +614,17 @@ export default function CheckOut() {
 
   return (
     <div className="font-sans w-full flex flex-col pb-6">
-      {/* Main Container Card */}
+      {/* ບັດບັນຈຸອົງປະກອບຫຼັກຂອງໜ້າລົດອອກ (Main Container Card) */}
       <div
         className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-visible w-full border-0 flex flex-col"
         style={{ borderRadius: 0 }}
       >
-        {/* Top Header Bar — Dark Gray (#5D5D5D) */}
+        {/* ແຖບຫົວຂໍ້ດ້ານເທິງ — ສີເທົາເຂັ້ມ (#5D5D5D) */}
         <div
           className="bg-[#5D5D5D] px-3 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 lg:gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Top Row on Mobile / Left Section on Desktop: Icon + Title + Mobile Scan QR button */}
+          {/* ແຖວເທິງໃນຈໍມືຖື / ສ່ວນຊ້າຍໃນຈໍຄອມພິວເຕີ: ໄອຄອນ, ຫົວຂໍ້ ແລະ ປຸ່ມສະແກນ QR ໃນຈໍມືຖື */}
           <div className="flex items-center justify-between w-full md:w-auto h-10">
             <div className="flex items-center gap-2.5">
               <LogOut size={20} className="w-5 h-5 text-white shrink-0 rotate-180" />
@@ -629,7 +633,7 @@ export default function CheckOut() {
               </h1>
             </div>
 
-            {/* Mobile-Only Scan QR Button — Square white button with black icon */}
+            {/* ປຸ່ມສະແກນ QR ສຳລັບຈໍມືຖື — ປຸ່ມສີ່ຫຼ່ຽມສີຂາວໄອຄອນດຳ */}
             <button
               type="button"
               onClick={() => setMode(mode === 'camera' ? 'manual' : 'camera')}
@@ -641,12 +645,12 @@ export default function CheckOut() {
             </button>
           </div>
 
-          {/* Controls: Search Box + Filters + Desktop Scan QR */}
+          {/* ສ່ວນຄວບຄຸມ: ຊ່ອງຄົ້ນຫາ + ຕົວກັ່ນຕອງ + ປຸ່ມສະແກນ QR ຈໍຄອມພິວເຕີ */}
           <div
             className="flex flex-col md:flex-row items-stretch md:items-center md:justify-end md:ml-auto gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 w-full md:w-auto shrink-0"
             ref={autocompleteRef}
           >
-            {/* Search Input Box — Full width on mobile, expanded width on desktop */}
+            {/* ຊ່ອງປ້ອນຂໍ້ມູນຄົ້ນຫາ (Search Input Box) */}
             <div className="flex items-center bg-white shadow-sm w-full md:w-[280px] lg:w-[315px] xl:w-[325px] rounded-l-none rounded-r-full overflow-hidden pl-3 sm:pl-3.5 h-10 min-h-[40px] shrink-0">
               <div className="flex items-center justify-center text-[#F9A825] shrink-0">
                 <Search size={18} className="w-[18px] h-[18px] text-[#F9A825]" />
@@ -696,9 +700,9 @@ export default function CheckOut() {
               </button>
             </div>
 
-            {/* Filter Dropdowns: 2 Columns on Mobile, Flex on Desktop */}
+            {/* ເມນູກັ່ນຕອງ: ແບ່ງ 2 ຖັນໃນຈໍມືຖື ແລະ ລຽງແນວນອນໃນຈໍຄອມພິວເຕີ */}
             <div className="grid grid-cols-2 md:flex items-center gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 w-full md:w-auto shrink-0">
-              {/* Vehicle Type Filter Dropdown */}
+              {/* ເມນູເລືອກກັ່ນຕອງຕາມປະເພດລົດ */}
               <div ref={filterRef} className="relative w-full md:w-[144px] lg:w-[150px]">
                 <button
                   type="button"
@@ -726,7 +730,7 @@ export default function CheckOut() {
                   />
                 </button>
 
-                {/* Custom Dropdown Menu */}
+                {/* ລາຍການຕົວເລືອກກັ່ນຕອງປະເພດລົດ */}
                 {filterOpen && (
                   <div
                     className="absolute top-full mt-1.5 left-0 w-max min-w-full max-w-[200px] bg-white shadow-[0_12px_28px_rgba(0,0,0,0.18)] z-50 py-1 border-0 rounded-none animate-fade-in"
@@ -768,7 +772,7 @@ export default function CheckOut() {
                 )}
               </div>
 
-              {/* Parking Type Filter Dropdown */}
+              {/* ເມນູເລືອກກັ່ນຕອງຕາມຮູບແບບການຈອດ */}
               <div ref={parkingTypeFilterRef} className="relative w-full md:w-[152px] lg:w-[158px]">
                 <button
                   type="button"
@@ -796,7 +800,7 @@ export default function CheckOut() {
                   />
                 </button>
 
-                {/* Custom Dropdown Menu */}
+                {/* ລາຍການຕົວເລືອກກັ່ນຕອງຮູບແບບການຈອດ */}
                 {parkingTypeFilterOpen && (
                   <div
                     className="absolute top-full mt-1.5 left-0 w-max min-w-full max-w-[200px] bg-white shadow-[0_12px_28px_rgba(0,0,0,0.18)] z-50 py-1 border-0 rounded-none animate-fade-in"
@@ -838,7 +842,7 @@ export default function CheckOut() {
                 )}
               </div>
 
-              {/* Desktop-Only Scan QR Button — Square white button with black icon and no border-radius */}
+              {/* ປຸ່ມສະແກນ QR ສຳລັບຈໍຄອມພິວເຕີ — ປຸ່ມສີ່ຫຼ່ຽມສີຂາວໄອຄອນດຳ */}
               <button
                 type="button"
                 onClick={() => setMode(mode === 'camera' ? 'manual' : 'camera')}
@@ -852,13 +856,13 @@ export default function CheckOut() {
           </div>
         </div>
 
-        {/* Top Red Stripe Divider */}
+        {/* ເສັ້ນແບ່ງແຖບສີແດງດ້ານເທິງ */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Main Body — Orange Background (Tight 12px padding aligning cards with header icons) */}
+        {/* ສ່ວນເນື້ອໃນຫຼັກ — ພື້ນຫຼັງສີສົ້ມ/ເຫຼືອງ (#F9A825) */}
         <div className="bg-[#F9A825] p-3 flex flex-col justify-start">
           {mode === 'camera' ? (
-            /* Camera Scanner Container */
+            /* ກ່ອງສະແດງກ້ອງສະແກນ QR Code */
             <div className="max-w-2xl mx-auto w-full shadow-lg bg-white my-auto animate-fade-in rounded-none overflow-hidden">
               <div className="bg-[#B02019] py-3.5 px-5 text-white flex items-center justify-between">
                 <div className="flex items-center gap-2 font-bold text-lg">
@@ -896,7 +900,7 @@ export default function CheckOut() {
               </div>
             </div>
           ) : (
-            /* Cards Grid */
+            /* ຕາຕະລາງສະແດງບັດລົດທີ່ກຳລັງຈອດຢູ່ (Cards Grid) */
             <>
               {displayTickets.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-3.5 lg:gap-4 animate-fade-in">
@@ -907,12 +911,12 @@ export default function CheckOut() {
                         key={t.id}
                         className="bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.18)] transition-all flex flex-col rounded-none overflow-hidden"
                       >
-                        {/* Top Card Header: Distinctive vehicle type color + compact vertical spacing */}
+                        {/* ສ່ວນເທິງຂອງບັດ: ສີຕາມປະເພດລົດ ແລະ ໄອຄອນພາຫະນະ */}
                         <div className={`${theme.bannerBg} py-2 sm:py-2.5 flex justify-center items-center shadow-inner transition-colors`}>
                           <SvgIcon raw={theme.iconRaw} className="w-9 h-9 sm:w-10 sm:h-10 text-white" />
                         </div>
 
-                        {/* Bottom Card Body: Compact, space-saving info */}
+                        {/* ສ່ວນເນື້ອໃນຂອງບັດ: ສະແດງຂໍ້ມູນລະອຽດຂອງປີ້ຈອດລົດ */}
                         <div className="px-3 py-2 sm:px-3.5 sm:py-2.5 flex flex-col justify-between flex-1 bg-white">
                           <div className="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-0.5 text-[15px] sm:text-[15.5px] font-bold text-black mx-auto w-fit leading-tight my-0.5">
                             <span className="text-right">ປະເພດ</span>
@@ -968,7 +972,7 @@ export default function CheckOut() {
                             </span>
                           </div>
 
-                          {/* Overdue alert and price if overdue */}
+                          {/* ແຈ້ງເຕືອນ ແລະ ລາຄາກໍລະນີຈອດລົດກາຍກຳນົດສັນຍາ */}
                           {(() => {
                             const endDateRaw = (t as any).customEnd || (t as any).membership?.endDate;
                             if (!endDateRaw) return null;
@@ -993,7 +997,7 @@ export default function CheckOut() {
                             );
                           })()}
 
-                          {/* Action Buttons */}
+                          {/* ປຸ່ມຄຳສັ່ງດຳເນີນການລົດອອກ */}
                           <div className="mt-2 sm:mt-2.5 w-full">
                             <button
                               type="button"
@@ -1016,7 +1020,7 @@ export default function CheckOut() {
                   })}
                 </div>
               ) : (
-                /* Empty State Matching Members.tsx */
+                /* ສະແດງສະຖານະເມື່ອບໍ່ມີຂໍ້ມູນລົດ (Empty State) */
                 <div className="py-12 sm:py-16 text-center flex flex-col items-center justify-center select-none">
                   <h3 className="text-base sm:text-[18px] font-bold text-black mb-1">
                     {isSearching ? 'ບໍ່ພົບຂໍ້ມູນລົດທີ່ຄົ້ນຫາ' : 'ບໍ່ມີລົດທີ່ກຳລັງຈອດຢູ່ໃນຂະນະນີ້'}
@@ -1030,15 +1034,15 @@ export default function CheckOut() {
           )}
         </div>
 
-        {/* Bottom Red Stripe Divider */}
+        {/* ເສັ້ນແບ່ງແຖບສີແດງດ້ານລຸ່ມ */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Bottom Footer Bar — Dark Gray (matching CheckOut header) */}
+        {/* ແຖບທ້າຍລຸ່ມສຸດ — ສີເທົາເຂັ້ມ (Dark Gray Footer Bar) */}
         <div
           className="bg-[#5D5D5D] px-3 py-3 md:py-0 min-h-[60px] md:h-16 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Total Count Badge (Square w-10 h-10) */}
+          {/* ດ້ານຊ້າຍ: ປ້າຍສະແດງຈຳນວນລາຍການທັງໝົດ */}
           <div className="flex items-center gap-2 text-white font-bold text-base md:text-[17px]">
             <span>ຈຳນວນ</span>
             <span
@@ -1050,7 +1054,7 @@ export default function CheckOut() {
             <span>ລາຍການ</span>
           </div>
 
-          {/* Right: Pagination Controls (Equal width buttons, square page buttons) */}
+          {/* ດ້ານຂວາ: ປຸ່ມຄວບຄຸມການປ່ຽນໜ້າ (Pagination Controls) */}
           <div className="flex items-center gap-1.5 sm:gap-2 max-w-full overflow-x-auto no-scrollbar py-1">
             <button
               type="button"
@@ -1062,7 +1066,7 @@ export default function CheckOut() {
               ຖອຍກັບ
             </button>
 
-            {/* Page number buttons (Squares h-10 w-10) */}
+            {/* ປຸ່ມໝາຍເລກໜ້າ (Squares h-10 w-10) */}
             {visiblePages.map((p) => (
               <button
                 key={p}
@@ -1093,7 +1097,7 @@ export default function CheckOut() {
         </div>
       </div>
 
-      {/* Centered Success Notification Popup (Dead Center of Screen) */}
+      {/* ປັອບອັບແຈ້ງເຕືອນລົດອອກສຳເລັດກາງໜ້າຈໍ (Centered Success Notification Popup) */}
       {checkoutSuccessMsg && (
         <div className="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center p-4">
           <div

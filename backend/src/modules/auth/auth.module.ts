@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Auth Module
-// JWT authentication with Passport
-// ============================================
+// ==============================================================================
+// PARKO — ໂມດູນລະບົບຢືນຢັນຕົວຕົນ (Auth Module)
+// ຕັ້ງຄ່າການຢືນຢັນຕົວຕົນດ້ວຍ JWT ຮ່ວມກັບ Passport.js ແລະ ການຈັດການ Refresh Token
+// ==============================================================================
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';

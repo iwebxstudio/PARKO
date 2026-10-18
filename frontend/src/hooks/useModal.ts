@@ -1,6 +1,6 @@
 // ============================================
-// PARKO — useModal Hook
-// State manager for modals and dialogs
+// ລະບົບ PARKO — useModal Hook (ເຄື່ອງມືຈັດການສະຖານະ Dialog ແລະ Modal)
+// ຄວບຄຸມການເປີດ, ປິດ, ສົ່ງຕໍ່ຂໍ້ມູນ (Data) ແລະ Toggle ສຳລັບໜ້າຕ່າງ Pop-up
 // ============================================
 import { useState, useCallback } from 'react';
 

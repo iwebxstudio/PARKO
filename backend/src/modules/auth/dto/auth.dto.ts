@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Auth DTOs
-// Validation for authentication requests
-// ============================================
+// ==============================================================================
+// PARKO — ອອບເຈັກສົ່ງຕໍ່ຂໍ້ມູນສຳລັບລະບົບຢືນຢັນຕົວຕົນ (Auth DTOs)
+// ກຳນົດກົດລະບຽບການກວດສອບຄວາມຖືກຕ້ອງຂອງຂໍ້ມູນ Login, Refresh Token ແລະ Auth Response
+// ==============================================================================
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
 

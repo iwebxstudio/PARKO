@@ -1,6 +1,7 @@
-// ============================================
-// PARKO — Standard API Response Interfaces
-// ============================================
+// ==============================================================================
+// PARKO — ອິນເຕີເຟດຂໍ້ມູນຕອບກັບມາດຕະຖານຂອງ API (Standard API Response Interfaces)
+// ກຳນົດໂຄງສ້າງ Generic Response Type ແລະ Metadata ສຳລັບການແບ່ງໜ້າ (Pagination)
+// ==============================================================================
 
 export interface ApiResponse<T = any> {
   success: boolean;

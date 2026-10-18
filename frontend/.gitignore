@@ -1,4 +1,4 @@
-# Logs
+# ໄຟລ໌ບັນທຶກການເຮັດວຽກຂອງລະບົບ (Log files)
 logs
 *.log
 npm-debug.log*
@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 
-# Editor directories and files
+# ໂຟນເດີ ແລະ ໄຟລ໌ການຕັ້ງຄ່າຂອງໂປຣແກຣມແກ້ໄຂໂຄ້ດ (Editor & IDE)
 .vscode/*
 !.vscode/extensions.json
 .idea

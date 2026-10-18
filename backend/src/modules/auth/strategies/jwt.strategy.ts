@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — JWT Strategy
-// Validates JWT access tokens
-// ============================================
+// ==============================================================================
+// PARKO — ຍຸດທະສາດການກວດສອບ JWT (JWT Strategy)
+// ກວດສອບຄວາມຖືກຕ້ອງຂອງ Bearer Token ແລະ ດຶງຂໍ້ມູນຜູ້ໃຊ້ງານທີ່ຍັງມີສະຖານະ Active ຈາກຖານຂໍ້ມູນ
+// ==============================================================================
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';

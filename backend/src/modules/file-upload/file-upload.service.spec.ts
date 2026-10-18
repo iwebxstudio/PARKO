@@ -68,7 +68,7 @@ describe('FileUploadService Security Regressions', () => {
   });
 
   it('should reject spoofed MIME type when file magic bytes do not match', async () => {
-    // Declares image/jpeg but content is raw script/text
+    // ແຈ້ງວ່າເປັນ image/jpeg ແຕ່ເນື້ອໃນພາຍໃນເປັນ Script ທີ່ບໍ່ຖືກຕ້ອງ
     const spoofedFile = {
       buffer: Buffer.from('malicious shell script disguised as image'),
       mimetype: 'image/jpeg',
@@ -82,14 +82,14 @@ describe('FileUploadService Security Regressions', () => {
   });
 
   it('should reject file exceeding maximum size limit', async () => {
-    // Valid PNG signature: 89 50 4E 47 0D 0A 1A 0A
+    // Header ມາດຕະຖານຂອງໄຟລ໌ PNG: 89 50 4E 47 0D 0A 1A 0A
     const pngHeader = Buffer.from([
       0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x00,
     ]);
     const oversizedFile = {
       buffer: pngHeader,
       mimetype: 'image/png',
-      size: 10 * 1024 * 1024, // 10MB > 5MB limit
+      size: 10 * 1024 * 1024, // ຂະໜາດ 10MB ເຊິ່ງເກີນຂີດຈຳກັດ 5MB
       originalname: 'large.png',
     } as any;
 
@@ -99,7 +99,7 @@ describe('FileUploadService Security Regressions', () => {
   });
 
   it('should save valid PNG image and enforce safe extension derived from magic bytes', async () => {
-    // Valid PNG header
+    // Header ທີ່ຖືກຕ້ອງຂອງໄຟລ໌ PNG
     const validPngBuffer = Buffer.from([
       0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d,
     ]);
@@ -107,7 +107,7 @@ describe('FileUploadService Security Regressions', () => {
       buffer: validPngBuffer,
       mimetype: 'image/png',
       size: 1024,
-      originalname: 'attempted_override.php', // Attacker attempted .php extension
+      originalname: 'attempted_override.php', // ຜູ້ໂຈມຕີພະຍາຍາມໃສ່ນາມສະກຸນ .php ມາໃນ originalname
     } as any;
 
     const savedUrl = await service.saveFile(validFile);

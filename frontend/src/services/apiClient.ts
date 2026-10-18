@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — Base API Client Wrapper
+// ລະບົບ PARKO — Base API Client Wrapper (ຕົວຫໍ່ຫຸ້ມ Axios ສຳລັບສົ່ງຄຳຂໍ API)
+// ໃຫ້ບໍລິການເມທອດ GET, POST, PUT, PATCH, DELETE ທີ່ຜ່ານ Interceptor ແລ້ວ
 // ============================================
 import api from '../api/client';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';

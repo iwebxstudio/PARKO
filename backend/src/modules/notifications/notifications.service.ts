@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Notifications Service
-// Email / Telegram / Discord notifications
-// ============================================
+// ==============================================================================
+// PARKO — ບໍລິການແຈ້ງເຕືອນລະບົບ (Notifications Service)
+// ຮອງຮັບການສົ່ງການແຈ້ງເຕືອນຜ່ານຊ່ອງທາງ Email, Telegram Bot ແລະ Discord Webhook
+// ==============================================================================
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -16,7 +16,7 @@ export class NotificationsService {
   ) {}
 
   /**
-   * Send notification to all active channels
+   * ສົ່ງຂໍ້ຄວາມແຈ້ງເຕືອນໄປຍັງທຸກຊ່ອງທາງທີ່ມີສະຖານະເປີດໃຊ້ງານ (Active Channels)
    */
   async send(title: string, message: string) {
     const configs = await this.prisma.notificationConfig.findMany({
@@ -45,7 +45,7 @@ export class NotificationsService {
   }
 
   private async sendEmail(config: any, title: string, message: string) {
-    // Dynamic import to avoid issues when nodemailer not needed
+    // ໂຫຼດ nodemailer ແບບ Dynamic Import ເພື່ອປະຢັດ Resource ເມື່ອບໍ່ໄດ້ໃຊ້ Email
     const nodemailer = await import('nodemailer');
     const transporter = nodemailer.createTransport({
       host: config.host,
@@ -103,14 +103,14 @@ export class NotificationsService {
   }
 
   /**
-   * Get all notification configs
+   * ດຶງຂໍ້ມູນການຕັ້ງຄ່າຊ່ອງທາງການແຈ້ງເຕືອນທັງໝົດ
    */
   async getConfigs() {
     return this.prisma.notificationConfig.findMany();
   }
 
   /**
-   * Update notification config
+   * ອັບເດດຂໍ້ມູນການຕັ້ງຄ່າ ແລະ ສະຖານະເປີດ/ປິດ ຂອງຊ່ອງທາງການແຈ້ງເຕືອນ
    */
   async updateConfig(id: string, data: { config?: any; isActive?: boolean }) {
     return this.prisma.notificationConfig.update({
@@ -120,7 +120,7 @@ export class NotificationsService {
   }
 
   /**
-   * Create notification config
+   * ສ້າງການຕັ້ງຄ່າຊ່ອງທາງການແຈ້ງເຕືອນໃໝ່
    */
   async createConfig(channel: any, config: any) {
     return this.prisma.notificationConfig.create({

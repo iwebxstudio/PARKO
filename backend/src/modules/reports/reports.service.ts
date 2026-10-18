@@ -1,6 +1,6 @@
 // ============================================
-// PARKO — Reports Service
-// Statistics & export (PDF/Excel)
+// ລະບົບ PARKO — Reports Service (ການບໍລິການລາຍງານ ແລະ ສະຖິຕິ)
+// ຄຳນວນສະຖິຕິການຈອດລົດ, ລາຍຮັບ, ແລະ ສົ່ງອອກຂໍ້ມູນ (PDF/Excel)
 // ============================================
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -11,7 +11,7 @@ export class ReportsService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Get revenue report by period
+   * ດຶງຂໍ້ມູນລາຍງານລາຍຮັບຕາມຮອບເວລາ (ລາຍວັນ, ລາຍເດືອນ, ຫຼື ລາຍປີ)
    */
   async getRevenueReport(
     period: 'daily' | 'monthly' | 'yearly',
@@ -29,7 +29,7 @@ export class ReportsService {
       orderBy: { paidAt: 'asc' },
     });
 
-    // Aggregate by period
+    // ຈັດກຸ່ມ ແລະ ລວມຍອດເງິນຕາມຮອບເວລາ (ລາຍວັນ, ລາຍເດືອນ, ລາຍປີ) ພ້ອມແບ່ງຕາມປະເພດພາຫະນະ
     const grouped = new Map<
       string,
       { total: number; count: number; byType: Record<string, number> }
@@ -76,7 +76,7 @@ export class ReportsService {
   }
 
   /**
-   * Get vehicle count report
+   * ດຶງຂໍ້ມູນລາຍງານສະຖິຕິຈຳນວນພາຫະນະ (ລົດເຂົ້າ ຫຼື ລົດອອກ) ແຍກຕາມຊ່ວງເວລາ (ລາຍວັນ, ລາຍເດືອນ, ລາຍປີ)
    */
   async getVehicleReport(
     period: 'daily' | 'monthly' | 'yearly',
@@ -143,7 +143,7 @@ export class ReportsService {
   }
 
   /**
-   * Export data as JSON (frontend generates PDF/Excel)
+   * ດຶງຂໍ້ມູນລາຍງານລະອຽດທັງໝົດໃນຮູບແບບ JSON ເພື່ອໃຫ້ Frontend ນຳໄປສ້າງເອກະສານ PDF ຫຼື ໄຟລ໌ Excel
    */
   async getExportData(dateFrom: string, dateTo: string) {
     const from = new Date(dateFrom);
@@ -178,7 +178,7 @@ export class ReportsService {
   }
 
   /**
-   * Get comprehensive stats for dashboard
+   * ດຶງຂໍ້ມູນສະຖິຕິລວມຢ່າງລະອຽດສຳລັບສະແດງຜົນເທິງ Dashboard (ລົດເຂົ້າ, ລົດອອກ, ລາຍຮັບ, ປະເພດລົດ)
    */
   async getDashboardStats() {
     const now = new Date();
@@ -190,7 +190,7 @@ export class ReportsService {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfYear = new Date(now.getFullYear(), 0, 1);
 
-    // Vehicles - In (checkInAt)
+    // ສະຖິຕິລົດເຂົ້າ (Check-in) ຕາມຮອບເວລາ: ມື້ນີ້, ເດືອນນີ້, ປີນີ້, ແລະ ທັງໝົດ
     const inToday = await this.prisma.parkingTicket.count({
       where: { checkInAt: { gte: startOfToday } },
     });
@@ -205,7 +205,7 @@ export class ReportsService {
       where: { status: 'ACTIVE' },
     });
 
-    // Vehicles - Out (checkOutAt)
+    // ສະຖິຕິລົດອອກ (Check-out) ຕາມຮອບເວລາ: ມື້ນີ້, ເດືອນນີ້, ປີນີ້, ແລະ ທັງໝົດ
     const outToday = await this.prisma.parkingTicket.count({
       where: { checkOutAt: { gte: startOfToday }, status: 'COMPLETED' },
     });
@@ -219,7 +219,7 @@ export class ReportsService {
       where: { status: 'COMPLETED' },
     });
 
-    // Revenue (paidAt)
+    // ສະຖິຕິລາຍຮັບລວມ (Revenue) ຕາມຮອບເວລາ: ມື້ນີ້, ເດືອນນີ້, ປີນີ້, ແລະ ທັງໝົດ
     const revTodayAgg = await this.prisma.payment.aggregate({
       _sum: { amount: true },
       where: { paidAt: { gte: startOfToday } },
@@ -236,7 +236,7 @@ export class ReportsService {
       _sum: { amount: true },
     });
 
-    // Vehicle types breakdown (Active / Parked)
+    // ສະຖິຕິຈຳແນກຈຳນວນລົດທີ່ກຳລັງຈອດຢູ່ (Active) ຕາມແຕ່ລະປະເພດພາຫະນະ
     const activeGrouped = await this.prisma.parkingTicket.groupBy({
       by: ['vehicleTypeId'],
       where: { status: 'ACTIVE' },

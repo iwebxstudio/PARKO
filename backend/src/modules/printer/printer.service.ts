@@ -1,8 +1,7 @@
 // ============================================
-// PARKO — Printer Service
-// Generate ESC/POS receipt data for thermal printer
-// The actual printing happens on the frontend via
-// Web Bluetooth or WebUSB API
+// ລະບົບ PARKO — Printer Service (ການບໍລິການຈັດການຂໍ້ມູນການພິມໃບບິນ)
+// ສ້າງໂຄງສ້າງຂໍ້ມູນໃບບິນຮັບເງິນ ແລະ ປີ້ຈອດລົດສຳລັບເຄື່ອງພິມຄວາມຮ້ອນ (Thermal Printer)
+// ໂດຍການສັ່ງພິມຕົວຈິງຈະຖືກປະມວນຜົນຢູ່ຝັ່ງ Frontend ຜ່ານ Web Bluetooth, WebUSB ຫຼື Print Agent
 // ============================================
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -30,8 +29,8 @@ export class PrinterService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Generate receipt data for a ticket
-   * The frontend uses this data to format and send to thermal printer
+   * ສ້າງຂໍ້ມູນໃບບິນລະອຽດສຳລັບປີ້ລົດແຕ່ລະໃບ
+   * ລະບົບ Frontend ຈະນຳເອົາຂໍ້ມູນຊຸດນີ້ໄປຈັດຮູບແບບ ແລະ ສັ່ງພິມຜ່ານເຄື່ອງພິມໃບບິນຄວາມຮ້ອນ
    */
   async generateReceiptData(ticketId: string): Promise<ReceiptData> {
     const ticket = await this.prisma.parkingTicket.findUnique({
@@ -45,7 +44,7 @@ export class PrinterService {
 
     if (!ticket) throw new Error('Ticket not found');
 
-    // Get parking name from settings
+    // ດຶງຊື່ສະຖານທີ່ຈອດລົດຈາກການຕັ້ງຄ່າລະບົບ (System Settings) ມາສະແດງເທິງຫົວໃບບິນ
     const parkingNameSetting = await this.prisma.systemSetting.findUnique({
       where: { key: 'parking_name' },
     });
@@ -53,7 +52,7 @@ export class PrinterService {
     const parkingName =
       (parkingNameSetting?.value as any)?.name || 'PARKO Parking';
 
-    // Calculate duration if checked out
+    // ຄິດໄລ່ໄລຍະເວລາການຈອດລົດ (ຊົ່ວໂມງ ແລະ ນາທີ) ຖ້າຫາກລົດໄດ້ມີການ Check-out ແລ້ວ
     let duration: string | null = null;
     if (ticket.checkOutAt) {
       const diffMs = ticket.checkOutAt.getTime() - ticket.checkInAt.getTime();

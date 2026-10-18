@@ -1,4 +1,4 @@
-// PARKO — Audit Log / ບັນທຶກການເຄື່ອນໄຫວ (Admin)
+// PARKO — ໜ້າຕ່າງ Audit Log / ບັນທຶກປະຫວັດການເຄື່ອນໄຫວລະບົບ (ສຳລັບຜູ້ດູແລລະບົບ Admin)
 import React, { useState, useEffect, useRef } from 'react';
 import { ClipboardList, Trash2, AlertTriangle, RefreshCw, Filter, ChevronDown, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -14,7 +14,7 @@ export default function AuditLog() {
   const [filterOpen, setFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
-  // Responsive max page buttons: 4 on Mobile (< 640px), 9 on Desktop
+  // ກຳນົດຈຳນວນປຸ່ມເລກໜ້າສູງສຸດຕາມຂະໜາດໜ້າຈໍ: 4 ປຸ່ມສຳລັບມືຖື (< 640px) ແລະ 9 ປຸ່ມສຳລັບຄອມພິວເຕີ (Desktop)
   const [isMobile, setIsMobile] = useState<boolean>(() =>
     typeof window !== 'undefined' ? window.innerWidth < 640 : false
   );
@@ -27,7 +27,7 @@ export default function AuditLog() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Close filter dropdown on outside click
+  // ຟັງຊັນກວດຈັບການກົດພາຍນອກ Dropdown ເພື່ອປິດເມນູເລືອກໝວດໝູ່ອັດຕະໂນມັດ
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
@@ -152,17 +152,17 @@ export default function AuditLog() {
 
   return (
     <div className="font-sans w-full flex flex-col pb-6">
-      {/* Main Container Card */}
+      {/* ກ່ອງຫຼັກສະແດງຕາຕະລາງບັນທຶກການເຄື່ອນໄຫວ (Main Container Card) */}
       <div
         className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-hidden bg-[#FFFAEE] w-full border-0 flex flex-col"
         style={{ borderRadius: 0 }}
       >
-        {/* Top Header Bar — Dark Gray (#5D5D5D) */}
+        {/* ແຖບຫົວຂໍ້ດ້ານເທິງ — ໂທນສີເທົາເຂັ້ມ (#5D5D5D) ພ້ອມຫົວຂໍ້ ແລະ ປຸ່ມຄວບຄຸມ */}
         <div
           className="bg-[#5D5D5D] px-3 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 md:gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Top Row on Mobile / Left Section on Desktop: Icon + Title + Mobile Refresh button */}
+          {/* ສ່ວນສະແດງໄອຄອນ, ຫົວຂໍ້ Audit Log ແລະ ປຸ່ມຣີເຟຣຊສຳລັບໜ້າຈໍມືຖື */}
           <div className="flex items-center justify-between w-full md:w-auto h-10 shrink-0">
             <div className="flex items-center gap-2.5">
               <ClipboardList size={20} className="w-5 h-5 text-white shrink-0" />
@@ -171,7 +171,7 @@ export default function AuditLog() {
               </h1>
             </div>
 
-            {/* Mobile-Only Refresh Button */}
+            {/* ປຸ່ມຣີເຟຣຊຂໍ້ມູນສະເພາະໜ້າຈໍມືຖື (Mobile-Only Refresh Button) */}
             <button
               type="button"
               onClick={load}
@@ -184,9 +184,9 @@ export default function AuditLog() {
             </button>
           </div>
 
-          {/* Controls on Mobile: Filter + Delete Buttons */}
+          {/* ສ່ວນຄວບຄຸມ: ຕົວກັ່ນຕອງໝວດໝູ່ ແລະ ປຸ່ມຈັດການລຶບຂໍ້ມູນປະຫວັດ */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center md:justify-end md:ml-auto gap-2 md:gap-2.5 w-full md:w-auto shrink-0">
-            {/* Category Filter Dropdown (matching Members.tsx) */}
+            {/* ເມນູເລືອກກັ່ນຕອງປະເພດການເຄື່ອນໄຫວ (Category Filter Dropdown) */}
             <div ref={filterRef} className="relative w-full sm:w-[150px] md:w-[155px] shrink-0">
               <button
                 type="button"
@@ -208,7 +208,7 @@ export default function AuditLog() {
                 />
               </button>
 
-              {/* Custom Dropdown Menu */}
+              {/* ລາຍການຕົວເລືອກໝວດໝູ່ໃນ Dropdown (Custom Dropdown Menu) */}
               {filterOpen && (
                 <div
                   className="absolute top-full mt-1.5 left-0 w-max min-w-full max-w-[200px] bg-white shadow-[0_12px_28px_rgba(0,0,0,0.18)] z-50 py-1 border-0 rounded-none animate-fade-in"
@@ -241,9 +241,9 @@ export default function AuditLog() {
               )}
             </div>
 
-            {/* Action Buttons: 2 columns on mobile, flex on sm+ */}
+            {/* ກຸ່ມປຸ່ມຈັດການຂໍ້ມູນ: ລຶບຂໍ້ມູນເກົ່າ ແລະ ລຶບຂໍ້ມູນທັງໝົດ */}
             <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto shrink-0">
-              {/* Delete old (> 3 months) */}
+              {/* ປຸ່ມລຶບຂໍ້ມູນບັນທຶກທີ່ເກົ່າກວ່າ 3 ເດືອນຂຶ້ນໄປ */}
               <button
                 type="button"
                 onClick={handleDeleteOld}
@@ -255,7 +255,7 @@ export default function AuditLog() {
                 <span className="whitespace-nowrap">ລຶບເກົ່າກວ່າ 3 ເດືອນ</span>
               </button>
 
-              {/* Delete all */}
+              {/* ປຸ່ມລຶບຂໍ້ມູນບັນທຶກທັງໝົດໃນລະບົບ (Delete all) */}
               <button
                 type="button"
                 onClick={handleDeleteAll}
@@ -268,7 +268,7 @@ export default function AuditLog() {
               </button>
             </div>
 
-            {/* Desktop-Only Refresh Button */}
+            {/* ປຸ່ມຣີເຟຣຊໂຫຼດຂໍ້ມູນໃໝ່ສຳລັບໜ້າຈໍ Desktop */}
             <button
               type="button"
               onClick={load}
@@ -282,10 +282,10 @@ export default function AuditLog() {
           </div>
         </div>
 
-        {/* Top Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານເທິງຂອງຕາຕະລາງ (#B02019) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Table Content (matching Users.tsx) */}
+        {/* ສ່ວນເນື້ອໃນຕາຕະລາງສະແດງລາຍການປະຫວັດການເຄື່ອນໄຫວ (Table Content) */}
         <div className="overflow-x-auto no-scrollbar">
           <table className="w-full text-center border-collapse">
             <thead>
@@ -335,27 +335,27 @@ export default function AuditLog() {
                       key={l.id}
                       className={`${rowBg} hover:bg-[#EAD0A0] transition-colors duration-150 text-base md:text-[17px] font-bold text-gray-800 h-14 cursor-default`}
                     >
-                      {/* Column 1: Date */}
+                      {/* ຖັນທີ 1: ວັນທີບັນທຶກການເຄື່ອນໄຫວ (Date) */}
                       <td className={`px-5 ${borderClass} text-gray-800 whitespace-nowrap text-base md:text-[17px] font-bold align-middle text-center`}>
                         {formatDate(l.createdAt)}
                       </td>
 
-                      {/* Column 2: Time */}
+                      {/* ຖັນທີ 2: ເວລາບັນທຶກການເຄື່ອນໄຫວ (Time) */}
                       <td className={`px-5 ${borderClass} text-gray-800 whitespace-nowrap text-base md:text-[17px] font-bold align-middle text-center`}>
                         {formatTime(l.createdAt)}
                       </td>
 
-                      {/* Column 3: User */}
+                      {/* ຖັນທີ 3: ຊື່ຜູ້ໃຊ້ງານທີ່ດຳເນີນການ (User) */}
                       <td className={`px-6 ${borderClass} text-gray-800 whitespace-nowrap text-base md:text-[17px] font-bold align-middle text-left`}>
                         {l.user?.displayName || l.user?.username || 'System'}
                       </td>
 
-                      {/* Column 4: Action */}
+                      {/* ຖັນທີ 4: ປະເພດການກະທຳ ຫຼື ລາຍລະອຽດການດຳເນີນງານ (Action) */}
                       <td className={`px-6 ${borderClass} text-[#B02019] whitespace-nowrap text-base md:text-[17px] font-bold align-middle text-center`}>
                         {l.action}
                       </td>
 
-                      {/* Column 5: IP Address */}
+                      {/* ຖັນທີ 5: ໝາຍເລກໄອພີແອດເດຣສ (IP Address) ທີ່ຮ້ອງຂໍ */}
                       <td className="px-6 text-gray-800 whitespace-nowrap text-base md:text-[17px] font-bold align-middle text-right">
                         {formatIpAddress(l.ipAddress)}
                       </td>
@@ -367,15 +367,15 @@ export default function AuditLog() {
           </table>
         </div>
 
-        {/* Bottom Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານລຸ່ມຂອງຕາຕະລາງ (#B02019) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Bottom Footer Bar — Dark Gray (matching CheckOut footer) */}
+        {/* ແຖບສະຫຼຸບ ແລະ ປຸ່ມປ່ຽນໜ້າດ້ານລຸ່ມ — ໂທນສີເທົາເຂັ້ມ (#5D5D5D) */}
         <div
           className="bg-[#5D5D5D] px-3 py-3 md:py-0 min-h-[60px] md:h-16 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Total Count Badge (Square w-10 h-10) */}
+          {/* ສ່ວນສະແດງຈຳນວນລາຍການທັງໝົດໃນໜ້າປັດຈຸບັນ (Total Count Badge) */}
           <div className="flex items-center gap-2 text-white font-bold text-base md:text-[17px]">
             <span>ຈຳນວນ</span>
             <span
@@ -387,7 +387,7 @@ export default function AuditLog() {
             <span>ລາຍການ</span>
           </div>
 
-          {/* Right: Pagination Controls */}
+          {/* ສ່ວນປຸ່ມຄວບຄຸມການປ່ຽນໜ້າ (Pagination Controls) */}
           <div className="flex items-center gap-1.5 sm:gap-2 max-w-full overflow-x-auto no-scrollbar py-1">
             <button
               type="button"
@@ -399,7 +399,7 @@ export default function AuditLog() {
               ຖອຍກັບ
             </button>
 
-            {/* Page number buttons (Squares h-10 w-10) */}
+            {/* ປຸ່ມເລືອກໄປຍັງໝາຍເລກໜ້າຕ່າງໆ (Page Number Buttons) */}
             {visiblePages.map((p) => (
               <button
                 key={p}

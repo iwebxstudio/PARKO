@@ -1,5 +1,5 @@
-// ============================================
-// PARKO — Health Controller (Proxy Export)
-// Re-exports from core/health for backward compatibility
-// ============================================
+// ==============================================================================
+// PARKO — ໂມດູນຄວບຄຸມການກວດສອບສະຖານະລະບົບ (Health Controller - Proxy Export)
+// ເຮັດໜ້າທີ່ Re-export ຈາກ core/health ເພື່ອຮອງຮັບການເອີ້ນໃຊ້ງານແບບ Backward Compatibility
+// ==============================================================================
 export * from './core/health/health.controller';

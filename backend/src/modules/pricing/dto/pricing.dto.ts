@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — Pricing DTOs
+// ລະບົບ PARKO — Pricing DTOs (Data Transfer Objects ສຳລັບກົດລະບຽບລາຄາ)
+// ກຳນົດໂຄງສ້າງ ແລະ ກວດສອບຄວາມຖືກຕ້ອງຂອງຂໍ້ມູນອັດຕາຄ່າທຳນຽມບ່ອນຈອດລົດ
 // ============================================
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import {

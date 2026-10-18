@@ -1,6 +1,6 @@
 // ============================================
-// PARKO — Login Page
-// Split-panel layout: Red brand + White form
+// PARKO — ໜ້າເຂົ້າສູ່ລະບົບ (Login Page)
+// ໜ້າທີ່: ຈັດການການກວດສອບສິດເຂົ້າໃຊ້ງານລະບົບ ໂດຍແບ່ງໂຄງສ້າງອອກເປັນ 2 ສ່ວນ: ແຜງແບຣນສີແດງ (ຊ້າຍ) ແລະ ຟອມປ້ອນຂໍ້ມູນສີຂາວ (ຂວາ)
 // ============================================
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -18,7 +18,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showForgotModal, setShowForgotModal] = useState(false);
 
-  // Load remembered username if saved previously
+  // ດຶງຂໍ້ມູນຊື່ບັນຊີຜູ້ໃຊ້ງານທີ່ເຄີຍບັນທຶກໄວ້ໃນ LocalStorage ອອກມາສະແດງອັດຕະໂນມັດ ຖ້າຜູ້ໃຊ້ເຄີຍເລືອກ "ຈື່ຂ້ອຍໄວ້" (Remember Me)
   useEffect(() => {
     const savedRemember = localStorage.getItem('parko_remember_me');
     const savedUsername = localStorage.getItem('parko_remember_username');
@@ -28,7 +28,7 @@ export default function Login() {
     }
   }, []);
 
-  // Handle ESC key to close modal
+  // ກວດຈັບການກົດປຸ່ມ Escape (ESC) ເທິງແປ້ນພິມ ເພື່ອປິດໜ້າຕ່າງປັອບອັບແຈ້ງລືມລະຫັດຜ່ານ
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && showForgotModal) {
@@ -50,7 +50,7 @@ export default function Login() {
     try {
       await login(username, password);
 
-      // Handle Remember Me persistence
+      // ບັນທຶກ ຫຼື ລຶບຊື່ບັນຊີຜູ້ໃຊ້ງານໃນ LocalStorage ຕາມສະຖານະຂອງຕົວເລືອກ "ຈື່ຂ້ອຍໄວ້" (Remember Me)
       if (rememberMe) {
         localStorage.setItem('parko_remember_me', 'true');
         localStorage.setItem('parko_remember_username', username.trim());
@@ -60,7 +60,7 @@ export default function Login() {
       }
 
       toast.success('Login successful!');
-      // Navigate based on role
+      // ນຳທາງຜູ້ໃຊ້ໄປຍັງໜ້າລະບົບຕາມລະດັບສິດທິ (Role): ແອດມິນໄປໜ້າກວດອອກລົດ (Check-out) ສ່ວນພະນັກງານທົ່ວໄປໄປໜ້າກວດເຂົ້າລົດ (Check-in)
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       navigate(user.role === 'ADMIN' ? '/staff/check-out' : '/staff/check-in');
     } catch (err: any) {
@@ -72,35 +72,35 @@ export default function Login() {
 
   return (
     <div className="auth-page-wrapper" style={styles.pageWrapper}>
-      {/* Centered Group: Card + Footer centered together as one unit */}
+      {/* ກຸ່ມອົງປະກອບກາງໜ້າຈໍ: ບັດເຂົ້າສູ່ລະບົບ ແລະ ແຖບທ້າຍໜ້າສະແດງລິຂະສິດ */}
       <div className="auth-card-group" style={styles.cardGroup}>
 
-        {/* Main Card */}
+        {/* ບັດຫຼັກຂອງການເຂົ້າສູ່ລະບົບ (Main Card) */}
         <div className="auth-card" style={styles.card}>
 
-        {/* ===== LEFT PANEL — Red Brand ===== */}
+        {/* ===== ແຜງດ້ານຊ້າຍ — ຂໍ້ມູນແບຣນ PARKO (ສີແດງ) ===== */}
         <div className="auth-brand-panel" style={styles.brandPanel}>
-          {/* Logo — square box with P circle */}
+          {/* ໂລໂກ້ລະບົບ — ກ່ອງສີ່ຫຼ່ຽມພ້ອມຕົວອັກສອນ P ໃນວົງມົນ */}
           <div className="auth-logo-box" style={styles.logoBox}>
             <div className="auth-logo-inner" style={styles.logoInnerCircle}>P</div>
           </div>
 
-          {/* Brand Text */}
+          {/* ຂໍ້ຄວາມຫົວຂໍ້ ແລະ ຄຳອະທິບາຍແບຣນ */}
           <h2 className="auth-brand-title" style={styles.brandTitle}>PARKO SYSTEM</h2>
           <p className="auth-brand-subtitle" style={styles.brandSubtitle}>ໂປຣແກຣມບໍລິຫານຈັດການບ່ອນຈອດລົດ</p>
           <p className="auth-version-tag" style={styles.versionTag}>VERSION RC1</p>
         </div>
 
-        {/* ===== RIGHT PANEL — White Form ===== */}
+        {/* ===== ແຜງດ້ານຂວາ — ຟອມປ້ອນຂໍ້ມູນເຂົ້າສູ່ລະບົບ (ສີຂາວ) ===== */}
         <div className="auth-form-panel" style={styles.formPanel}>
 
-          {/* Title */}
+          {/* ຫົວຂໍ້ຟອມເຂົ້າສູ່ລະບົບ */}
           <h1 className="auth-form-title" style={styles.formTitle}>ເຂົ້າສູ່ລະບົບ/SignIn</h1>
 
-          {/* Form */}
+          {/* ຟອມຮັບຂໍ້ມູນການເຂົ້າສູ່ລະບົບ */}
           <form onSubmit={handleSubmit} style={{ width: '100%' }}>
 
-            {/* Username Field */}
+            {/* ຊ່ອງປ້ອນຊື່ຜູ້ໃຊ້ງານ (Username) */}
             <fieldset style={styles.fieldset}>
               <legend style={styles.legend}>ຊື່ຜູ້ໃຊ້/USERNAME</legend>
               <div style={styles.inputWrapper}>
@@ -118,7 +118,7 @@ export default function Login() {
               </div>
             </fieldset>
 
-            {/* Password Field */}
+            {/* ຊ່ອງປ້ອນລະຫັດຜ່ານ (Password) */}
             <fieldset style={{ ...styles.fieldset, marginTop: 18 }}>
               <legend style={styles.legend}>ລະຫັດຜ່ານ/PASSWORD</legend>
               <div style={styles.inputWrapper}>
@@ -142,7 +142,7 @@ export default function Login() {
               </div>
             </fieldset>
 
-            {/* Remember Me & Forgot Password */}
+            {/* ຕົວເລືອກ ຈື່ຂ້ອຍໄວ້ ແລະ ລິ້ງກ໌ລືມລະຫັດຜ່ານ */}
             <div style={styles.optionsRow}>
               <label
                 style={styles.rememberLabel}
@@ -180,7 +180,7 @@ export default function Login() {
               </button>
             </div>
 
-            {/* Login Button */}
+            {/* ປຸ່ມກົດສົ່ງຟອມເຂົ້າສູ່ລະບົບ (Submit Button) */}
             <button
               id="login-submit"
               type="submit"
@@ -205,7 +205,7 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Register Link */}
+          {/* ລິ້ງກ໌ໄປຫາໜ້າລົງທະບຽນບັນຊີໃໝ່ */}
           <div style={styles.registerRow}>
             <span style={{ color: '#555', fontSize: 14 }}>ຍັງບໍ່ມີບັນຊີ? </span>
             <Link to="/register" style={styles.registerLink}>
@@ -215,7 +215,7 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Footer */}
+      {/* ແຖບທ້າຍໜ້າສະແດງລິຂະສິດ (Footer) */}
       <div className="auth-footer" style={styles.footer}>
         <div className="auth-footer-inner" style={styles.footerInner}>
           <p className="auth-footer-line" style={styles.footerLine1}>Powered by iwebxstudio technology</p>
@@ -224,7 +224,7 @@ export default function Login() {
       </div>
       </div>
 
-      {/* ===== POPUP MODAL — Forgot Password / Contact Admin ===== */}
+      {/* ===== ໜ້າຕ່າງປັອບອັບ (Modal) — ແຈ້ງລືມລະຫັດຜ່ານ ແລະ ຂໍ້ມູນຕິດຕໍ່ຜູ້ດູແລລະບົບ ===== */}
       {showForgotModal && (
         <div
           style={styles.modalOverlay}
@@ -236,7 +236,7 @@ export default function Login() {
             role="dialog"
             aria-modal="true"
           >
-            {/* Modal Header Bar */}
+            {/* ສ່ວນຫົວຂອງໜ້າຕ່າງປັອບອັບ (Modal Header) */}
             <div style={styles.modalHeader}>
               <div style={styles.modalHeaderLeft}>
                 <HelpCircle size={22} color="#FFFFFF" strokeWidth={2.4} />
@@ -252,19 +252,19 @@ export default function Login() {
               </button>
             </div>
 
-            {/* Modal Body */}
+            {/* ເນື້ອໃນຫຼັກຂອງໜ້າຕ່າງປັອບອັບ (Modal Body) */}
             <div style={styles.modalBody}>
-              {/* Center Icon */}
+              {/* ໄອຄອນຮູບກະແຈກາງໜ້າຕ່າງ */}
               <div style={styles.modalCenterIconBox}>
                 <KeyRound size={46} color="#111827" strokeWidth={2.2} />
               </div>
 
-              {/* Title & Subtitles */}
+              {/* ຫົວຂໍ້ຫຼັກ ແລະ ຂໍ້ຄວາມແນະນຳ */}
               <h3 style={styles.modalMainTitle}>ລືມລະຫັດຜ່ານ?</h3>
               <p style={styles.modalSubText1}>ແຈ້ງເຕືອນການຣີເຊັດລະຫັດຜ່ານ / Password Reset</p>
               <p style={styles.modalSubText2}>ຕິດຕໍ່ຜູ້ Admin ເພື່ອຂໍຣີເຊັດລະຫັດຜ່ານ</p>
 
-              {/* Amber / Yellow-Orange Box */}
+              {/* ກ່ອງສີສົ້ມສະແດງເບີໂທສາຍດ່ວນ (Hotline) ຂອງຜູ້ດູແລລະບົບ */}
               <div style={styles.modalHotlineCard}>
                 <div style={styles.modalHotlineIconWrap}>
                   <Phone size={36} color="#7A1B19" strokeWidth={2.4} />
@@ -292,7 +292,7 @@ export default function Login() {
 }
 
 /* ============================================
-   Inline Styles
+   ຮູບແບບການຕົກແຕ່ງ (Inline Styles)
    ============================================ */
 const styles: Record<string, React.CSSProperties> = {
   pageWrapper: {
@@ -326,7 +326,7 @@ const styles: Record<string, React.CSSProperties> = {
     margin: 0,
   },
 
-  /* ---------- LEFT Brand Panel ---------- */
+  /* ---------- ແຜງດ້ານຊ້າຍ (ແບຣນສີແດງ) ---------- */
   brandPanel: {
     width: '50%',
     minHeight: 400,
@@ -385,7 +385,7 @@ const styles: Record<string, React.CSSProperties> = {
     margin: 0,
   },
 
-  /* ---------- RIGHT Form Panel ---------- */
+  /* ---------- ແຜງດ້ານຂວາ (ຟອມສີຂາວ) ---------- */
   formPanel: {
     width: '50%',
     display: 'flex',
@@ -404,7 +404,7 @@ const styles: Record<string, React.CSSProperties> = {
     margin: '0 0 22px 0',
   },
 
-  /* Fieldset approach for labeled border */
+  /* ການນຳໃຊ້ fieldset ເພື່ອໃຫ້ມີເສັ້ນຂອບພ້ອມຂໍ້ຄວາມກຳກັບ (Legend) */
   fieldset: {
     border: '2px solid #5D5D5D',
     borderRadius: 0,
@@ -456,7 +456,7 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
   },
 
-  /* Options row */
+  /* ແຖວຕົວເລືອກເພີ່ມເຕີມ (ຈື່ຂ້ອຍໄວ້ ແລະ ລືມລະຫັດຜ່ານ) */
   optionsRow: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -507,7 +507,7 @@ const styles: Record<string, React.CSSProperties> = {
     outline: 'none',
   },
 
-  /* Submit button */
+  /* ປຸ່ມກົດສົ່ງຟອມເຂົ້າສູ່ລະບົບ */
   submitButton: {
     width: '100%',
     padding: '14px 0',
@@ -523,7 +523,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: 'inherit',
   },
 
-  /* Register link */
+  /* ລິ້ງກ໌ສຳລັບລົງທະບຽນບັນຊີໃໝ່ */
   registerRow: {
     marginTop: 18,
     textAlign: 'center',
@@ -537,7 +537,7 @@ const styles: Record<string, React.CSSProperties> = {
     textUnderlineOffset: 3,
   },
 
-  /* Footer */
+  /* ສ່ວນທ້າຍໜ້າສະແດງລິຂະສິດ */
   footer: {
     marginTop: 24,
     marginBottom: 0,
@@ -567,7 +567,7 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.4,
   },
 
-  /* Modal Popup */
+  /* ໜ້າຕ່າງປັອບອັບແຈ້ງລືມລະຫັດຜ່ານ */
   modalOverlay: {
     position: 'fixed',
     top: 0,

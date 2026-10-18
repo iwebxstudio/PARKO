@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Audit Interceptor
-// Automatically logs all CUD operations
-// ============================================
+// ==============================================================================
+// PARKO — ຕົວດັກຈັບບັນທຶກປະຫວັດການດຳເນີນງານ (Audit Interceptor)
+// ບັນທຶກປະຫວັດການປ່ຽນແປງຂໍ້ມູນ (Create, Update, Delete) ລົງຖານຂໍ້ມູນແບບອັດຕະໂນມັດ ພ້ອມຕັດຂໍ້ມູນລັບ
+// ==============================================================================
 import {
   Injectable,
   NestInterceptor,
@@ -59,7 +59,7 @@ export class AuditInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
     const method = request.method;
 
-    // Only log modifying operations
+    // ບັນທຶກສະເພາະຄຳຮ້ອງຂໍທີ່ມີການດັດແກ້ຂໍ້ມູນເທົ່ານັ້ນ (ຂ້າມ GET, HEAD, OPTIONS)
     if (['GET', 'HEAD', 'OPTIONS'].includes(method)) {
       return next.handle();
     }
@@ -84,7 +84,7 @@ export class AuditInterceptor implements NestInterceptor {
       const handler = context.getHandler().name;
       const controller = context.getClass().name;
 
-      // Extract and format real client IP address
+      // ດຶງຂໍ້ມູນ ແລະ ຈັດຮູບແບບ IP Address ຕົວຈິງຂອງ Client (ຮອງຮັບ Reverse Proxy Headers)
       const forwardedHeader = request.headers['x-forwarded-for'];
       const rawForwarded = Array.isArray(forwardedHeader)
         ? forwardedHeader[0]

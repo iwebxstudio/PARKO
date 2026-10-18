@@ -5,7 +5,7 @@ echo "=========================================="
 echo "   PARKO Backend Starting Up...           "
 echo "=========================================="
 
-# 1. Wait for PostgreSQL Database to be ready
+# 1. ລໍຖ້າການເຊື່ອມຕໍ່ກັບຖານຂໍ້ມູນ PostgreSQL ໃຫ້ພ້ອມໃຊ້ງານ (ກວດສອບຜ່ານ Prisma Client Query)
 echo "[1/3] Checking database connectivity..."
 MAX_RETRIES=30
 COUNT=0
@@ -27,7 +27,7 @@ prisma.\$queryRaw\`SELECT 1\`
 done
 echo "      Database connected successfully."
 
-# 2. Run Database Migrations (with baseline resilience)
+# 2. ດຳເນີນການ Migrate ໂຄງສ້າງຖານຂໍ້ມູນ (ພ້ອມລະບົບຮອງຮັບ Baseline ອັດຕະໂນມັດ ເພື່ອປ້ອງກັນ Migration ລົ້ມເຫຼວ)
 echo "[2/3] Applying database migrations..."
 if ! npx prisma migrate deploy; then
   echo "[WARN] Direct migrate deploy encountered existing schema or baseline requirement."
@@ -37,7 +37,7 @@ if ! npx prisma migrate deploy; then
 fi
 echo "      Database schema is up to date."
 
-# 3. Seed initial default data (admin, staff, pricing rules)
+# 3. ສ້າງຂໍ້ມູນເລີ່ມຕົ້ນຂອງລະບົບ (ຜູ້ດູແລລະບົບ Admin, ພະນັກງານ Staff, ປະເພດລົດ, ແລະ ອັດຕາຄ່າບໍລິການ)
 echo "[3/3] Seeding initial database records..."
 if [ -f "dist/prisma/seed.js" ]; then
   node dist/prisma/seed.js || echo "[INFO] Seed completed or records already exist."

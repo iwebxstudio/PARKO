@@ -1,12 +1,12 @@
 FROM nginx:alpine
 
-# Install openssl for self-signed certificates generation
+# ຕິດຕັ້ງ openssl ເພື່ອໃຊ້ສ້າງໃບຢັ້ງຢືນຄວາມປອດໄພ SSL ແບບ Self-signed ອັດຕະໂນມັດ
 RUN apk add --no-cache openssl
 
-# Copy entrypoint script
+# ສຳເນົາສະຄຣິບ entrypoint ເຂົ້າໄປໃນ Container ແລະ ກຳນົດສິດການ Run
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Set entrypoint
+# ກຳນົດ Entrypoint ແລະ ຄຳສັ່ງເລີ່ມຕົ້ນການເຮັດວຽກຂອງ Nginx Daemon ແບບ Foreground
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

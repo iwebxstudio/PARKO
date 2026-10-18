@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — Card Component
+// ລະບົບ PARKO — Card Component (ກາດສະແດງຂໍ້ມູນ)
+// ປະກອບມີ Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter
 // ============================================
 import React from 'react';
 

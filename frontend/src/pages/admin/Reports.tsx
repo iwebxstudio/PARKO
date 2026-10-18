@@ -1,5 +1,8 @@
-// PARKO — Reports & Export / ລາຍງານ (Admin & Staff)
-// Redesigned to 4-Section Dashboard UI & New Export Format
+/**
+ * ໂມດູນຫນ້າລາຍງານ ແລະ ສົ່ງອອກຂໍ້ມູນລະບົບ PARKO (Reports & Export Page)
+ * ສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ງານລະດັບຜູ້ບໍລິຫານ (Admin) ແລະ ພະນັກງານ (Staff) ເພື່ອສະຫຼຸບສະຖິຕິການຈອດລົດ,
+ * ລາຍຮັບ, ປະເພດພາຫະນະ ພ້ອມທັງລະບົບດາວໂຫຼດເອກະສານລາຍງານໃນຮູບແບບ PDF ແລະ ໄຟລ໌ Excel (.xlsx).
+ */
 import React, { useState, useEffect } from 'react';
 import {
   CircleParking, LogIn, LogOut, CalendarDays, CalendarRange, CalendarCheck2,
@@ -25,7 +28,7 @@ function SvgIcon({ raw, className = "w-5 h-5" }: { raw: string; className?: stri
   );
 }
 
-// Inline SVG strings for printable PDF documents
+// ຂໍ້ຄວາມໂຄງສ້າງລະຫັດຮູບພາບ SVG ແບບຝັງໃນຕົວ (Inline SVG Strings) ສຳລັບນຳໃຊ້ເຂົ້າໃນການສ້າງເອກະສານລາຍງານຮູບແບບ PDF ທີ່ສາມາດສັ່ງພິມໄດ້
 const svgParking = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg>`;
 const svgLogIn = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg>`;
 const svgCalendar = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="0"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>`;
@@ -84,7 +87,7 @@ export default function Reports() {
   const defaultDateFrom = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0];
   const defaultDateTo = new Date().toISOString().split('T')[0];
 
-  // Dates for 4 Sections
+  // ກຳນົດຕົວແປສະຖານະວັນທີເລີ່ມຕົ້ນ ແລະ ສິ້ນສຸດ ສຳລັບແຍກຕາມແຕ່ລະໝວດລາຍງານ (ທັງໝົດ 4 ໝວດ)
   const [dateFrom1, setDateFrom1] = useState(defaultDateFrom);
   const [dateTo1, setDateTo1] = useState(defaultDateTo);
 
@@ -97,13 +100,13 @@ export default function Reports() {
   const [dateFrom4, setDateFrom4] = useState(defaultDateFrom);
   const [dateTo4, setDateTo4] = useState(defaultDateTo);
 
-  // Data States
+  // ສະຖານະການເກັບຂໍ້ມູນທີ່ໄດ້ຮັບມາຈາກ API ຂອງລະບົບ (Data States)
   const [stats, setStats] = useState<any>(null);
   const [vehInData, setVehInData] = useState<any>(null);
   const [vehOutData, setVehOutData] = useState<any>(null);
   const [revData, setRevData] = useState<any>(null);
 
-  // Loading States
+  // ສະຖານະການໂຫຼດຂໍ້ມູນໃນແຕ່ລະສ່ວນຍ່ອຍເພື່ອສະແດງ Spinner ໃຫ້ຜູ້ໃຊ້ຮັບຊາບ (Loading States)
   const [loadingStats, setLoadingStats] = useState(false);
   const [loading1, setLoading1] = useState(false);
   const [loading2, setLoading2] = useState(false);
@@ -115,7 +118,7 @@ export default function Reports() {
 
   const fmt = (n: number | undefined) => (n !== undefined ? new Intl.NumberFormat('lo-LA').format(n) : '0');
 
-  // Load dashboard stats and initial data
+  // ຟັງຊັນໂຫຼດຂໍ້ມູນສະຖິຕິພາບລວມ ແລະ ຂໍ້ມູນເລີ່ມຕົ້ນທັງໝົດຂອງໜ້າ Dashboard ຈາກ Backend API
   const loadInitial = async () => {
     setLoadingStats(true);
     try {
@@ -141,7 +144,7 @@ export default function Reports() {
     loadInitial();
   }, []);
 
-  // Fetch Section 1: Check In
+  // ຟັງຊັນດຶງຂໍ້ມູນສະຖິຕິລົດເຂົ້າ (Section 1: Check In) ຕາມຊ່ວງວັນທີທີ່ກຳນົດ
   const fetchCheckIn = async (from = dateFrom1, to = dateTo1) => {
     setLoading1(true);
     try {
@@ -160,7 +163,7 @@ export default function Reports() {
     }
   };
 
-  // Fetch Section 2: Check Out
+  // ຟັງຊັນດຶງຂໍ້ມູນສະຖິຕິລົດອອກ (Section 2: Check Out) ຕາມຊ່ວງວັນທີທີ່ກຳນົດ
   const fetchCheckOut = async (from = dateFrom2, to = dateTo2) => {
     setLoading2(true);
     try {
@@ -179,7 +182,7 @@ export default function Reports() {
     }
   };
 
-  // Fetch Section 3: Revenue
+  // ຟັງຊັນດຶງຂໍ້ມູນສະຖິຕິລາຍຮັບຄ່າບໍລິການຈອດລົດ (Section 3: Revenue) ຕາມຊ່ວງວັນທີທີ່ກຳນົດ
   const fetchRevenue = async (from = dateFrom3, to = dateTo3) => {
     setLoading3(true);
     try {
@@ -198,7 +201,7 @@ export default function Reports() {
     }
   };
 
-  // Fetch Section 4: Vehicle Types
+  // ຟັງຊັນດຶງຂໍ້ມູນສະຖິຕິແຍກຕາມປະເພດພາຫະນະ (Section 4: Vehicle Types)
   const fetchVehicleTypes = async () => {
     setLoading4(true);
     try {
@@ -213,13 +216,13 @@ export default function Reports() {
     }
   };
 
-  // Counts for Section 4
+  // ຄິດໄລ່ ແລະ ຄັດແຍກຈຳນວນລົດທີ່ກຳລັງຈອດຢູ່ແຍກຕາມແຕ່ລະປະເພດພາຫະນະ (ລົດໃຫຍ່, ລົດຈັກ, ລົດໄຟຟ້າ, ລົດບັນທຸກ)
   const carParked = stats?.vehicles?.byType?.find((v: any) => v.name === 'car' || v.label === 'ລົດໃຫຍ່')?.count || 0;
   const bikeParked = stats?.vehicles?.byType?.find((v: any) => v.name === 'motorcycle' || v.label === 'ລົດຈັກ')?.count || 0;
   const evParked = stats?.vehicles?.byType?.find((v: any) => v.name === 'ev_motorcycle' || v.label?.includes('ໄຟຟ້າ'))?.count || 0;
   const truckParked = stats?.vehicles?.byType?.find((v: any) => v.name === 'truck' || v.label === 'ລົດບັນທຸກ')?.count || 0;
 
-  // Helper to render HTML StatCard for PDF
+  // ຟັງຊັນຊ່ວຍໃນການສ້າງໂຄງສ້າງ HTML ຂອງກາດສະຖິຕິ (StatCard) ສຳລັບນຳໄປສະແດງໃນເອກະສານ PDF
   const renderPdfCard = (title: string, value: string | number, unit: string, bg: string, svg: string) => `
     <div class="stat-card">
       <div class="stat-banner" style="background-color: ${bg};">
@@ -233,7 +236,7 @@ export default function Reports() {
   `;
 
   // =========================================================
-  // PDF EXPORT (COMPLETELY REPLACED WITH NEW DATA FORMAT)
+  // ລະບົບສົ່ງອອກເອກະສານລາຍງານເປັນ PDF (PDF Export - ສ້າງແບບຟອມມາດຕະຖານຕາມໂຄງສ້າງໃໝ່)
   // =========================================================
   const exportPdfSection = async (section: 1 | 2 | 3 | 4 | 'all') => {
     setExportingSection(`pdf-${section}`);
@@ -507,7 +510,7 @@ export default function Reports() {
         </table>
       `;
     } else {
-      // Export All 4 Sections in One Document
+      // ກໍລະນີສັ່ງພິມ ຫຼື ສົ່ງອອກລາຍງານທັງໝົດ 4 ໝວດລວມເຂົ້າໃນເອກະສານດຽວກັນ (Export All 4 Sections in One Document)
       title = 'ລາຍງານລວມລະບົບຈອດລົດ PARKO (System Overview Report)';
       dateRangeStr = '';
 
@@ -604,7 +607,7 @@ export default function Reports() {
       text-align: right;
     }
     
-    /* 4 StatCards matching Image 3 — border removed */
+    /* ໂຄງສ້າງການຈັດວາງກາດສະຖິຕິ 4 ໃບ (StatCards Grid) ໃນເອກະສານ PDF ໂດຍຕັດເສັ້ນຂອບອອກ */
     .card-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -648,7 +651,7 @@ export default function Reports() {
       color: #111827;
     }
 
-    /* Section title without red left border as requested in Image 3 */
+    /* ຫົວຂໍ້ແຕ່ລະໝວດລາຍງານ (Section Title) ໂດຍບໍ່ໃສ່ເສັ້ນຂອບສີແດງດ້ານຊ້າຍ */
     .section-title {
       font-size: 13px;
       font-weight: 800;
@@ -756,7 +759,7 @@ export default function Reports() {
   };
 
   // =========================================================
-  // EXCEL EXPORT (COMPLETELY REPLACED WITH NEW DATA FORMAT)
+  // ລະບົບສົ່ງອອກຂໍ້ມູນເປັນໄຟລ໌ Excel (Excel Export - ສ້າງຕາຕະລາງຕາມໂຄງສ້າງໃໝ່)
   // =========================================================
   const exportExcelSection = async (section: 1 | 2 | 3 | 4 | 'all') => {
     setExportingSection(`excel-${section}`);
@@ -832,7 +835,7 @@ export default function Reports() {
         aoa.push([4, 'ລົດບັນທຸກ (Truck)', truckParked, 'ຄັນ', totalParked > 0 ? `${((truckParked / totalParked) * 100).toFixed(1)}%` : '0%']);
         aoa.push(['', 'ລວມທັງໝົດ (Total)', totalParked, 'ຄັນ', '100%']);
       } else {
-        // Export All in 1
+        // ສົ່ງອອກລາຍງານສະຫຼຸບລວມທັງໝົດທຸກໝວດໄວ້ໃນ Sheet ດຽວ (Export All in 1 Overview Sheet)
         fname = `PARKO_AllReports_${new Date().toISOString().split('T')[0]}`;
         sheetName = 'Overview';
 
@@ -883,17 +886,17 @@ export default function Reports() {
 
   return (
     <div className="font-sans w-full flex flex-col pb-6">
-      {/* Main Container Card */}
+      {/* ກາດບັນຈຸຫຼັກຂອງໜ້າລາຍງານ (Main Container Card) */}
       <div
         className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-visible w-full border-0 flex flex-col"
         style={{ borderRadius: 0 }}
       >
-        {/* Top Header Bar — Dark Gray (#5D5D5D) */}
+        {/* ແຖບຫົວດ້ານເທິງສຸດ (Top Header Bar) ພື້ນຫຼັງສີເທົາເຂັ້ມ (#5D5D5D) ສະແດງຫົວຂໍ້ໜ້າ ແລະ ປຸ່ມສັ່ງການຫຼັກ */}
         <div
           className="bg-[#5D5D5D] px-3 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 lg:gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Icon + Title */}
+          {/* ດ້ານຊ້າຍ: ໄອຄອນ ແລະ ຊື່ໜ້າລາຍງານ */}
           <div className="flex items-center justify-between w-full md:w-auto h-10">
             <div className="flex items-center gap-2.5">
               <FileSpreadsheet size={20} className="w-5 h-5 text-white shrink-0" />
@@ -903,7 +906,7 @@ export default function Reports() {
             </div>
           </div>
 
-          {/* Right: Master Export All Buttons + Refresh */}
+          {/* ດ້ານຂວາ: ປຸ່ມດາວໂຫຼດ PDF ລວມ, Excel ລວມ ແລະ ປຸ່ມໂຫຼດຂໍ້ມູນໃໝ່ (Refresh) */}
           <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
             {isAdmin && (
               <>
@@ -945,17 +948,17 @@ export default function Reports() {
           </div>
         </div>
 
-        {/* Top Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານເທິງ (Top Red Stripe Divider) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Main Body — Orange Background (#F9A825) matching Image 3 */}
+        {/* ສ່ວນເນື້ອໃນຫຼັກ (Main Body) ພື້ນຫຼັງສີສົ້ມເຫຼືອງ (#F9A825) ບັນຈຸ 4 ໝວດລາຍງານ */}
         <div className="bg-[#F9A825] p-3 sm:p-4 flex flex-col justify-start space-y-4">
 
           {/* ========================================================= */}
-          {/* SECTION 1: ລົດເຂົ້າ (Check In) */}
+          {/* ໝວດທີ 1: ລາຍງານສະຖິຕິລົດເຂົ້າ (Section 1: Check In) */}
           {/* ========================================================= */}
           <div className="flex flex-col space-y-2.5">
-            {/* White Header Bar */}
+            {/* ແຖບຫົວສີຂາວ ພ້ອມຟອມເລືອກຊ່ວງວັນທີ ແລະ ປຸ່ມດຶງຂໍ້ມູນ/ສົ່ງອອກ */}
             <div
               className="bg-white p-3 sm:px-4 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.08)] flex flex-col md:flex-row items-start md:items-center justify-between gap-3 rounded-none"
               style={{ borderRadius: 0 }}
@@ -1021,7 +1024,7 @@ export default function Reports() {
               </div>
             </div>
 
-            {/* 4 Cards */}
+            {/* ກາດສະແດງສະຖິຕິ 4 ໃບ (ລົດກຳລັງຈອດ, ລົດເຂົ້າວັນນີ້, ລົດເຂົ້າເດືອນນີ້, ລົດເຂົ້າປີນີ້) */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
               <StatCard
                 title="ລົດກຳລັງຈອດ"
@@ -1055,10 +1058,10 @@ export default function Reports() {
           </div>
 
           {/* ========================================================= */}
-          {/* SECTION 2: ລົດອອກ (Check Out) */}
+          {/* ໝວດທີ 2: ລາຍງານສະຖິຕິລົດອອກ (Section 2: Check Out) */}
           {/* ========================================================= */}
           <div className="flex flex-col space-y-2.5">
-            {/* White Header Bar */}
+            {/* ແຖບຫົວສີຂາວ ພ້ອມຟອມເລືອກຊ່ວງວັນທີ ແລະ ປຸ່ມດຶງຂໍ້ມູນ/ສົ່ງອອກ */}
             <div
               className="bg-white p-3 sm:px-4 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.08)] flex flex-col md:flex-row items-start md:items-center justify-between gap-3 rounded-none"
               style={{ borderRadius: 0 }}
@@ -1124,7 +1127,7 @@ export default function Reports() {
               </div>
             </div>
 
-            {/* 4 Cards */}
+            {/* ກາດສະແດງສະຖິຕິ 4 ໃບ (ລົດອອກວັນນີ້, ລົດອອກເດືອນນີ້, ລົດອອກປີນີ້, ລົດອອກທັງໝົດ) */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
               <StatCard
                 title="ລົດອອກວັນນີ້"
@@ -1158,10 +1161,10 @@ export default function Reports() {
           </div>
 
           {/* ========================================================= */}
-          {/* SECTION 3: ລາຍຮັບ (Revenue) */}
+          {/* ໝວດທີ 3: ລາຍງານສະຖິຕິລາຍຮັບ (Section 3: Revenue) */}
           {/* ========================================================= */}
           <div className="flex flex-col space-y-2.5">
-            {/* White Header Bar */}
+            {/* ແຖບຫົວສີຂາວ ພ້ອມຟອມເລືອກຊ່ວງວັນທີ ແລະ ປຸ່ມດຶງຂໍ້ມູນ/ສົ່ງອອກ */}
             <div
               className="bg-white p-3 sm:px-4 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.08)] flex flex-col md:flex-row items-start md:items-center justify-between gap-3 rounded-none"
               style={{ borderRadius: 0 }}
@@ -1227,7 +1230,7 @@ export default function Reports() {
               </div>
             </div>
 
-            {/* 4 Cards */}
+            {/* ກາດສະແດງສະຖິຕິ 4 ໃບ (ລາຍຮັບວັນນີ້, ລາຍຮັບເດືອນນີ້, ລາຍຮັບປີນີ້, ລາຍຮັບລວມທັງໝົດ) */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
               <StatCard
                 title="ລາຍຮັບວັນນີ້"
@@ -1261,10 +1264,10 @@ export default function Reports() {
           </div>
 
           {/* ========================================================= */}
-          {/* SECTION 4: ປະເພດລົດ (Vehicle Type) */}
+          {/* ໝວດທີ 4: ລາຍງານສະຖິຕິປະເພດພາຫະນະ (Section 4: Vehicle Type) */}
           {/* ========================================================= */}
           <div className="flex flex-col space-y-2.5">
-            {/* White Header Bar */}
+            {/* ແຖບຫົວສີຂາວ ພ້ອມຟອມເລືອກຊ່ວງວັນທີ ແລະ ປຸ່ມດຶງຂໍ້ມູນ/ສົ່ງອອກ */}
             <div
               className="bg-white p-3 sm:px-4 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.08)] flex flex-col md:flex-row items-start md:items-center justify-between gap-3 rounded-none"
               style={{ borderRadius: 0 }}
@@ -1330,7 +1333,7 @@ export default function Reports() {
               </div>
             </div>
 
-            {/* 4 Cards */}
+            {/* ກາດສະແດງສະຖິຕິ 4 ໃບ (ລົດໃຫຍ່, ລົດຈັກ, ລົດໄຟຟ້າ, ລົດບັນທຸກ) */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
               <StatCard
                 title="ລົດໃຫຍ່"
@@ -1365,10 +1368,10 @@ export default function Reports() {
 
         </div>
 
-        {/* Bottom Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານລຸ່ມ (Bottom Red Stripe Divider) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Bottom Footer Bar — Dark Gray */}
+        {/* ແຖບສ່ວນທ້າຍດ້ານລຸ່ມສຸດ (Bottom Footer Bar) ພື້ນຫຼັງສີເທົາເຂັ້ມ ສະແດງສະຫຼຸບຈຳນວນໝວດ ແລະ ເວລາອັບເດດລ່າສຸດ */}
         <div
           className="bg-[#5D5D5D] px-3 py-3 md:py-0 min-h-[60px] md:h-16 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}

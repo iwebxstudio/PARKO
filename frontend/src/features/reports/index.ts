@@ -1,4 +1,5 @@
 // ============================================
-// PARKO — Reports Feature Module
+// ລະບົບ PARKO — Reports Feature Module (ໂມດູນລະບົບລາຍງານ)
+// ສົ່ງອອກ Service ສຳລັບການດຶງສະຖິຕິ ແລະ ລາຍງານການເງິນ
 // ============================================
 export * from '../../services/report.service';

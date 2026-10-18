@@ -1,10 +1,10 @@
 // ============================================
-// PARKO — API Client
-// Axios instance with auth interceptors
+// ລະບົບ PARKO — API Client (ຕົວເຊື່ອມຕໍ່ລະບົບ API ຫຼັກ)
+// ສ້າງ Axios Instance ພ້ອມ Interceptors ສຳລັບການແນບ ແລະ ຕໍ່ອາຍຸ JWT Token ອັດຕະໂນມັດ
 // ============================================
 import axios from 'axios';
 
-// ใช้ empty string เพื่อให้ Vite proxy จัดการ — ทำงานได้ทุก IP/hostname
+// ນຳໃຊ້ຄ່າ Empty String ເພື່ອໃຫ້ Vite Proxy ເປັນຕົວຈັດການສົ່ງຕໍ່ Request — ຮອງຮັບທຸກໆ IP ແລະ Hostname
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 const api = axios.create({
@@ -13,7 +13,7 @@ const api = axios.create({
   timeout: 15000,
 });
 
-// Request interceptor: attach JWT token
+// Request Interceptor: ແນບ Bearer JWT Access Token ເຂົ້າໃນ Header ຂອງທຸກໆ Request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
   if (token) {
@@ -22,7 +22,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor: handle token refresh
+// Response Interceptor: ຈັດການຕໍ່ອາຍຸ Token (Token Refresh) ເມື່ອໄດ້ຮັບ HTTP Status 401 Unauthorized
 api.interceptors.response.use(
   (response) => response,
   async (error) => {

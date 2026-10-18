@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Configuration
-// Centralized environment configuration
-// ============================================
+// ==============================================================================
+// PARKO — ຟາຍກຳນົດຄ່າລະບົບ (Configuration)
+// ເຮັດໜ້າທີ່ລວບລວມ ແລະ ຈັດສັນຄ່າຕົວປ່ຽນສະພາບແວດລ້ອມ (Environment Variables) ໄວ້ບ່ອນດຽວ
+// ==============================================================================
 export default () => ({
   port: parseInt(process.env.BACKEND_PORT || '3000', 10),
   nodeEnv: process.env.NODE_ENV || 'development',

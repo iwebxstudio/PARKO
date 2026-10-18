@@ -1,4 +1,5 @@
 // ============================================
-// PARKO — Membership Feature Module
+// ລະບົບ PARKO — Membership Feature Module (ໂມດູນລະບົບສະມາຊິກ)
+// ສົ່ງອອກ Service ການຈັດການຂໍ້ມູນສະມາຊິກບ່ອນຈອດລົດ
 // ============================================
 export * from '../../services/member.service';

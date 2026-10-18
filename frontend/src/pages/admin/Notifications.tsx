@@ -1,4 +1,4 @@
-// PARKO — Notifications / ແຈ້ງເຕືອນ (Admin & Staff)
+// PARKO — ໜ້າຕ່າງແຈ້ງເຕືອນລົດສະມາຊິກໃກ້ໝົດອາຍຸ ຫຼື ກາຍກຳນົດ (Notifications ສຳລັບ Admin & Staff)
 import React, { useState, useEffect } from 'react';
 import { Bell, AlertTriangle, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -41,7 +41,7 @@ export default function Notifications() {
   const totalPages = Math.max(1, Math.ceil(expiringMembers.length / ITEMS_PER_PAGE));
   const paginatedMembers = expiringMembers.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-  // Responsive max page buttons: 4 on Mobile (< 640px), 9 on Desktop
+  // ກຳນົດຈຳນວນປຸ່ມເລກໜ້າສູງສຸດຕາມຂະໜາດໜ້າຈໍ: 4 ປຸ່ມສຳລັບມືຖື (< 640px) ແລະ 9 ປຸ່ມສຳລັບ Desktop
   const [isMobile, setIsMobile] = useState<boolean>(() =>
     typeof window !== 'undefined' ? window.innerWidth < 640 : false
   );
@@ -75,9 +75,9 @@ export default function Notifications() {
       sevenDaysLater.setDate(sevenDaysLater.getDate() + 7);
       sevenDaysLater.setHours(23, 59, 59, 999);
 
-      // Condition:
-      // 1. Must be currently parked (has at least 1 ACTIVE ticket). If checked out, tickets length is 0!
-      // 2. Either overdue (endDate < now) or expiring within 7 days (endDate <= sevenDaysLater)
+      // ເງື່ອນໄຂການກວດສອບແຈ້ງເຕືອນ:
+      // 1. ຕ້ອງເປັນລົດທີ່ກຳລັງຈອດຢູ່ໃນບ່ອນຈອດ (ມີປີ້ສະຖານະ ACTIVE ຢ່າງໜ້ອຍ 1 ໃບ, ຖ້າ Check-out ແລ້ວ tickets ຈະເທົ່າກັບ 0)
+      // 2. ເປັນລົດທີ່ກາຍກຳນົດແລ້ວ (endDate < now) ຫຼື ໃກ້ຈະໝົດອາຍຸພາຍໃນ 7 ວັນຂ້າງໜ້າ (endDate <= sevenDaysLater)
       const expiring = members.filter((m: any) => {
         const hasActiveTicket = Array.isArray(m.tickets) && m.tickets.length > 0;
         if (!hasActiveTicket) return false;
@@ -104,7 +104,7 @@ export default function Notifications() {
   useEffect(() => {
     loadData();
 
-    // 1. Cross-tab Broadcast Channel
+    // 1. ການສື່ສານຂ້າມແຖບ Browser ຜ່ານ Broadcast Channel
     let channel: BroadcastChannel | null = null;
     try {
       channel = new BroadcastChannel('parko_channel');
@@ -115,18 +115,18 @@ export default function Notifications() {
       };
     } catch {}
 
-    // 2. Real-time WebSocket connection to backend
+    // 2. ການເຊື່ອມຕໍ່ແບບ Real-time ຜ່ານ WebSocket ກັບ Backend
     const WS = import.meta.env.VITE_WS_URL || '';
     const socket = io(`${WS}/parking`, { transports: ['websocket'] });
     socket.on('parking_update', () => {
       loadData();
     });
 
-    // 3. Same-tab Custom Event
+    // 3. ຮັບຟັງອີເວັ້ນພາຍໃນແຖບດຽວກັນ (Custom Event)
     const handleUpdate = () => loadData();
     window.addEventListener('membership-updated', handleUpdate);
 
-    // 4. Window focus & visibility change (when switching back to tab)
+    // 4. ກວດຈັບການສະຫຼັບແທັບກັບມາເປີດໜ້າຕ່າງນີ້ໃໝ່ (Window focus & visibility change)
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
         loadData();
@@ -135,7 +135,7 @@ export default function Notifications() {
     window.addEventListener('focus', handleUpdate);
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // 5. Periodic polling fallback every 8 seconds
+    // 5. ໂຫຼດຂໍ້ມູນອັດຕະໂນມັດທຸກໆ 8 ວິນາທີເພື່ອປ້ອງກັນຂໍ້ມູນຕົກຄ້າງ (Periodic Polling Fallback)
     const interval = setInterval(loadData, 8000);
 
     return () => {
@@ -148,7 +148,7 @@ export default function Notifications() {
     };
   }, []);
 
-  // Helper to calculate status, overdue days, remaining days, and overdue cost
+  // ຟັງຊັນຊ່ວຍຄຳນວນສະຖານະ, ຈຳນວນວັນທີ່ກາຍກຳນົດ, ຈຳນວນວັນທີ່ເຫຼືອ ແລະ ຄ່າບໍລິການກາຍກຳນົດ
   const getExpirationStatus = (m: any) => {
     const end = new Date(m.endDate);
     end.setHours(23, 59, 59, 999);
@@ -165,7 +165,7 @@ export default function Notifications() {
       daysRemaining = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
     }
 
-    // Find daily rate from database pricing rules
+    // ຄົ້ນຫາອັດຕາຄ່າບໍລິການລາຍວັນຈາກຕາຕະລາງລາຄາໃນຖານຂໍ້ມູນ
     const rule = pricingRules.find(r => r.vehicleTypeId === m.vehicleTypeId) || m.vehicleType?.pricingRules?.[0];
     const dailyRate = Number(rule?.dailyRate || 0);
     const overdueFee = isOverdue ? overdueDays * dailyRate : 0;
@@ -197,17 +197,17 @@ export default function Notifications() {
 
   return (
     <div className="font-sans w-full flex flex-col pb-6">
-      {/* Main Container Card */}
+      {/* ກ່ອງຫຼັກສະແດງລາຍການແຈ້ງເຕືອນ (Main Container Card) */}
       <div
         className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-visible w-full border-0 flex flex-col"
         style={{ borderRadius: 0 }}
       >
-        {/* Top Header Bar — Dark Gray (#5D5D5D) */}
+        {/* ແຖບຫົວຂໍ້ດ້ານເທິງ — ໂທນສີເທົາເຂັ້ມ (#5D5D5D) */}
         <div
           className="bg-[#5D5D5D] px-3 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 lg:gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Icon + Title */}
+          {/* ດ້ານຊ້າຍ: ໄອຄອນ ແລະ ຫົວຂໍ້ແຈ້ງເຕືອນ */}
           <div className="flex items-center justify-between w-full md:w-auto h-10">
             <div className="flex items-center gap-2.5">
               <Bell size={20} className="w-5 h-5 text-white shrink-0" />
@@ -217,7 +217,7 @@ export default function Notifications() {
             </div>
           </div>
 
-          {/* Right: Refresh button */}
+          {/* ດ້ານຂວາ: ປຸ່ມຣີເຟຣຊໂຫຼດຂໍ້ມູນໃໝ່ */}
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
@@ -232,10 +232,10 @@ export default function Notifications() {
           </div>
         </div>
 
-        {/* Top Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານເທິງ (#B02019) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Main Body — Orange Background */}
+        {/* ສ່ວນເນື້ອໃນຫຼັກ — ພື້ນຫຼັງສີເຫຼືອງສົ້ມ (#F9A825) */}
         <div className="bg-[#F9A825] p-3 flex flex-col justify-start">
           {loading ? (
             <div className="py-12 sm:py-16 text-center flex flex-col items-center justify-center select-none">
@@ -252,7 +252,7 @@ export default function Notifications() {
               {paginatedMembers.map(m => {
                 const { isOverdue, overdueDays, daysRemaining, dailyRate, overdueFee } = getExpirationStatus(m);
 
-                // Extract plate parts
+                // ແຍກຂໍ້ມູນປ້າຍທະບຽນລົດອອກເປັນຕົວອັກສອນ ແລະ ຕົວເລກ
                 const parts = m.plateNumber.split(' ');
                 let letters = '-';
                 let num = m.plateNumber;
@@ -272,7 +272,7 @@ export default function Notifications() {
                     className="bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.18)] transition-all flex flex-col rounded-none overflow-hidden h-fit"
                     style={{ borderRadius: 0 }}
                   >
-                    {/* Top Card Header: Red Alert Banner for Remaining, Deep Crimson for Overdue */}
+                    {/* ສ່ວນຫົວຂອງກາດ: ແຖບສີແດງເຂັ້ມເຕືອນກາຍກຳນົດ ຫຼື ແຖບສີແດງເຕືອນໃກ້ໝົດອາຍຸ */}
                     <div className={`${isOverdue ? 'bg-[#991B1B]' : 'bg-[#B02019]'} py-2 sm:py-2.5 flex justify-center items-center gap-2 shadow-inner px-2`}>
                       <AlertTriangle size={18} className="text-white shrink-0" />
                       <span className="text-base sm:text-[17px] font-bold text-white tracking-wide">
@@ -284,7 +284,7 @@ export default function Notifications() {
                       </span>
                     </div>
 
-                    {/* Card Body: Compact details matching CheckOut info */}
+                    {/* ສ່ວນເນື້ອໃນລາຍລະອຽດຂອງກາດສະມາຊິກ */}
                     <div className="px-3 py-2.5 sm:px-3.5 sm:py-3 flex flex-col bg-white">
                       <div className="flex justify-center mb-1 text-gray-700">
                         <SvgIcon raw={iconRaw} className={`w-8 h-8 ${isOverdue ? 'text-[#991B1B]' : 'text-[#B02019]'}`} />
@@ -330,7 +330,7 @@ export default function Notifications() {
                         <span className="whitespace-nowrap text-emerald-600">{new Intl.NumberFormat('lo-LA').format(m.paidAmount)} ₭</span>
                       </div>
 
-                      {/* Overdue Price Details Box (เพี้มรายละเอียดราคาที่ต้องจ่ายที่กายกำนด) */}
+                      {/* ກ່ອງສະແດງລາຍລະອຽດຄ່າບໍລິການສ່ວນທີ່ກາຍກຳນົດ */}
                       {isOverdue && (
                         <div className="mt-2.5 p-2 bg-red-50 border border-red-300 text-center rounded-none">
                           <div className="text-[13px] font-bold text-red-800">
@@ -353,15 +353,15 @@ export default function Notifications() {
           )}
         </div>
 
-        {/* Bottom Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານລຸ່ມ (#B02019) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Bottom Footer Bar — Dark Gray (matching CheckOut footer) */}
+        {/* ແຖບສະຫຼຸບ ແລະ ປຸ່ມປ່ຽນໜ້າດ້ານລຸ່ມ — ໂທນສີເທົາເຂັ້ມ (#5D5D5D) */}
         <div
           className="bg-[#5D5D5D] px-3 py-3 md:py-0 min-h-[60px] md:h-16 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Total Count Badge (Square w-10 h-10) */}
+          {/* ສ່ວນສະແດງຈຳນວນລາຍການທັງໝົດ (Total Count Badge) */}
           <div className="flex items-center gap-2 text-white font-bold text-base md:text-[17px]">
             <span>ຈຳນວນ</span>
             <span
@@ -373,7 +373,7 @@ export default function Notifications() {
             <span>ລາຍການ</span>
           </div>
 
-          {/* Right: Pagination Controls */}
+          {/* ສ່ວນປຸ່ມຄວບຄຸມການປ່ຽນໜ້າ (Pagination Controls) */}
           <div className="flex items-center gap-1.5 sm:gap-2 max-w-full overflow-x-auto no-scrollbar py-1">
             <button
               type="button"
@@ -389,7 +389,7 @@ export default function Notifications() {
               ຖອຍກັບ
             </button>
 
-            {/* Page number buttons (Squares h-10 w-10) */}
+            {/* ປຸ່ມໝາຍເລກໜ້າຕ່າງໆ (Page Number Buttons) */}
             {visiblePages.map((p) => (
               <button
                 key={p}

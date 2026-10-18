@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — ConfirmDialog Component
+// ລະບົບ PARKO — ConfirmDialog Component (ກ່ອງຂໍ້ຄວາມຢືນຢັນການດຳເນີນການ)
+// ສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ສຳລັບການແຈ້ງເຕືອນ ແລະ ຖາມຢືນຢັນກ່ອນດຳເນີນການສຳຄັນ
 // ============================================
 import React from 'react';
 import { Modal } from '../ui/Modal';
@@ -22,10 +23,10 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   isOpen,
   onClose,
   onConfirm,
-  title = 'ยืนยันการดำเนินการ',
+  title = 'ຢືນຢັນການດຳເນີນການ',
   message,
-  confirmLabel = 'ยืนยัน',
-  cancelLabel = 'ยกเลิก',
+  confirmLabel = 'ຢືນຢັນ',
+  cancelLabel = 'ຍົກເລີກ',
   isDestructive = false,
   isLoading = false,
 }) => {

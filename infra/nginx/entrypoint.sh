@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-# Generate self-signed certificates if they don't exist
+# ສ້າງໃບຢັ້ງຢືນຄວາມປອດໄພ SSL ແບບ Self-signed ອັດຕະໂນມັດ ຖ້າຍັງບໍ່ທັນມີຢູ່ໃນລະບົບ ເພື່ອຮອງຮັບ HTTPS
 CERT_DIR="/etc/nginx/certs"
 mkdir -p "$CERT_DIR"
 
@@ -16,5 +16,5 @@ else
     echo "SSL certificates already exist."
 fi
 
-# Execute CMD
+# ສົ່ງຕໍ່ຄຳສັ່ງຫຼັກ (CMD) ເພື່ອ Run Nginx Service ຕໍ່ໄປ
 exec "$@"

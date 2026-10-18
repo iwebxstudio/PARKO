@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Roles Guard
-// Checks user role against required roles
-// ============================================
+// ==============================================================================
+// PARKO — ລະບົບປ້ອງກັນການເຂົ້າເຖິງຕາມບົດບາດ (Roles Guard)
+// ກວດສອບບົດບາດ (Role) ຂອງຜູ້ໃຊ້ງານທຽບກັບສິດທີ່ Endpoint ຕ້ອງການ
+// ==============================================================================
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from '@prisma/client';
@@ -17,7 +17,7 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    // If no roles are required, allow access
+    // ຖ້າຫາກ Endpoint ນີ້ບໍ່ໄດ້ກຳນົດສິດສະເພາະ ຈະອະນຸຍາດໃຫ້ເຂົ້າເຖິງໄດ້ທັນທີ
     if (!requiredRoles) {
       return true;
     }

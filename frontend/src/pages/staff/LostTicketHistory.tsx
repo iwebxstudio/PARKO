@@ -1,4 +1,7 @@
-// PARKO — Lost Ticket History Page
+// ============================================
+// PARKO — ໜ້າປະຫວັດການແຈ້ງປີ້ລົດເສຍ (Lost Ticket History Page)
+// ໜ້າທີ່: ສະແດງລາຍການປະຫວັດກໍລະນີປີ້ລົດເສຍທັງໝົດ, ຄົ້ນຫາຕາມປ້າຍລົດ ຫຼື ລະຫັດປີ້, ເບິ່ງຫຼັກຖານຮູບພາບ, ແກ້ໄຂສະຖານະ ແລະ ລຶບຂໍ້ມູນ (ສຳລັບ Admin)
+// ============================================
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   FileWarning, Search, X, Eye, Trash2, CheckCircle2,
@@ -86,7 +89,7 @@ export default function LostTicketHistory() {
     caseTitle: string;
   }
 
-  // Modals state
+  // ສະຖານະການເປີດໜ້າຕ່າງປັອບອັບຕ່າງໆ (Modals State)
   const [selectedCase, setSelectedCase] = useState<LostTicketCaseItem | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<LostTicketCaseItem | null>(null);
   const [lightbox, setLightbox] = useState<LightboxState | null>(null);
@@ -120,7 +123,7 @@ export default function LostTicketHistory() {
     );
   }, []);
 
-  // Keyboard navigation for image lightbox
+  // ລະບົບຄວບຄຸມການເລື່ອນເບິ່ງຮູບພາບຜ່ານແປ້ນພິມ (Keyboard Navigation)
   useEffect(() => {
     if (!lightbox) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -139,11 +142,11 @@ export default function LostTicketHistory() {
   const ITEMS_PER_PAGE = 8;
   const API_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || '';
 
-  // Enterprise Security: Sanitized Photo URL Resolver
+  // ລະບົບຄວາມປອດໄພ: ກວດສອບ ແລະ ປັບແຕ່ງ URL ຂອງຮູບພາບໃຫ້ປອດໄພ (Sanitized Photo URL Resolver)
   const getPhotoSrc = useCallback((url?: string | null): string => {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
-    // Prevent XSS / malicious schemes
+    // ປ້ອງກັນການໂຈມຕີແບບ XSS ແລະ ໂປຣໂຕຄອນທີ່ເປັນອັນຕະລາຍ
     if (/^(javascript|vbscript|data:(?!image\/)):/i.test(trimmed)) {
       return '';
     }
@@ -155,7 +158,7 @@ export default function LostTicketHistory() {
     return `${cleanBase}${cleanPath}`;
   }, [API_URL]);
 
-  // Extract evidence photos recorded for this case
+  // ດຶງລາຍການຮູບພາບຫຼັກຖານທັງໝົດທີ່ບັນທຶກໄວ້ໃນ Case ນີ້
   const getCasePhotos = useCallback((c: LostTicketCaseItem) => {
     const list: { key: string; label: string; url: string }[] = [];
     if (c.driverPhotoUrl) {
@@ -267,17 +270,17 @@ export default function LostTicketHistory() {
 
   return (
     <div className="font-sans w-full flex flex-col">
-      {/* Main Container Card — Matches Users.tsx */}
+      {/* ບັດບັນຈຸຕາຕະລາງຫຼັກ (Main Container Card) */}
       <div
         className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-hidden bg-[#FFFAEE] border-0 flex flex-col"
         style={{ borderRadius: 0 }}
       >
-        {/* Header Bar */}
+        {/* ແຖບຫົວຂໍ້ດ້ານເທິງ — ສີເທົາເຂັ້ມ */}
         <div
           className="bg-[#5D5D5D] px-3 sm:px-4 md:px-6 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Top Row on Mobile / Left Section on Desktop: Icon + Title */}
+          {/* ແຖວເທິງໃນຈໍມືຖື / ສ່ວນຊ້າຍໃນຈໍຄອມພິວເຕີ: ໄອຄອນ ແລະ ຫົວຂໍ້ */}
           <div className="flex items-center justify-between w-full md:w-auto h-10 shrink-0">
             <div className="flex items-center gap-2.5">
               <FileWarning className="w-5 h-5 text-white shrink-0" />
@@ -287,7 +290,7 @@ export default function LostTicketHistory() {
             </div>
           </div>
 
-          {/* Right: Search Input Box */}
+          {/* ດ້ານຂວາ: ຊ່ອງປ້ອນຂໍ້ມູນຄົ້ນຫາ */}
           <div className="flex items-center gap-3 justify-end w-full md:w-auto shrink-0">
             <form
               onSubmit={handleSearchSubmit}
@@ -326,10 +329,10 @@ export default function LostTicketHistory() {
           </div>
         </div>
 
-        {/* Red Stripe Divider */}
+        {/* ເສັ້ນແບ່ງແຖບສີແດງດ້ານເທິງ */}
         <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-        {/* Table Content */}
+        {/* ຕາຕະລາງເນື້ອໃນຂໍ້ມູນປະຫວັດປີ້ເສຍ */}
         <div className="overflow-x-auto table-responsive-scrollbar">
           <table className="w-full min-w-max text-center border-collapse">
             <thead>
@@ -385,27 +388,27 @@ export default function LostTicketHistory() {
                       key={c.id}
                       className="bg-[#FFFAEE] hover:bg-[#F3EAD3] border-b border-[#EADFC7]/70 transition-colors duration-150 text-base md:text-[17px] font-bold text-gray-800 h-14 cursor-default whitespace-nowrap"
                     >
-                      {/* Column 1: ລ/ດ */}
+                      {/* ຖັນ 1: ລ/ດ */}
                       <td className={`px-3.5 ${borderClass} ${cellTextClass} text-center`}>
                         {rowNumber}
                       </td>
 
-                      {/* Column 2: Ticket ID */}
+                      {/* ຖັນ 2: Ticket ID */}
                       <td className={`px-5 ${borderClass} ${cellTextClass} text-left`}>
                         {c.ticket?.ticketNumber || '-'}
                       </td>
 
-                      {/* Column 3: ທະບຽນລົດ */}
+                      {/* ຖັນ 3: ທະບຽນລົດ */}
                       <td className={`px-5 ${borderClass} ${cellTextClass} text-left`}>
                         {plateStr}
                       </td>
 
-                      {/* Column 4: ປະເພດລົດ */}
+                      {/* ຖັນ 4: ປະເພດລົດ */}
                       <td className={`px-5 ${borderClass} ${cellTextClass} text-center`}>
                         {c.ticket?.vehicleType?.label || '-'}
                       </td>
 
-                      {/* Column 5: ຮູບພາບ (Evidence Photo from LostTicket recording) */}
+                      {/* ຖັນ 5: ຮູບພາບຫຼັກຖານທີ່ບັນທຶກໄວ້ */}
                       <td className={`px-4 ${borderClass} align-middle text-center whitespace-nowrap`}>
                         {casePhotos.length > 0 ? (
                           <div className="flex items-center justify-center">
@@ -450,22 +453,22 @@ export default function LostTicketHistory() {
                         )}
                       </td>
 
-                      {/* Column 6: ວັນທີບັນທຶກ */}
+                      {/* ຖັນ 6: ວັນທີບັນທຶກ */}
                       <td className={`px-5 ${borderClass} ${cellTextClass} text-left`}>
                         {formatDate(c.createdAt)}
                       </td>
 
-                      {/* Column 7: ຄ່າປັບໃໝ */}
+                      {/* ຖັນ 7: ຄ່າປັບໃໝ */}
                       <td className={`px-5 ${borderClass} ${cellTextClass} text-right`}>
                         {formatKip(c.penaltyAmount)}
                       </td>
 
-                      {/* Column 8: ຜູ້ບັນທຶກ */}
+                      {/* ຖັນ 8: ຜູ້ບັນທຶກ */}
                       <td className={`px-5 ${borderClass} ${cellTextClass} text-left`}>
                         {c.staff?.displayName || c.staff?.username || '-'}
                       </td>
 
-                      {/* Column 9: ສະຖານະ */}
+                      {/* ຖັນ 9: ສະຖານະ */}
                       <td className={`px-5 ${borderClass} align-middle text-center whitespace-nowrap`}>
                         <button
                           type="button"
@@ -485,7 +488,7 @@ export default function LostTicketHistory() {
                         </button>
                       </td>
 
-                      {/* Column 10: ຈັດການ */}
+                      {/* ຖັນ 10: ປຸ່ມຄຳສັ່ງຈັດການ */}
                       <td className="px-5 align-middle text-center whitespace-nowrap">
                         <div className="flex items-center justify-center gap-2">
                           <button
@@ -516,15 +519,15 @@ export default function LostTicketHistory() {
           </table>
         </div>
 
-        {/* Red Stripe Divider */}
+        {/* ເສັ້ນແບ່ງແຖບສີແດງດ້ານລຸ່ມ */}
         <div className="h-[2.5px] bg-[#B02019] w-full" />
 
-        {/* Footer / Pagination Bar — Matches CheckOut.tsx */}
+        {/* ແຖບທ້າຍລຸ່ມສຸດ — ສ່ວນຄວບຄຸມການປ່ຽນໜ້າ (Pagination Bar) */}
         <div
           className="bg-[#5D5D5D] px-3 sm:px-4 md:px-6 py-3 md:py-0 min-h-[60px] md:h-16 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Total Count */}
+          {/* ດ້ານຊ້າຍ: ຈຳນວນລາຍການທັງໝົດ */}
           <div className="flex items-center gap-2 text-white font-bold text-base md:text-[17px]">
             <span>ຈຳນວນ</span>
             <span
@@ -536,7 +539,7 @@ export default function LostTicketHistory() {
             <span>ລາຍການ</span>
           </div>
 
-          {/* Right: Pagination Controls */}
+          {/* ດ້ານຂວາ: ປຸ່ມຄວບຄຸມການປ່ຽນໜ້າ (Pagination Controls) */}
           <div className="flex items-center gap-1.5 sm:gap-2 max-w-full overflow-x-auto no-scrollbar py-1">
             <button
               type="button"
@@ -585,7 +588,7 @@ export default function LostTicketHistory() {
         </div>
       </div>
 
-      {/* Detail & Evidence Modal — Redesigned Matching Image 3 */}
+      {/* ໜ້າຕ່າງປັອບອັບເບິ່ງລາຍລະອຽດ ແລະ ຫຼັກຖານ (Detail & Evidence Modal) */}
       {selectedCase && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 animate-fade-in">
           <div
@@ -593,7 +596,7 @@ export default function LostTicketHistory() {
             style={{ borderRadius: 0 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
+            {/* ສ່ວນຫົວຂອງໜ້າຕ່າງປັອບອັບ */}
             <div className="bg-[#5D5D5D] px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2.5">
                 <FileText className="w-5 h-5 text-white" />
@@ -611,15 +614,15 @@ export default function LostTicketHistory() {
               </button>
             </div>
 
-            {/* Red Stripe Divider */}
+            {/* ເສັ້ນແບ່ງແຖບສີແດງ */}
             <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-            {/* Modal Body (Scrollable) */}
+            {/* ເນື້ອໃນຂອງໜ້າຕ່າງ (ສາມາດເລື່ອນຂຶ້ນ-ລົງໄດ້) */}
             <div className="p-4 sm:p-6 overflow-y-auto space-y-4">
-              {/* Summary Info Box — Matches Image 3 with Vertical Center Divider */}
+              {/* ກ່ອງສະຫຼຸບຂໍ້ມູນປີ້ເສຍ — ແບ່ງສອງຝັ່ງດ້ວຍເສັ້ນແບ່ງກາງ */}
               <div className="bg-[#FDF1D7] border-2 border-[#5D5D5D] p-4 sm:p-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-0 md:divide-x-2 md:divide-[#5D5D5D]">
-                  {/* Left Column */}
+                  {/* ຖັນດ້ານຊ້າຍ */}
                   <div className="space-y-2.5 sm:space-y-3 md:pr-6 text-sm sm:text-base md:text-[17px] font-bold text-black">
                     <div className="flex items-baseline">
                       <span className="whitespace-nowrap">Ticket ID : </span>
@@ -645,7 +648,7 @@ export default function LostTicketHistory() {
                     </div>
                   </div>
 
-                  {/* Right Column */}
+                  {/* ຖັນດ້ານຂວາ */}
                   <div className="space-y-2.5 sm:space-y-3 md:pl-6 text-sm sm:text-base md:text-[17px] font-bold text-black">
                     <div className="flex items-baseline">
                       <span className="whitespace-nowrap">ສະຖານະ : </span>
@@ -675,7 +678,7 @@ export default function LostTicketHistory() {
                 </div>
               </div>
 
-              {/* Photo Evidence Section — 4 Photo Boxes Matching Image 3 */}
+              {/* ສ່ວນສະແດງຮູບພາບຫຼັກຖານ 4 ຊ່ອງ */}
               {(() => {
                 const modalPhotos = getCasePhotos(selectedCase);
                 const caseTitle = `Ticket #${selectedCase.ticket?.ticketNumber || selectedCase.id}`;
@@ -746,7 +749,7 @@ export default function LostTicketHistory() {
                                 </div>
                               </>
                             ) : (
-                              /* Placeholder: ONLY Zoom icon and Text as requested */
+                              /* ຊ່ອງຫວ່າງ: ສະແດງໄອຄອນ ZoomIn ແລະ ຊື່ຮູບພາບກໍລະນີບໍ່ມີຮູບ */
                               <div className="flex flex-col items-center justify-center text-center p-2 gap-2">
                                 <ZoomIn size={28} className="text-gray-600 stroke-[2]" />
                                 <span className="text-xs sm:text-[13px] font-bold text-gray-800 leading-tight">
@@ -763,10 +766,10 @@ export default function LostTicketHistory() {
               })()}
             </div>
 
-            {/* Red Stripe Divider */}
+            {/* ເສັ້ນແບ່ງແຖບສີແດງ */}
             <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-            {/* Modal Actions Footer — Matches Image 2 */}
+            {/* ສ່ວນທ້າຍຂອງໜ້າຕ່າງປັອບອັບພ້ອມປຸ່ມດຳເນີນການ */}
             <div className="bg-[#5D5D5D] px-4 sm:px-6 py-3 flex items-center justify-center shrink-0">
               {selectedCase.resolution === 'PENDING' ? (
                 <button
@@ -800,7 +803,7 @@ export default function LostTicketHistory() {
         </div>
       )}
 
-      {/* Fullscreen Photo Lightbox Modal with Sliding Support */}
+      {/* ໜ້າຕ່າງປັອບອັບສະແດງຮູບພາບເຕັມຈໍພ້ອມລະບົບເລື່ອນຮູບ (Fullscreen Photo Lightbox Modal) */}
       {lightbox && lightbox.photos.length > 0 && (() => {
         const currentPhoto = lightbox.photos[lightbox.index] || lightbox.photos[0];
         const hasMultiple = lightbox.photos.length > 1;
@@ -810,7 +813,7 @@ export default function LostTicketHistory() {
             className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-sm flex flex-col items-center justify-between p-3 sm:p-5 animate-fade-in select-none"
             onClick={() => setLightbox(null)}
           >
-            {/* Lightbox Top Bar — Removed Ticket # subtitle as requested */}
+            {/* ແຖບຫົວຂໍ້ດ້ານເທິງຂອງ Lightbox */}
             <div
               className="w-full max-w-5xl flex items-center justify-between text-white py-2 px-2 shrink-0 border-b border-white/15"
               onClick={(e) => e.stopPropagation()}
@@ -838,12 +841,12 @@ export default function LostTicketHistory() {
               </div>
             </div>
 
-            {/* Lightbox Center Image Stage */}
+            {/* ພື້ນທີ່ສະແດງຮູບພາບຂະໜາດເຕັມກາງໜ້າຈໍ */}
             <div
               className="relative w-full max-w-5xl flex-1 flex items-center justify-center my-auto p-2"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Previous Button */}
+              {/* ປຸ່ມກົດເບິ່ງຮູບກ່ອນໜ້າ */}
               {hasMultiple && (
                 <button
                   type="button"
@@ -858,7 +861,7 @@ export default function LostTicketHistory() {
                 </button>
               )}
 
-              {/* Main Displayed Photo */}
+              {/* ຮູບພາບຫຼັກທີ່ກຳລັງສະແດງ */}
               <div className="relative max-h-[72vh] flex items-center justify-center overflow-hidden">
                 <img
                   key={currentPhoto?.url}
@@ -868,7 +871,7 @@ export default function LostTicketHistory() {
                 />
               </div>
 
-              {/* Next Button */}
+              {/* ປຸ່ມກົດເບິ່ງຮູບຖັດໄປ */}
               {hasMultiple && (
                 <button
                   type="button"
@@ -884,7 +887,7 @@ export default function LostTicketHistory() {
               )}
             </div>
 
-            {/* Lightbox Bottom Strip (Thumbnails without instruction hint text) */}
+            {/* ແຖບສະແດງຮູບຕົວຢ່າງຂະໜາດນ້ອຍດ້ານລຸ່ມ (Thumbnails) */}
             <div
               className="w-full max-w-2xl flex flex-col items-center gap-2 pt-2 border-t border-white/15 shrink-0"
               onClick={(e) => e.stopPropagation()}
@@ -916,7 +919,7 @@ export default function LostTicketHistory() {
         );
       })()}
 
-      {/* Admin Delete Confirmation Modal */}
+      {/* ໜ້າຕ່າງປັອບອັບຢືນຢັນການລຶບຂໍ້ມູນສຳລັບຜູ້ດູແລລະບົບ (Admin Delete Confirmation Modal) */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 animate-scale-in">
           <div

@@ -1,4 +1,4 @@
-# Load environment variables
+# ໂຫຼດຄ່າຕົວປ່ຽນສະພາບແວດລ້ອມຈາກຟາຍ .env
 if (Test-Path ".env") {
     Get-Content ".env" | Where-Object { $_ -notmatch "^#" -and $_ -match "=" } | ForEach-Object {
         $name, $value = $_.Split('=', 2)
@@ -13,7 +13,7 @@ $BackupDir = "infra/database/backup"
 if (-not $PostgresUser) { $PostgresUser = "parko" }
 if (-not $PostgresDb) { $PostgresDb = "parko_db" }
 
-# Get file argument or look for latest
+# ຮັບຄ່າ Argument ຊື່ຟາຍສຳຮອງ ຫຼື ຄົ້ນຫາຟາຍສຳຮອງ .sql ທີ່ລ່າສຸດໂດຍອັດຕະໂນມັດ
 $BackupFile = $args[0]
 
 if (-not $BackupFile) {
@@ -33,10 +33,10 @@ if (-not $BackupFile) {
 
 Write-Host "[RESTORE] Restoring database from $BackupFile..." -ForegroundColor Cyan
 
-# Recreate public schema to ensure clean slate
+# ລຶບ ແລະ ສ້າງ public schema ໃໝ່ ເພື່ອລ້າງຂໍ້ມູນເກົ່າອອກໃຫ້ສະອາດກ່ອນ Restore
 docker compose exec -T postgres psql -U $PostgresUser -d $PostgresDb -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
 
-# Pipe file into postgres psql
+# ສົ່ງຂໍ້ມູນຈາກຟາຍ .sql ເຂົ້າໄປ Execute ໃນ PostgreSQL ຜ່ານຄຳສັ່ງ psql
 Get-Content $BackupFile | docker compose exec -T postgres psql -U $PostgresUser -d $PostgresDb
 
 if ($LASTEXITCODE -eq 0) {

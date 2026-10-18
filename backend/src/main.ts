@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — Application Entry Point
-// NestJS bootstrap with Swagger, CORS, Helmet
-// ============================================
+// ==============================================================================
+// PARKO — ຈຸດເລີ່ມຕົ້ນຂອງແອັບພລິເຄຊັນ (Application Entry Point)
+// ຕັ້ງຄ່າ NestJS Bootstrap ພ້ອມລະບົບຄວາມປອດໄພ Helmet, CORS, Validation, Exception Filter ແລະ Swagger
+// ==============================================================================
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -13,14 +13,14 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
-  // Security
+  // ລະບົບຄວາມປອດໄພ HTTP Headers ໂດຍໃຊ້ Helmet
   app.use(
     helmet({
       crossOriginResourcePolicy: { policy: 'cross-origin' },
     }),
   );
 
-  // CORS — explicit allowlist with credentials support
+  // ການກຳນົດສິດ CORS — ອະນຸຍາດ Domain ທີ່ກຳນົດໄວ້ ແລະ ເຄືອຂ່າຍພາຍໃນ ພ້ອມຮອງຮັບ Cookies/Credentials
   const defaultCorsOrigins = [
     'http://localhost',
     'http://localhost:80',
@@ -57,10 +57,10 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 
-  // Global prefix
+  // ກຳນົດ Prefix ຫຼັກຂອງເສັ້ນທາງ API ທັງໝົດເປັນ /api
   app.setGlobalPrefix('api');
 
-  // Validation pipe
+  // ຕັ້ງຄ່າ ValidationPipe ລະດັບ Global ເພື່ອກວດສອບ ແລະ ແປງປະເພດຂໍ້ມູນ DTO ທີ່ສົ່ງເຂົ້າມາ
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -72,10 +72,10 @@ async function bootstrap() {
     }),
   );
 
-  // Global exception filter
+  // ຕັ້ງຄ່າ AllExceptionsFilter ລະດັບ Global ເພື່ອດັກຈັບ ແລະ ຈັດຮູບແບບ Error Response ໃຫ້ເປັນມາດຕະຖານດຽວກັນ
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  // Swagger API documentation
+  // ຕັ້ງຄ່າເອກະສານ OpenAPI / Swagger API Documentation ສຳລັບນັກພັດທະນາ
   const config = new DocumentBuilder()
     .setTitle('PARKO SYSTEM API')
     .setDescription('PARKO SYSTEM API — Currency: LAK (Lao Kip)')
@@ -96,7 +96,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  // Graceful shutdown
+  // ເປີດໃຊ້ງານ Shutdown Hooks ເພື່ອປິດການເຊື່ອມຕໍ່ຕ່າງໆຢ່າງປອດໄພເມື່ອ Process ຖືກຢຸດ (Graceful Shutdown)
   app.enableShutdownHooks();
 
   const port = process.env.BACKEND_PORT || 3000;

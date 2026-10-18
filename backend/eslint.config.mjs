@@ -1,3 +1,4 @@
+// ເປີດການກວດສອບ Type ຂອງ TypeScript ສຳລັບໄຟລ໌ JavaScript ນີ້ໂດຍອັດຕະໂນມັດ
 // @ts-check
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';

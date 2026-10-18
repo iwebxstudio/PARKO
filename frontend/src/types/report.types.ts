@@ -1,5 +1,6 @@
 // ============================================
-// PARKO — Reports & Audit Types
+// ລະບົບ PARKO — Reports & Audit Types (ປະເພດຂໍ້ມູນລາຍງານ ແລະ ປະຫວັດການເຄື່ອນໄຫວ)
+// ກຳນົດ Interface ສຳລັບສະຖິຕິເທິງ Dashboard ແລະ ບັນທຶກ Audit Log
 // ============================================
 
 export interface DashboardStats {

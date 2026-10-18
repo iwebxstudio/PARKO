@@ -1,4 +1,8 @@
-// PARKO — System Settings / ຕັ້ງຄ່າລະບົບ (Admin)
+/**
+ * ໂມດູນຫນ້າຕັ້ງຄ່າລະບົບ PARKO (System Settings Page)
+ * ສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ງານລະດັບຜູ້ບໍລິຫານ (Admin) ເພື່ອກຳນົດຄ່າອັດຕາຄ່າບໍລິການຈອດລົດແຍກຕາມປະເພດພາຫະນະ,
+ * ຊື່ສະຖານທີ່, ໂລໂກ ແລະ QR Code ຮັບເງິນ, ຂໍ້ຄວາມທ້າຍໃບບິນ ແລະ ການເຊື່ອມຕໍ່ເຄື່ອງພິມໃບບິນ.
+ */
 import React, { useState, useEffect } from 'react';
 import {
   Settings as SettingsIcon, Save, Upload, DollarSign,
@@ -111,7 +115,7 @@ function Pricing() {
             className="bg-white shadow-[0_4px_14px_rgba(0,0,0,0.08)] border border-gray-200 rounded-none overflow-hidden transition-all hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)]"
             style={{ borderRadius: 0 }}
           >
-            {/* Card Header */}
+            {/* ແຖບຫົວກາດລາຄາ (Card Header) ສະແດງໄອຄອນ, ຊື່ປະເພດພາຫະນະ ແລະ ປຸ່ມແກ້ໄຂ */}
             <div
               className="bg-[#F8F9FA] px-4 py-3 border-b border-gray-200 flex items-center justify-between"
               style={{ borderRadius: 0 }}
@@ -149,12 +153,12 @@ function Pricing() {
               )}
             </div>
 
-            {/* Card Body */}
+            {/* ເນື້ອໃນກາດລາຄາ (Card Body) ສະແດງ ແລະ ແກ້ໄຂອັດຕາຄ່າຈອດລາຍວັນ, ລາຍອາທິດ, ລາຍເດືອນ, ລາຍປີ */}
             <div className="p-4">
               {isEditing ? (
                 <div className="space-y-3.5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5">
-                    {/* Daily */}
+                    {/* ອັດຕາຄ່າບໍລິການລາຍວັນ (Daily Rate) */}
                     <div className="bg-[#FAFBFD] p-3 border border-gray-200" style={{ borderRadius: 0 }}>
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="text-xs font-bold text-gray-700">ລາຍມື້ (Day)</label>
@@ -180,7 +184,7 @@ function Pricing() {
                       {errors.dailyRate && <p className="text-xs font-bold text-red-600 mt-1">{errors.dailyRate}</p>}
                     </div>
 
-                    {/* Weekly */}
+                    {/* ອັດຕາຄ່າບໍລິການລາຍອາທິດ (Weekly Rate) */}
                     <div className="bg-[#FAFBFD] p-3 border border-gray-200" style={{ borderRadius: 0 }}>
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="text-xs font-bold text-gray-700">ລາຍອາທິດ (Week)</label>
@@ -206,7 +210,7 @@ function Pricing() {
                       {errors.weeklyRate && <p className="text-xs font-bold text-red-600 mt-1">{errors.weeklyRate}</p>}
                     </div>
 
-                    {/* Monthly */}
+                    {/* ອັດຕາຄ່າບໍລິການລາຍເດືອນ (Monthly Rate) */}
                     <div className="bg-[#FAFBFD] p-3 border border-gray-200" style={{ borderRadius: 0 }}>
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="text-xs font-bold text-gray-700">ລາຍເດືອນ (Month)</label>
@@ -232,7 +236,7 @@ function Pricing() {
                       {errors.monthlyRate && <p className="text-xs font-bold text-red-600 mt-1">{errors.monthlyRate}</p>}
                     </div>
 
-                    {/* Yearly */}
+                    {/* ອັດຕາຄ່າບໍລິການລາຍປີ (Yearly Rate) */}
                     <div className="bg-[#FAFBFD] p-3 border border-gray-200" style={{ borderRadius: 0 }}>
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="text-xs font-bold text-gray-700">ລາຍປີ (Year)</label>
@@ -391,17 +395,17 @@ export default function Settings() {
 
   return (
     <div className="font-sans w-full flex flex-col pb-6">
-      {/* Main Container Card */}
+      {/* ກາດບັນຈຸຫຼັກຂອງໜ້າຕັ້ງຄ່າລະບົບ (Main Container Card) */}
       <div
         className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-visible w-full border-0 flex flex-col"
         style={{ borderRadius: 0 }}
       >
-        {/* Top Header Bar — Dark Gray (#5D5D5D) */}
+        {/* ແຖບຫົວດ້ານເທິງສຸດ (Top Header Bar) ພື້ນຫຼັງສີເທົາເຂັ້ມ (#5D5D5D) */}
         <div
           className="bg-[#5D5D5D] px-3 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 lg:gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Icon + Title */}
+          {/* ດ້ານຊ້າຍ: ໄອຄອນ ແລະ ຊື່ໜ້າຕັ້ງຄ່າລະບົບ */}
           <div className="flex items-center justify-between w-full md:w-auto h-10">
             <div className="flex items-center gap-2.5">
               <SettingsIcon size={20} className="w-5 h-5 text-white shrink-0" />
@@ -412,12 +416,12 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Top Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານເທິງ (Top Red Stripe Divider) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Main Body — Orange Background (p-3.5 matching Statistics) */}
+        {/* ສ່ວນເນື້ອໃນຫຼັກ (Main Body) ພື້ນຫຼັງສີສົ້ມເຫຼືອງ (#F9A825) */}
         <div className="bg-[#F9A825] p-3.5 flex flex-col justify-start space-y-3.5">
-          {/* SECTION 1: PRICING */}
+          {/* ໝວດທີ 1: ຕັ້ງຄ່າລາຄາຄ່າຈອດ (Section 1: Pricing Rules) */}
           <div>
             <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
               <DollarSign size={20} className="text-black shrink-0" />
@@ -426,7 +430,7 @@ export default function Settings() {
             <Pricing />
           </div>
 
-          {/* SECTION 2: PARKING NAME */}
+          {/* ໝວດທີ 2: ຕັ້ງຄ່າຊື່ສະຖານທີ່ຈອດລົດ (Section 2: Parking Location Name) */}
           <div>
             <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
               <Store size={20} className="text-black shrink-0" />
@@ -472,14 +476,14 @@ export default function Settings() {
             </div>
           </div>
 
-          {/* SECTION 3: LOGO & QR PAYMENT */}
+          {/* ໝວດທີ 3: ຕັ້ງຄ່າໂລໂກ ແລະ QR Code ຮັບເງິນ (Section 3: Logo & QR Payment) */}
           <div>
             <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
               <Image size={20} className="text-black shrink-0" />
               <span>ໂລໂກ ແລະ QR Code ຮັບເງິນ</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-              {/* Logo Card */}
+              {/* ກາດຈັດການຮູບພາບໂລໂກປີ້ລົດ (Ticket Logo Card) */}
               <div
                 className="bg-white shadow-[0_4px_14px_rgba(0,0,0,0.08)] border border-gray-200 rounded-none p-4 sm:p-5 flex flex-col justify-between"
                 style={{ borderRadius: 0 }}
@@ -529,7 +533,7 @@ export default function Settings() {
                 </div>
               </div>
 
-              {/* QR Code Card */}
+              {/* ກາດຈັດການຮູບພາບ QR Code ຮັບເງິນ (QR Code Payment Card) */}
               <div
                 className="bg-white shadow-[0_4px_14px_rgba(0,0,0,0.08)] border border-gray-200 rounded-none p-4 sm:p-5 flex flex-col justify-between"
                 style={{ borderRadius: 0 }}
@@ -581,7 +585,7 @@ export default function Settings() {
             </div>
           </div>
 
-          {/* SECTION 4: RECEIPT FOOTER */}
+          {/* ໝວດທີ 4: ຕັ້ງຄ່າຂໍ້ຄວາມທ້າຍໃບບິນປີ້ລົດ (Section 4: Receipt Footer Text) */}
           <div>
             <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
               <FileText size={20} className="text-black shrink-0" />
@@ -613,7 +617,7 @@ export default function Settings() {
             </div>
           </div>
 
-          {/* SECTION 5: PRINTER CONFIG */}
+          {/* ໝວດທີ 5: ຕັ້ງຄ່າການເຊື່ອມຕໍ່ເຄື່ອງພິມໃບບິນ (Section 5: Printer Configuration) */}
           <div>
             <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
               <Printer size={20} className="text-black shrink-0" />
@@ -657,10 +661,10 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານລຸ່ມ (Bottom Red Stripe Divider) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Footer Bar */}
+        {/* ແຖບສ່ວນທ້າຍດ້ານລຸ່ມສຸດ (Bottom Footer Bar) ພື້ນຫຼັງສີເທົາເຂັ້ມ */}
         <div
           className="bg-[#5D5D5D] px-6 min-h-[60px] md:h-16 rounded-none shrink-0"
           style={{ borderRadius: 0 }}

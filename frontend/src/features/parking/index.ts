@@ -1,4 +1,5 @@
 // ============================================
-// PARKO — Parking Feature Module
+// ລະບົບ PARKO — Parking Feature Module (ໂມດູນລະບົບບ່ອນຈອດລົດ)
+// ສົ່ງອອກ Service ສຳລັບການບັນທຶກລົດເຂົ້າ-ອອກ ແລະ ຄິດໄລ່ຄ່າທຳນຽມ
 // ============================================
 export * from '../../services/parking.service';

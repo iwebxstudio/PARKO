@@ -1,7 +1,7 @@
 // ============================================
-// PARKO — Register Page
-// Split-panel layout matching Login page design
-// Left: Red Brand Panel | Right: White Form Panel
+// PARKO — ໜ້າລົງທະບຽນຜູ້ໃຊ້ງານໃໝ່ (Register Page)
+// ໜ້າທີ່: ຈັດການການລົງທະບຽນບັນຊີຜູ້ໃຊ້ງານໃໝ່ເຂົ້າສູ່ລະບົບ ໂດຍອອກແບບແຍກສອງຝັ່ງຄືກັນກັບໜ້າເຂົ້າສູ່ລະບົບ
+// ດ້ານຊ້າຍ: ແຜງແບຣນສີແດງ (Red Brand Panel) | ດ້ານຂວາ: ຟອມປ້ອນຂໍ້ມູນສີຂາວ (White Form Panel)
 // ============================================
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -34,35 +34,35 @@ export default function Register() {
 
   return (
     <div className="auth-page-wrapper" style={styles.pageWrapper}>
-      {/* Centered Group: Card + Footer centered together as one unit */}
+      {/* ກຸ່ມອົງປະກອບກາງໜ້າຈໍ: ບັດລົງທະບຽນ ແລະ ແຖບທ້າຍໜ້າສະແດງລິຂະສິດ */}
       <div className="auth-card-group" style={styles.cardGroup}>
 
-        {/* Main Card */}
+        {/* ບັດຫຼັກຂອງການລົງທະບຽນ (Main Card) */}
         <div className="auth-card" style={styles.card}>
 
-          {/* ===== LEFT PANEL — Red Brand ===== */}
+          {/* ===== ແຜງດ້ານຊ້າຍ — ຂໍ້ມູນແບຣນ PARKO (ສີແດງ) ===== */}
           <div className="auth-brand-panel" style={styles.brandPanel}>
-            {/* Logo — square box with P circle */}
+            {/* ໂລໂກ້ລະບົບ — ກ່ອງສີ່ຫຼ່ຽມພ້ອມຕົວອັກສອນ P ໃນວົງມົນ */}
             <div className="auth-logo-box" style={styles.logoBox}>
               <div className="auth-logo-inner" style={styles.logoInnerCircle}>P</div>
             </div>
 
-            {/* Brand Text */}
+            {/* ຂໍ້ຄວາມຫົວຂໍ້ ແລະ ຄຳອະທິບາຍແບຣນ */}
             <h2 className="auth-brand-title" style={styles.brandTitle}>PARKO SYSTEM</h2>
             <p className="auth-brand-subtitle" style={styles.brandSubtitle}>ໂປຣແກຣມບໍລິຫານຈັດການບ່ອນຈອດລົດ</p>
             <p className="auth-version-tag" style={styles.versionTag}>VERSION RC1</p>
           </div>
 
-          {/* ===== RIGHT PANEL — White Form ===== */}
+          {/* ===== ແຜງດ້ານຂວາ — ຟອມປ້ອນຂໍ້ມູນລົງທະບຽນ (ສີຂາວ) ===== */}
           <div className="auth-form-panel" style={styles.formPanel}>
 
-            {/* Title */}
+            {/* ຫົວຂໍ້ຟອມລົງທະບຽນ */}
             <h1 className="auth-form-title" style={styles.formTitle}>ລົງທະບຽນ/SignUp</h1>
 
-            {/* Form */}
+            {/* ຟອມຮັບຂໍ້ມູນການລົງທະບຽນ */}
             <form onSubmit={handleRegister} style={{ width: '100%' }}>
 
-              {/* Username Field */}
+              {/* ຊ່ອງປ້ອນຊື່ຜູ້ໃຊ້ງານ (Username) */}
               <fieldset style={styles.fieldset}>
                 <legend style={styles.legend}>ຊື່ຜູ້ໃຊ້/USERNAME</legend>
                 <div style={styles.inputWrapper}>
@@ -81,7 +81,7 @@ export default function Register() {
                 </div>
               </fieldset>
 
-              {/* Email Field */}
+              {/* ຊ່ອງປ້ອນອີເມວ (Email) */}
               <fieldset style={{ ...styles.fieldset, marginTop: 14 }}>
                 <legend style={styles.legend}>ອີເມວ/EMAIL</legend>
                 <div style={styles.inputWrapper}>
@@ -99,7 +99,7 @@ export default function Register() {
                 </div>
               </fieldset>
 
-              {/* Phone Field */}
+              {/* ຊ່ອງປ້ອນເບີໂທລະສັບ (Phone Number) */}
               <fieldset style={{ ...styles.fieldset, marginTop: 14 }}>
                 <legend style={styles.legend}>ເບີໂທລະສັບ/PHONE</legend>
                 <div style={styles.inputWrapper}>
@@ -116,7 +116,7 @@ export default function Register() {
                 </div>
               </fieldset>
 
-              {/* Password Field */}
+              {/* ຊ່ອງປ້ອນລະຫັດຜ່ານ (Password) */}
               <fieldset style={{ ...styles.fieldset, marginTop: 14 }}>
                 <legend style={styles.legend}>ລະຫັດຜ່ານ/PASSWORD</legend>
                 <div style={styles.inputWrapper}>
@@ -141,7 +141,7 @@ export default function Register() {
                 </div>
               </fieldset>
 
-              {/* Register Button */}
+              {/* ປຸ່ມກົດສົ່ງຟອມລົງທະບຽນ (Submit Button) */}
               <button
                 id="register-submit"
                 type="submit"
@@ -167,7 +167,7 @@ export default function Register() {
               </button>
             </form>
 
-            {/* Login Link */}
+            {/* ລິ້ງກ໌ສຳລັບກັບໄປໜ້າເຂົ້າສູ່ລະບົບ */}
             <div style={styles.registerRow}>
               <span style={{ color: '#555', fontSize: 14 }}>ມີບັນຊີແລ້ວບໍ? </span>
               <Link to="/login" style={styles.registerLink}>
@@ -177,7 +177,7 @@ export default function Register() {
           </div>
         </div>
 
-        {/* Footer */}
+        {/* ແຖບທ້າຍໜ້າສະແດງລິຂະສິດ (Footer) */}
         <div className="auth-footer" style={styles.footer}>
           <div className="auth-footer-inner" style={styles.footerInner}>
             <p className="auth-footer-line" style={styles.footerLine1}>Powered by iwebxstudio technology</p>
@@ -190,7 +190,7 @@ export default function Register() {
 }
 
 /* ============================================
-   Inline Styles (matching Login page design)
+   ຮູບແບບການຕົກແຕ່ງ (Inline Styles ໃຫ້ສອດຄ່ອງກັບໜ້າ Login)
    ============================================ */
 const styles: Record<string, React.CSSProperties> = {
   pageWrapper: {
@@ -224,7 +224,7 @@ const styles: Record<string, React.CSSProperties> = {
     margin: 0,
   },
 
-  /* ---------- LEFT Brand Panel ---------- */
+  /* ---------- ແຜງດ້ານຊ້າຍ (ແບຣນສີແດງ) ---------- */
   brandPanel: {
     width: '50%',
     minHeight: 450,
@@ -283,7 +283,7 @@ const styles: Record<string, React.CSSProperties> = {
     margin: 0,
   },
 
-  /* ---------- RIGHT Form Panel ---------- */
+  /* ---------- ແຜງດ້ານຂວາ (ຟອມສີຂາວ) ---------- */
   formPanel: {
     width: '50%',
     display: 'flex',
@@ -302,7 +302,7 @@ const styles: Record<string, React.CSSProperties> = {
     margin: '0 0 20px 0',
   },
 
-  /* Fieldset approach for labeled border */
+  /* ການນຳໃຊ້ fieldset ເພື່ອໃຫ້ມີເສັ້ນຂອບພ້ອມຂໍ້ຄວາມກຳກັບ (Legend) */
   fieldset: {
     border: '2px solid #5D5D5D',
     borderRadius: 0,
@@ -354,7 +354,7 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
   },
 
-  /* Submit button */
+  /* ປຸ່ມກົດສົ່ງຟອມລົງທະບຽນ */
   submitButton: {
     width: '100%',
     padding: '14px 0',
@@ -370,7 +370,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: 'inherit',
   },
 
-  /* Register link */
+  /* ລິ້ງກ໌ສຳລັບກັບໄປໜ້າເຂົ້າສູ່ລະບົບ */
   registerRow: {
     marginTop: 18,
     textAlign: 'center',
@@ -384,7 +384,7 @@ const styles: Record<string, React.CSSProperties> = {
     textUnderlineOffset: 3,
   },
 
-  /* Footer */
+  /* ສ່ວນທ້າຍໜ້າສະແດງລິຂະສິດ */
   footer: {
     marginTop: 24,
     marginBottom: 0,

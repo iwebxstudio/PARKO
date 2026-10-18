@@ -1,4 +1,4 @@
-# Enforce LF for shell scripts and Dockerfiles so they execute without CRLF errors in Linux containers
+# ບັງຄັບໃຊ້ຮູບແບບການຂຶ້ນແຖວໃໝ່ແບບ LF ສຳລັບ Shell Scripts ແລະ Dockerfiles ເພື່ອປ້ອງກັນຂໍ້ຜິດພາດ CRLF ເວລາ Run ເທິງ Linux Containers
 *.sh text eol=lf
 *.bash text eol=lf
 Dockerfile* text eol=lf

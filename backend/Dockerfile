@@ -1,18 +1,18 @@
-# ────────────────────────────────────────────────────────
-# PARKO Backend — Production Multi-stage Dockerfile
-# Standard: Enterprise Security, Non-Root, Zero-Lag Alpine
-# ────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# PARKO Backend — ໄຟລ໌ Multi-stage Dockerfile ສຳລັບສະພາບແວດລ້ອມ Production
+# ມາດຕະຖານ: ຄວາມປອດໄພລະດັບ Enterprise, ໃຊ້ຜູ້ໃຊ້ Non-Root, ແລະ Alpine Linux ຂະໜາດກະທັດຮັດ
+# ─────────────────────────────────────────────────────────────────────────────
 
-# Stage 1: Dependencies
+# ຂັ້ນຕອນທີ 1 (Stage 1): ຈັດການ ແລະ ຕິດຕັ້ງ Dependencies ທັງໝົດ
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
-# Install production-only dependencies
+# ຕິດຕັ້ງ Dependencies ສະເພາະສຳລັບ Production ເທົ່ານັ້ນ ແລ້ວສຳເນົາເກັບໄວ້ຕ່າງຫາກ
 RUN npm ci --omit=dev && cp -R node_modules /prod_modules
-# Install all dependencies (including dev for building)
+# ຕິດຕັ້ງ Dependencies ທັງໝົດລວມທັງ devDependencies ເພື່ອໃຊ້ສຳລັບການ Compile ແລະ Build ໂຄ້ດ
 RUN npm ci
 
-# Stage 2: Build
+# ຂັ້ນຕອນທີ 2 (Stage 2): ທຳການ Compile TypeScript ແລະ Build ແອັບພລິເຄຊັນ
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -21,14 +21,14 @@ RUN npx prisma generate
 RUN npm run build
 RUN npx tsc prisma/seed.ts --outDir dist/prisma --skipLibCheck --module commonjs --target es2021 --moduleResolution node
 
-# Stage 3: Production Runner
+# ຂັ້ນຕອນທີ 3 (Stage 3): ສະພາບແວດລ້ອມສຳລັບ Run ລະບົບ Production ຕົວຈິງ
 FROM node:20-alpine AS production
 WORKDIR /app
 
-# Install openssl for Prisma and dumb-init for proper PID 1 signal handling
+# ຕິດຕັ້ງ openssl ສຳລັບ Prisma ORM ແລະ dumb-init ເພື່ອຈັດການ Signal PID 1 ໃຫ້ຖືກຕ້ອງ
 RUN apk add --no-cache openssl dumb-init
 
-# Copy node_modules & prebuilt artifacts
+# ສຳເນົາ Dependencies ແລະ ໄຟລ໌ Artifacts ທີ່ Build ແລ້ວເຂົ້າມາ
 COPY --from=deps /prod_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
@@ -37,7 +37,7 @@ COPY --from=build /app/prisma ./prisma
 COPY package*.json ./
 COPY docker-entrypoint.sh ./
 
-# Create directories and assign non-root permissions
+# ສ້າງໂຟນເດີ uploads, logs ແລະ ກຳນົດສິດຄວາມປອດໄພໃຫ້ແກ່ user 'node' (Non-root user)
 RUN chmod +x docker-entrypoint.sh && \
     mkdir -p uploads logs && \
     chown -R node:node /app

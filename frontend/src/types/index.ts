@@ -1,6 +1,6 @@
 // ============================================
-// PARKO — TypeScript Types Root Barrel
-// Re-exports all domain types for backward compatibility
+// ລະບົບ PARKO — TypeScript Types Root Barrel (ໄຟລ໌ລວມປະເພດຂໍ້ມູນທັງໝົດ)
+// ສົ່ງອອກ (Re-export) ປະເພດຂໍ້ມູນ Domain Types ທັງໝົດ ເພື່ອຄວາມສະດວກໃນການນຳໃຊ້
 // ============================================
 
 export * from './common.types';

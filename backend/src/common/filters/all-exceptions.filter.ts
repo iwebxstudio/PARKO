@@ -1,7 +1,7 @@
-// ============================================
-// PARKO — HTTP Exception Filter
-// Consistent error response format
-// ============================================
+// ==============================================================================
+// PARKO — ຕົວດັກຈັບ ແລະ ຈັດການຂໍ້ຜິດພາດລະບົບ (HTTP Exception Filter)
+// ຈັດຮູບແບບຂໍ້ມູນ Error Response ໃຫ້ເປັນມາດຕະຖານດຽວກັນ ແລະ ເຊື່ອງລາຍລະອຽດລະບົບໃນ Production
+// ==============================================================================
 import {
   ExceptionFilter,
   Catch,
@@ -39,7 +39,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         errors = resp.errors || null;
       }
     } else if (exception instanceof Error) {
-      // In production, hide internal server & database error details from clients
+      // ໃນສະພາບແວດລ້ອມ Production ຈະປິດບັງລາຍລະອຽດຂໍ້ຜິດພາດພາຍໃນ ແລະ ຖານຂໍ້ມູນ ເພື່ອຄວາມປອດໄພຂອງລະບົບ
       message = isProduction ? 'Internal server error' : exception.message;
       this.logger.error(
         `Unhandled exception: ${exception.message}`,

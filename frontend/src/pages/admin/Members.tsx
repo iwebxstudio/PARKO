@@ -1,4 +1,4 @@
-// PARKO — Admin Members Page
+// PARKO — ໜ້າຕ່າງຈັດການສະມາຊິກ / ຝາກລົດມີກຳນົດ (Admin Members Page)
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Plus, Search, Edit2, Car, X, Save, Trash2, LogOut, RefreshCw
@@ -40,7 +40,7 @@ const getVehicleTypeIconRaw = (nameOrLabel = '') => {
 
 const getVehicleTheme = (nameOrLabel = '', iconStr = '') => {
   const s = nameOrLabel.toLowerCase();
-  // 1. EV Motorcycle / Electric (Emerald Green)
+  // 1. ລົດຈັກໄຟຟ້າ / ພະລັງງານໄຟຟ້າ (EV Motorcycle) — ກຳນົດໂທນສີຂຽວມໍລະກົດ (Emerald Green)
   if (s.includes('ev') || s.includes('ໄຟຟ້າ') || iconStr.includes('⚡')) {
     return {
       bannerBg: 'bg-[#059669]',
@@ -48,7 +48,7 @@ const getVehicleTheme = (nameOrLabel = '', iconStr = '') => {
       iconRaw: zapIcon,
     };
   }
-  // 2. Motorcycle / Bike / ລົດຈັກ / ລົດຖີບ (Royal Blue / Sky Blue)
+  // 2. ລົດຈັກທຳມະດາ / ລົດຖີບ (Motorcycle / Bike) — ກຳນົດໂທນສີຟ້າເຂັ້ມ ຫຼື ສີຟ້າຄາມ (Royal Blue / Sky Blue)
   if (
     s.includes('motorcycle') ||
     s.includes('bike') ||
@@ -64,7 +64,7 @@ const getVehicleTheme = (nameOrLabel = '', iconStr = '') => {
       iconRaw: isBicycle ? bikeIcon : motorbikeIcon,
     };
   }
-  // 3. Truck / ລົດບັນທຸກ (Purple)
+  // 3. ລົດບັນທຸກຂະໜາດໃຫຍ່ (Truck) — ກຳນົດໂທນສີມ່ວງ (Purple)
   if (s.includes('truck') || s.includes('ບັນທຸກ') || iconStr.includes('🚚')) {
     return {
       bannerBg: 'bg-[#7C3AED]',
@@ -72,7 +72,7 @@ const getVehicleTheme = (nameOrLabel = '', iconStr = '') => {
       iconRaw: truckIcon,
     };
   }
-  // 4. Car / ລົດໃຫຍ່ (Deep Red)
+  // 4. ລົດໃຫຍ່ / ລົດເກັງ / ລົດກະບະ (Car) — ກຳນົດໂທນສີແດງເຂັ້ມ (Deep Red)
   return {
     bannerBg: 'bg-[#B02019]',
     btnBg: 'bg-[#B02019] hover:bg-[#961b15]',
@@ -99,27 +99,27 @@ export default function Members() {
   const [currentPage, setCurrentPage] = useState(1);
   const [processingMemberId, setProcessingMemberId] = useState<string | null>(null);
 
-  // Custom filter dropdown state
+  // ສະຖານະການເປີດ-ປິດເມນູ Dropdown ສຳລັບກັ່ນຕອງປະເພດຍານພາຫະນະ
   const [filterOpen, setFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const [selectedVehicleType, setSelectedVehicleType] = useState<string>('ALL');
 
-  // Parking Type Filter Dropdown state
+  // ສະຖານະການເປີດ-ປິດເມນູ Dropdown ສຳລັບກັ່ນຕອງຮູບແບບການຝາກ (ລາຍວັນ, ລາຍເດືອນ, ລາຍປີ, ມີກຳນົດ)
   const [selectedParkingType, setSelectedParkingType] = useState<string>('ALL');
   const [parkingTypeFilterOpen, setParkingTypeFilterOpen] = useState(false);
   const parkingTypeFilterRef = useRef<HTMLDivElement>(null);
 
-  // Confirmation Modals
+  // ສະຖານະ Modal ຢືນຢັນການລຶບ ແລະ ຢືນຢັນລົດອອກ
   const [deleteConfirmMember, setDeleteConfirmMember] = useState<{ id: string; code: string } | null>(null);
   const [checkoutConfirmMember, setCheckoutConfirmMember] = useState<Membership | null>(null);
 
-  // Centered Success Popup State
+  // ສະຖານະກ່ອງແຈ້ງເຕືອນຄວາມສຳເລັດເຄິ່ງກາງໜ້າຈໍ (Centered Success Popup)
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const ITEMS_PER_PAGE = 20;
 
-  // Responsive max page buttons: 4 on Mobile (< 640px), 9 on Desktop
+  // ຈຳນວນປຸ່ມເລກໜ້າສູງສຸດຕາມຂະໜາດໜ້າຈໍ: 4 ປຸ່ມສຳລັບມືຖື (< 640px) ແລະ 9 ປຸ່ມສຳລັບ Desktop
   const [isMobile, setIsMobile] = useState<boolean>(() =>
     typeof window !== 'undefined' ? window.innerWidth < 640 : false
   );
@@ -149,7 +149,7 @@ export default function Members() {
     };
   }, []);
 
-  // Close vehicle and parking type dropdowns on outside click
+  // ຟັງຊັນກວດຈັບການຄລິກພາຍນອກ Dropdown ເພື່ອປິດເມນູກັ່ນຕອງທັງສອງອັດຕະໂນມັດ
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
@@ -163,7 +163,7 @@ export default function Members() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Modal form state
+  // ສະຖານະຟອມ ແລະ Modal ເພີ່ມ/ແກ້ໄຂສະມາຊິກ
   const [selectedMemberView, setSelectedMemberView] = useState<Membership | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Membership | null>(null);
@@ -355,7 +355,7 @@ export default function Members() {
   const openEdit = (m: Membership) => {
     setEditing(m);
 
-    // Split plateNumber into letters and numbers
+    // ແຍກຂໍ້ມູນປ້າຍທະບຽນລົດອອກເປັນຕົວອັກສອນ ແລະ ຕົວເລກ
     const parts = m.plateNumber.split(' ');
     let letters = '';
     let num = m.plateNumber;
@@ -421,7 +421,7 @@ export default function Members() {
     }
   };
 
-  // Filter options
+  // ລາຍການຕົວເລືອກກັ່ນຕອງປະເພດຍານພາຫະນະ (Vehicle Filter Options)
   const fallbackFilterOptions = [
     { id: 'ALL', label: 'ປະເພດລົດ', iconRaw: funnelIcon },
     { id: '1', label: 'ລົດໃຫຍ່', iconRaw: carIcon },
@@ -521,12 +521,12 @@ export default function Members() {
     return memType || 'ຝາກມີກຳນົດ';
   };
 
-  // Filtered members list
+  // ກັ່ນຕອງລາຍຊື່ສະມາຊິກ — ສະແດງສະເພາະສະມາຊິກທີ່ມີລົດຈອດຢູ່ໃນລະບົບຂະນະນີ້
   const filteredMembers = members.filter((m) => {
     const isParked = (m as any).tickets?.length > 0;
     if (!isParked) return false;
 
-    // 1. Vehicle Type Filter
+    // 1. ກັ່ນຕອງຕາມປະເພດຍານພາຫະນະ (Vehicle Type Filter)
     if (selectedVehicleType && selectedVehicleType !== 'ALL') {
       const vtId = String(m.vehicleTypeId || m.vehicleType?.id || '');
       const vtName = (m.vehicleType?.name || '').toLowerCase();
@@ -534,7 +534,7 @@ export default function Members() {
       if (vtId !== sel && vtName !== sel) return false;
     }
 
-    // 2. Parking Type Filter (DAILY, MONTHLY, YEARLY, CUSTOM)
+    // 2. ກັ່ນຕອງຕາມຮູບແບບການຝາກ (DAILY, MONTHLY, YEARLY, CUSTOM)
     if (selectedParkingType && selectedParkingType !== 'ALL') {
       const pType = getMemberParkingType(m);
       const memType = (m.memberType || '').toUpperCase();
@@ -556,7 +556,7 @@ export default function Members() {
       }
     }
 
-    // 3. Search Query Filter
+    // 3. ກັ່ນຕອງຕາມຄຳຄົ້ນຫາ (Search Query Filter)
     if (query.trim()) {
       const q = query.toLowerCase().trim();
       const codeMatch = (m.memberCode || '').toLowerCase().includes(q);
@@ -571,7 +571,7 @@ export default function Members() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedMembers = filteredMembers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  // Compute visible pages (Mobile = 4 buttons, Desktop = 9 buttons)
+  // ຄຳນວນເລກໜ້າທີ່ຈະສະແດງ (ມືຖື = 4 ປຸ່ມ, Desktop = 9 ປຸ່ມ)
   const getVisiblePages = () => {
     if (totalPages <= maxPageButtons) {
       return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -590,18 +590,17 @@ export default function Members() {
 
   return (
     <div className="font-sans w-full flex flex-col pb-6">
-      {/* Main Container Card */}
+      {/* ກ່ອງຫຼັກສະແດງຕາຕະລາງ ແລະ ລາຍການສະມາຊິກ (Main Container Card) */}
       <div
         className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-visible w-full border-0 flex flex-col"
         style={{ borderRadius: 0 }}
       >
-        {/* Top Header Bar — Dark Gray (matching CheckOut.tsx) */}
-        {/* Top Header Bar — Dark Gray (matching CheckOut.tsx) */}
+        {/* ແຖບຫົວຂໍ້ດ້ານເທິງ — ໂທນສີເທົາເຂັ້ມ (#5D5D5D) */}
         <div
           className="bg-[#5D5D5D] px-3 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 lg:gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Icon + Title */}
+          {/* ດ້ານຊ້າຍ: ໄອຄອນ ແລະ ຫົວຂໍ້ໜ້າຝາກມີກຳນົດ */}
           <div className="flex items-center gap-2.5 h-10 shrink-0">
             <Car size={20} className="w-5 h-5 text-white shrink-0" />
             <h1 className="text-base md:text-[17px] font-bold text-white tracking-normal whitespace-nowrap">
@@ -609,9 +608,9 @@ export default function Members() {
             </h1>
           </div>
 
-          {/* Right: Search Box + Vehicle Filter + Add Member Button */}
+          {/* ດ້ານຂວາ: ຊ່ອງຄົ້ນຫາ, ຕົວກັ່ນຕອງ ແລະ ປຸ່ມເພີ່ມສະມາຊິກ */}
           <div className="flex flex-col md:flex-row items-stretch md:items-center md:justify-end md:ml-auto gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 w-full md:w-auto shrink-0">
-            {/* Search Input Box */}
+            {/* ຊ່ອງປ້ອນຂໍ້ມູນຄົ້ນຫາ Ticket ID ຫຼື ປ້າຍທະບຽນລົດ */}
             <div className="flex items-center bg-white shadow-sm w-full md:w-[280px] lg:w-[315px] xl:w-[325px] rounded-l-none rounded-r-full overflow-hidden pl-3 sm:pl-3.5 h-10 min-h-[40px] shrink-0">
               <div className="flex items-center justify-center text-[#F9A825] shrink-0">
                 <Search size={18} className="w-[18px] h-[18px] text-[#F9A825]" />
@@ -665,9 +664,9 @@ export default function Members() {
               </button>
             </div>
 
-            {/* Filter Dropdowns: 2 Columns on Mobile, Flex on Desktop */}
+            {/* ເມນູ Dropdown ສຳລັບກັ່ນຕອງ: ແບ່ງ 2 ຖັນໃນມືຖື ແລະ ລຽງແນວນອນໃນ Desktop */}
             <div className="grid grid-cols-2 md:flex items-center gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 w-full md:w-auto shrink-0">
-              {/* Vehicle Type Filter Dropdown */}
+              {/* ເມນູເລືອກກັ່ນຕອງຕາມປະເພດຍານພາຫະນະ (Vehicle Type Filter) */}
               <div ref={filterRef} className="relative w-full md:w-[144px] lg:w-[150px]">
                 <button
                   type="button"
@@ -695,7 +694,7 @@ export default function Members() {
                   />
                 </button>
 
-                {/* Custom Dropdown Menu */}
+                {/* ລາຍການຕົວເລືອກປະເພດລົດໃນ Dropdown (Custom Dropdown Menu) */}
                 {filterOpen && (
                   <div
                     className="absolute top-full mt-1.5 left-0 w-max min-w-full max-w-[200px] bg-white shadow-[0_12px_28px_rgba(0,0,0,0.18)] z-50 py-1 border-0 rounded-none animate-fade-in"
@@ -737,7 +736,7 @@ export default function Members() {
                 )}
               </div>
 
-              {/* Parking Type Filter Dropdown */}
+              {/* ເມນູເລືອກກັ່ນຕອງຕາມຮູບແບບການຝາກ (Parking Type Filter) */}
               <div ref={parkingTypeFilterRef} className="relative w-full md:w-[152px] lg:w-[158px]">
                 <button
                   type="button"
@@ -765,7 +764,7 @@ export default function Members() {
                   />
                 </button>
 
-                {/* Custom Dropdown Menu */}
+                {/* ລາຍການຕົວເລືອກຮູບແບບການຝາກໃນ Dropdown (Custom Dropdown Menu) */}
                 {parkingTypeFilterOpen && (
                   <div
                     className="absolute top-full mt-1.5 left-0 w-max min-w-full max-w-[200px] bg-white shadow-[0_12px_28px_rgba(0,0,0,0.18)] z-50 py-1 border-0 rounded-none animate-fade-in"
@@ -808,7 +807,7 @@ export default function Members() {
               </div>
             </div>
 
-            {/* Add Member Button (for Admin) */}
+            {/* ປຸ່ມເພີ່ມຂໍ້ມູນສະມາຊິກໃໝ່ (ສຳລັບ Admin) */}
             {isAdmin && (
               <button
                 type="button"
@@ -822,10 +821,10 @@ export default function Members() {
           </div>
         </div>
 
-        {/* Top Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານເທິງ (#B02019) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Main Body — Orange Background (Equal 12px padding top/bottom/left/right) */}
+        {/* ສ່ວນເນື້ອໃນຫຼັກ — ພື້ນຫຼັງສີເຫຼືອງສົ້ມ (#F9A825) */}
         <div className="bg-[#F9A825] p-3 flex flex-col justify-start">
           {loading ? (
             <div className="py-12 sm:py-16 text-center flex flex-col items-center justify-center select-none">
@@ -833,7 +832,7 @@ export default function Members() {
               <p className="text-black font-bold text-base md:text-[17px]">ກຳລັງໂຫຼດຂໍ້ມູນສະມາຊິກ...</p>
             </div>
           ) : paginatedMembers.length > 0 ? (
-            /* Cards Grid */
+            /* ຕາໜ່າງກາດສະແດງລາຍຊື່ສະມາຊິກ (Cards Grid) */
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-3.5 lg:gap-4 animate-fade-in">
               {paginatedMembers.map((m) => {
                 const parts = m.plateNumber.split(' ');
@@ -862,12 +861,12 @@ export default function Members() {
                     onClick={() => setSelectedMemberView(m)}
                     className="bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.18)] transition-all flex flex-col rounded-none overflow-hidden cursor-pointer"
                   >
-                    {/* Top Card Header: Distinctive vehicle type color + compact vertical spacing */}
+                    {/* ສ່ວນຫົວຂອງກາດ: ສີພື້ນຫຼັງຕາມປະເພດລົດ ພ້ອມໄອຄອນ */}
                     <div className={`${theme.bannerBg} py-2 sm:py-2.5 flex justify-center items-center shadow-inner transition-colors relative`}>
                       <SvgIcon raw={theme.iconRaw} className="w-9 h-9 sm:w-10 sm:h-10 text-white" />
                     </div>
 
-                    {/* Bottom Card Body: Compact, space-saving info */}
+                    {/* ສ່ວນເນື້ອໃນລາຍລະອຽດຂອງກາດສະມາຊິກ: ລະຫັດ, ປ້າຍລົດ, ວັນໝົດອາຍຸ ແລະ ສະຖານະ */}
                     <div className="px-3 py-2 sm:px-3.5 sm:py-2.5 flex flex-col justify-between flex-1 bg-white">
                       <div className="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-0.5 text-[15px] sm:text-[15.5px] font-bold text-black mx-auto w-fit leading-tight my-0.5">
                         <span className="text-right">ລະຫັດ</span>
@@ -913,7 +912,7 @@ export default function Members() {
                         <span className="whitespace-nowrap">{fmt(m.paidAmount)} ₭</span>
                       </div>
 
-                      {/* Action Button: ລົດອອກ(Check out) */}
+                      {/* ປຸ່ມດຳເນີນການ: ເອົາລົດສະມາຊິກອອກ (Check out) */}
                       <div className="mt-2 sm:mt-2.5 flex items-center justify-center w-full">
                         <button
                           type="button"
@@ -936,7 +935,7 @@ export default function Members() {
               })}
             </div>
           ) : (
-            /* Empty State Matching Notifications.tsx */
+            /* ສະແດງຂໍ້ຄວາມເມື່ອບໍ່ພົບຂໍ້ມູນສະມາຊິກ (Empty State) */
             <div className="py-12 sm:py-16 text-center flex flex-col items-center justify-center select-none">
               <h3 className="text-base sm:text-[18px] font-bold text-black mb-1">
                 {isSearching ? 'ບໍ່ພົບຂໍ້ມູນສະມາຊິກທີ່ຄົ້ນຫາ' : 'ບໍ່ມີຂໍ້ມູນສະມາຊິກໃນຂະນະນີ້'}
@@ -950,15 +949,15 @@ export default function Members() {
           )}
         </div>
 
-        {/* Bottom Red Stripe Divider */}
+        {/* ເສັ້ນຂັ້ນສີແດງດ້ານລຸ່ມ (#B02019) */}
         <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-        {/* Bottom Footer Bar — Dark Gray (matching CheckOut.tsx) */}
+        {/* ແຖບສະຫຼຸບ ແລະ ປຸ່ມປ່ຽນໜ້າດ້ານລຸ່ມ — ໂທນສີເທົາເຂັ້ມ (#5D5D5D) */}
         <div
           className="bg-[#5D5D5D] px-3 py-3 md:py-0 min-h-[60px] md:h-16 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-none shrink-0"
           style={{ borderRadius: 0 }}
         >
-          {/* Left: Total Count Badge (Square w-10 h-10) */}
+          {/* ສ່ວນສະແດງຈຳນວນລາຍການທັງໝົດທີ່ກັ່ນຕອງໄດ້ (Total Count Badge) */}
           <div className="flex items-center gap-2 text-white font-bold text-base md:text-[17px]">
             <span>ຈຳນວນ</span>
             <span
@@ -970,7 +969,7 @@ export default function Members() {
             <span>ລາຍການ</span>
           </div>
 
-          {/* Right: Pagination Controls (Equal width buttons, square page buttons) */}
+          {/* ສ່ວນປຸ່ມຄວບຄຸມການປ່ຽນໜ້າ (Pagination Controls) */}
           <div className="flex items-center gap-1.5 sm:gap-2 max-w-full overflow-x-auto no-scrollbar py-1">
             <button
               type="button"
@@ -982,7 +981,7 @@ export default function Members() {
               ຖອຍກັບ
             </button>
 
-            {/* Page number buttons (Squares h-10 w-10) */}
+            {/* ປຸ່ມໝາຍເລກໜ້າຕ່າງໆ (Page Number Buttons) */}
             {visiblePages.map((p) => (
               <button
                 key={p}
@@ -1013,7 +1012,7 @@ export default function Members() {
         </div>
       </div>
 
-      {/* View Member Details Modal */}
+      {/* ໜ້າຕ່າງ Modal ສະແດງລາຍລະອຽດສະມາຊິກ (View Member Details Modal) */}
       {selectedMemberView && (() => {
         const parts = selectedMemberView.plateNumber.split(' ');
         let viewLetters = '-';
@@ -1040,7 +1039,7 @@ export default function Members() {
               className="bg-white w-full max-w-md shadow-2xl rounded-none overflow-hidden animate-scale-in border-0 flex flex-col max-h-[92vh]"
               style={{ borderRadius: 0 }}
             >
-              {/* Modal Header */}
+              {/* ສ່ວນຫົວຂອງ Modal: ຫົວຂໍ້ ແລະ ປຸ່ມປິດ */}
               <div className="bg-[#5D5D5D] px-4 sm:px-5 h-11 sm:h-12 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <SvgIcon raw={memberTheme.iconRaw} className="w-5 h-5 text-white" />
@@ -1058,10 +1057,10 @@ export default function Members() {
                 </button>
               </div>
 
-              {/* Red Stripe Divider */}
+              {/* ເສັ້ນຂັ້ນສີແດງ (#B02019) */}
               <div className="h-[2px] bg-[#B02019] w-full shrink-0" />
 
-              {/* Modal Body */}
+              {/* ສ່ວນເນື້ອໃນລາຍລະອຽດພາຍໃນ Modal */}
               <div className="px-4 sm:px-5 py-2.5 sm:py-3 space-y-2 bg-white overflow-y-auto">
                 <div className="grid grid-cols-[auto_auto_1fr] gap-x-2.5 gap-y-0.5 sm:gap-y-1 text-[14px] font-bold text-black mx-auto w-fit leading-tight sm:leading-snug">
                   <span className="text-right">ລະຫັດສະມາຊິກ</span>
@@ -1122,10 +1121,10 @@ export default function Members() {
                 </div>
               </div>
 
-              {/* Red Stripe Divider */}
+              {/* ເສັ້ນຂັ້ນສີແດງ (#B02019) */}
               <div className="h-[2px] bg-[#B02019] w-full shrink-0" />
 
-              {/* Modal Footer */}
+              {/* ສ່ວນລຸ່ມຂອງ Modal: ປຸ່ມແກ້ໄຂຂໍ້ມູນສະມາຊິກ */}
               <div className="bg-[#5D5D5D] px-4 py-2.5 flex items-center justify-center shrink-0">
                 <button
                   type="button"
@@ -1145,14 +1144,14 @@ export default function Members() {
         );
       })()}
 
-      {/* Add / Edit Member Modal Form */}
+      {/* ໜ້າຕ່າງ Modal ຟອມເພີ່ມ ແລະ ແກ້ໄຂຂໍ້ມູນສະມາຊິກ (Add/Edit Member Modal) */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
           <div
             className="bg-white w-full max-w-lg shadow-2xl rounded-none overflow-hidden animate-scale-in max-h-[90vh] flex flex-col"
             style={{ borderRadius: 0 }}
           >
-            {/* Modal Header */}
+            {/* ສ່ວນຫົວຂອງ Modal: ຫົວຂໍ້ຟອມ ແລະ ປຸ່ມປິດ */}
             <div className="bg-[#5D5D5D] px-6 h-16 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2.5 text-white font-bold text-base md:text-[18px]">
                 <Car size={20} className="w-5 h-5 text-white" />
@@ -1168,12 +1167,12 @@ export default function Members() {
               </button>
             </div>
 
-            {/* Red Stripe Divider */}
+            {/* ເສັ້ນຂັ້ນສີແດງ (#B02019) */}
             <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-            {/* Modal Form Scrollable Area */}
+            {/* ພື້ນທີ່ຟອມປ້ອນຂໍ້ມູນແບບເລື່ອນໄດ້ (Modal Form Scrollable Area) */}
             <form id="member-form" onSubmit={handleSubmit} className="p-6 overflow-y-auto flex-1 space-y-4">
-              {/* 1. Vehicle Type */}
+              {/* 1. ຕົວເລືອກປະເພດຍານພາຫະນະ (Vehicle Type) */}
               <div>
                 <p className="text-sm font-bold text-gray-800 mb-2 uppercase tracking-wide">1. ເລືອກປະເພດລົດ</p>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -1216,7 +1215,7 @@ export default function Members() {
                 </div>
               </div>
 
-              {/* 2. Plate Info */}
+              {/* 2. ຂໍ້ມູນປ້າຍທະບຽນລົດ (Plate Info) */}
               <div>
                 <p className="text-sm font-bold text-gray-800 mb-2 uppercase tracking-wide">2. ປ້າຍລົດ</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -1256,7 +1255,7 @@ export default function Members() {
                 </div>
               </div>
 
-              {/* 3. Membership Type */}
+              {/* 3. ຮູບແບບການສະໝັກສະມາຊິກ (Membership Type) */}
               <div>
                 <label className="block text-sm font-bold text-gray-800 mb-1">ປະເພດສະມາຊິກ *</label>
                 <select
@@ -1278,7 +1277,7 @@ export default function Members() {
                 </select>
               </div>
 
-              {/* 4. Dates */}
+              {/* 4. ວັນທີເລີ່ມຕົ້ນ ແລະ ວັນໝົດອາຍຸ (Dates) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-bold text-gray-800 mb-1">ວັນທີເລີ່ມ *</label>
@@ -1309,7 +1308,7 @@ export default function Members() {
                 </div>
               </div>
 
-              {/* 5. Paid Amount */}
+              {/* 5. ຈຳນວນເງິນຄ່າບໍລິການທີ່ຊຳລະ (Paid Amount) */}
               {!editing && (
                 <div>
                   <label className="block text-sm font-bold text-gray-800 mb-1">ຈຳນວນເງິນທີ່ຈ່າຍ (₭) *</label>
@@ -1325,7 +1324,7 @@ export default function Members() {
                 </div>
               )}
 
-              {/* 6. Notes */}
+              {/* 6. ໝາຍເຫດເພີ່ມເຕີມ (Notes) */}
               <div>
                 <label className="block text-sm font-bold text-gray-800 mb-1">ໝາຍເຫດ</label>
                 <textarea
@@ -1338,10 +1337,10 @@ export default function Members() {
               </div>
             </form>
 
-            {/* Red Stripe Divider */}
+            {/* ເສັ້ນຂັ້ນສີແດງ (#B02019) */}
             <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
 
-            {/* Modal Footer */}
+            {/* ສ່ວນລຸ່ມຂອງ Modal: ປຸ່ມຍົກເລີກ ແລະ ປຸ່ມບັນທຶກຂໍ້ມູນ */}
             <div className="bg-[#5D5D5D] px-6 py-3.5 flex items-center justify-end gap-3 shrink-0">
               <button
                 type="button"
@@ -1363,7 +1362,7 @@ export default function Members() {
         </div>
       )}
 
-      {/* Checkout Confirmation Modal */}
+      {/* ໜ້າຕ່າງ Modal ຢືນຢັນການນຳລົດອອກ (Checkout Confirmation Modal) */}
       {checkoutConfirmMember && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 animate-fade-in">
           <div
@@ -1447,7 +1446,7 @@ export default function Members() {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* ໜ້າຕ່າງ Modal ຢືນຢັນການລຶບສະມາຊິກ (Delete Confirmation Modal) */}
       {deleteConfirmMember && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 animate-fade-in">
           <div
@@ -1494,7 +1493,7 @@ export default function Members() {
         </div>
       )}
 
-      {/* Centered Success Notification Popup (Dead Center of Screen) */}
+      {/* ກ່ອງແຈ້ງເຕືອນຄວາມສຳເລັດເຄິ່ງກາງໜ້າຈໍ (Centered Success Notification Popup) */}
       {successMsg && (
         <div className="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center p-4">
           <div
