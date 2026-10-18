@@ -3,11 +3,51 @@
 // Automatically logs all CUD operations
 // ============================================
 import {
-  Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger,
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+  Logger,
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+
+const SENSITIVE_KEYS = new Set([
+  'password',
+  'passwordhash',
+  'password_hash',
+  'accesstoken',
+  'refreshtoken',
+  'token',
+  'access_token',
+  'refresh_token',
+  'secret',
+  'authorization',
+  'currentpassword',
+  'newpassword',
+]);
+
+function redactSensitiveData(obj: any, depth = 0): any {
+  if (depth > 5 || obj === null || obj === undefined) return obj;
+  if (typeof obj !== 'object') return obj;
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => redactSensitiveData(item, depth + 1));
+  }
+
+  const sanitized: Record<string, any> = {};
+  for (const [key, val] of Object.entries(obj)) {
+    if (SENSITIVE_KEYS.has(key.toLowerCase())) {
+      sanitized[key] = '[REDACTED]';
+    } else if (typeof val === 'object' && val !== null) {
+      sanitized[key] = redactSensitiveData(val, depth + 1);
+    } else {
+      sanitized[key] = val;
+    }
+  }
+  return sanitized;
+}
 
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
@@ -27,27 +67,63 @@ export class AuditInterceptor implements NestInterceptor {
     const user = request.user;
 
     return next.handle().pipe(
-      tap(async (responseData) => {
-        try {
-          const handler = context.getHandler().name;
-          const controller = context.getClass().name;
-
-          await this.prisma.auditLog.create({
-            data: {
-              userId: user?.id || null,
-              action: `${method} ${handler}`,
-              entityType: controller.replace('Controller', ''),
-              entityId: request.params?.id || null,
-              oldData: Prisma.JsonNull,
-              newData: typeof responseData === 'object' ? (responseData as Prisma.InputJsonValue) : Prisma.JsonNull,
-              ipAddress: request.ip || request.connection?.remoteAddress,
-              userAgent: request.headers['user-agent'] || null,
-            },
-          });
-        } catch (err: any) {
-          this.logger.error(`Audit log failed: ${err.message}`);
-        }
+      tap((responseData) => {
+        void this.logAudit(context, request, user, method, responseData);
       }),
     );
+  }
+
+  private async logAudit(
+    context: ExecutionContext,
+    request: any,
+    user: any,
+    method: string,
+    responseData: any,
+  ): Promise<void> {
+    try {
+      const handler = context.getHandler().name;
+      const controller = context.getClass().name;
+
+      // Extract and format real client IP address
+      const forwardedHeader = request.headers['x-forwarded-for'];
+      const rawForwarded = Array.isArray(forwardedHeader)
+        ? forwardedHeader[0]
+        : forwardedHeader;
+      const rawIp =
+        rawForwarded?.split(',')[0]?.trim() ||
+        (request.headers['x-real-ip'] as string) ||
+        request.ip ||
+        request.connection?.remoteAddress ||
+        '';
+
+      let cleanIp = rawIp.replace(/^::ffff:/i, '').trim();
+      if (
+        cleanIp === '::1' ||
+        cleanIp === 'localhost' ||
+        /^172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+$/.test(cleanIp)
+      ) {
+        cleanIp = '127.0.0.1';
+      }
+
+      const sanitizedData =
+        typeof responseData === 'object' && responseData !== null
+          ? redactSensitiveData(responseData)
+          : Prisma.JsonNull;
+
+      await this.prisma.auditLog.create({
+        data: {
+          userId: user?.id || null,
+          action: `${method} ${handler}`,
+          entityType: controller.replace('Controller', ''),
+          entityId: request.params?.id || null,
+          oldData: Prisma.JsonNull,
+          newData: sanitizedData,
+          ipAddress: cleanIp || null,
+          userAgent: request.headers['user-agent'] || null,
+        },
+      });
+    } catch (err: any) {
+      this.logger.error(`Audit log failed: ${err.message}`);
+    }
   }
 }

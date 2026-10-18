@@ -11,7 +11,12 @@ import {
   UseGuards,
   Param,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Role } from '@prisma/client';
 import { ParkingService } from './parking.service';
@@ -56,13 +61,16 @@ export class ParkingController {
   @ApiOperation({ summary: 'Get all active/parked tickets' })
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'limit', required: false })
+  @ApiQuery({ name: 'vehicleTypeId', required: false })
   getActiveTickets(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('vehicleTypeId') vehicleTypeId?: string,
   ) {
     return this.parkingService.getActiveTickets(
       parseInt(String(page)) || 1,
       parseInt(String(limit)) || 20,
+      vehicleTypeId ? parseInt(String(vehicleTypeId)) : undefined,
     );
   }
 
@@ -71,6 +79,26 @@ export class ParkingController {
   @ApiQuery({ name: 'limit', required: false })
   getRecentActivity(@Query('limit') limit?: string) {
     return this.parkingService.getRecentActivity(parseInt(String(limit)) || 10);
+  }
+
+  @Get('history')
+  @ApiOperation({ summary: 'Get all completed/history tickets' })
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiQuery({ name: 'vehicleTypeId', required: false })
+  @ApiQuery({ name: 'search', required: false })
+  getHistoryTickets(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('vehicleTypeId') vehicleTypeId?: string,
+    @Query('search') search?: string,
+  ) {
+    return this.parkingService.getHistoryTickets(
+      parseInt(String(page)) || 1,
+      parseInt(String(limit)) || 20,
+      vehicleTypeId ? parseInt(String(vehicleTypeId)) : undefined,
+      search,
+    );
   }
 
   @Post('delete/:id')

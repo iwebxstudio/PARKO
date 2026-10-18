@@ -16,7 +16,9 @@ export class SettingsService {
   }
 
   async get(key: string) {
-    const setting = await this.prisma.systemSetting.findUnique({ where: { key } });
+    const setting = await this.prisma.systemSetting.findUnique({
+      where: { key },
+    });
     if (!setting) throw new NotFoundException(`Setting '${key}' not found`);
     return setting;
   }

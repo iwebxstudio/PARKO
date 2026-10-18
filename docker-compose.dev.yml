@@ -1,0 +1,22 @@
+# ==============================================================================
+# PARKO — Development Override Compose
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+# Enables live Vite hot-module-reloading and host volume mounting
+# ==============================================================================
+
+services:
+  frontend:
+    build:
+      target: development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - PORT=80
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=800
+      - WATCHPACK_POLLING=true
+
+  backend:
+    environment:
+      - NODE_ENV=development

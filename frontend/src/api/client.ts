@@ -4,7 +4,8 @@
 // ============================================
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// ใช้ empty string เพื่อให้ Vite proxy จัดการ — ทำงานได้ทุก IP/hostname
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,
@@ -54,20 +55,7 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
     }
-    
-    // Log error to a hidden div for debugging
-    const errDiv = document.getElementById('debug-error-log') || document.createElement('div');
-    errDiv.id = 'debug-error-log';
-    errDiv.style.display = 'none';
-    errDiv.innerText = JSON.stringify({
-      url: error.config?.url,
-      method: error.config?.method,
-      data: error.config?.data,
-      status: error.response?.status,
-      message: error.response?.data?.message || error.message
-    });
-    document.body.appendChild(errDiv);
-    
+
     return Promise.reject(error);
   },
 );

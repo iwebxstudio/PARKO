@@ -27,7 +27,7 @@ export class CreateUserDto {
 
   @ApiProperty({ example: 'password123' })
   @IsString()
-  @MinLength(4)
+  @MinLength(8, { message: 'Password must be at least 8 characters long' })
   password: string;
 
   @ApiProperty({ example: 'Staff One' })
@@ -68,18 +68,18 @@ export class UpdateUserDto {
 export class ChangePasswordDto {
   @ApiProperty()
   @IsString()
-  @MinLength(4)
+  @IsNotEmpty()
   currentPassword: string;
 
   @ApiProperty()
   @IsString()
-  @MinLength(4)
+  @MinLength(8, { message: 'New password must be at least 8 characters long' })
   newPassword: string;
 }
 
 export class ResetPasswordDto {
   @ApiProperty()
   @IsString()
-  @MinLength(4)
+  @MinLength(8, { message: 'New password must be at least 8 characters long' })
   newPassword: string;
 }

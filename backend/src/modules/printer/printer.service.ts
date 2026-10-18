@@ -50,7 +50,8 @@ export class PrinterService {
       where: { key: 'parking_name' },
     });
 
-    const parkingName = (parkingNameSetting?.value as any)?.name || 'PARKO Parking';
+    const parkingName =
+      (parkingNameSetting?.value as any)?.name || 'PARKO Parking';
 
     // Calculate duration if checked out
     let duration: string | null = null;
@@ -66,7 +67,10 @@ export class PrinterService {
       ticketNumber: ticket.ticketNumber,
       vehicleType: ticket.vehicleType.label,
       vehicleIcon: ticket.vehicleType.icon,
-      plateNumber: ticket.plateNumber || 'N/A',
+      plateNumber:
+        [ticket.plateProvince, ticket.plateLetters, ticket.plateNumber]
+          .filter(Boolean)
+          .join(' ') || 'N/A',
       checkInAt: ticket.checkInAt.toISOString(),
       checkOutAt: ticket.checkOutAt?.toISOString() || null,
       duration,
@@ -75,7 +79,10 @@ export class PrinterService {
       paymentMethod: null,
       qrCodeData: ticket.qrCodeData,
       currency: 'LAK',
-      staffName: ticket.checkedOutBy?.displayName || ticket.checkedInBy?.displayName || 'System',
+      staffName:
+        ticket.checkedOutBy?.displayName ||
+        ticket.checkedInBy?.displayName ||
+        'System',
       printedAt: new Date().toISOString(),
     };
   }

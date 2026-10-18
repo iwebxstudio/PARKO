@@ -1,11 +1,11 @@
 // ============================================
 // PARKO — Register Page
-// Split-panel layout: Orange form + Teal brand
-// Matching the Login page design
+// Split-panel layout matching Login page design
+// Left: Red Brand Panel | Right: White Form Panel
 // ============================================
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ParkingCircle, UserPlus, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { User, Mail, Phone, Lock, Eye, EyeOff, Loader2, UserPlus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/client';
 
@@ -33,171 +33,384 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4"
-      style={{ background: '#e8e8e8' }}>
+    <div className="auth-page-wrapper" style={styles.pageWrapper}>
+      {/* Centered Group: Card + Footer centered together as one unit */}
+      <div className="auth-card-group" style={styles.cardGroup}>
 
-      {/* Main Card */}
-      <div className="w-full max-w-[900px] overflow-hidden shadow-2xl animate-fade-in flex flex-col md:flex-row">
+        {/* Main Card */}
+        <div className="auth-card" style={styles.card}>
 
-        {/* ===== LEFT PANEL — Orange Form ===== */}
-        <div className="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center"
-          style={{ background: 'linear-gradient(160deg, #FFB834 0%, #F5A623 50%, #E8961E 100%)' }}>
-
-          {/* Title */}
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-0 text-center">
-            ລົງທະບຽນ
-          </h1>
-          <p className="text-gray-900 text-base font-bold text-center mb-6">
-            ສ້າງບັນຊີໃໝ່ສຳລັບພະນັກງານ
-          </p>
-
-          {/* Form */}
-          <form onSubmit={handleRegister} className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold text-gray-800 mb-1.5">
-                ຊື່ຜູ້ໃຊ້ (Username)
-              </label>
-              <input
-                type="text"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 bg-white text-gray-900 placeholder-gray-400 border-none outline-none shadow-md focus:ring-2 focus:ring-white/50 transition-all duration-200"
-                placeholder="staff02"
-                autoFocus
-              />
+          {/* ===== LEFT PANEL — Red Brand ===== */}
+          <div className="auth-brand-panel" style={styles.brandPanel}>
+            {/* Logo — square box with P circle */}
+            <div className="auth-logo-box" style={styles.logoBox}>
+              <div className="auth-logo-inner" style={styles.logoInnerCircle}>P</div>
             </div>
 
-            <div>
-              <label className="block text-sm font-bold text-gray-800 mb-1.5">
-                ອີເມວ (Email)
-              </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-white text-gray-900 placeholder-gray-400 border-none outline-none shadow-md focus:ring-2 focus:ring-white/50 transition-all duration-200"
-                placeholder="staff@parko.com"
-              />
-            </div>
+            {/* Brand Text */}
+            <h2 className="auth-brand-title" style={styles.brandTitle}>PARKO SYSTEM</h2>
+            <p className="auth-brand-subtitle" style={styles.brandSubtitle}>ໂປຣແກຣມບໍລິຫານຈັດການບ່ອນຈອດລົດ</p>
+            <p className="auth-version-tag" style={styles.versionTag}>VERSION RC1</p>
+          </div>
 
-            <div>
-              <label className="block text-sm font-bold text-gray-800 mb-1.5">
-                ເບີໂທລະສັບ (Phone)
-              </label>
-              <input
-                type="tel"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                className="w-full px-4 py-3 bg-white text-gray-900 placeholder-gray-400 border-none outline-none shadow-md focus:ring-2 focus:ring-white/50 transition-all duration-200"
-                placeholder="020 9999 9999"
-              />
-            </div>
+          {/* ===== RIGHT PANEL — White Form ===== */}
+          <div className="auth-form-panel" style={styles.formPanel}>
 
-            <div>
-              <label className="block text-sm font-bold text-gray-800 mb-1.5">
-                ລະຫັດຜ່ານ (Password)
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 bg-white text-gray-900 placeholder-gray-400 border-none outline-none shadow-md focus:ring-2 focus:ring-white/50 transition-all duration-200"
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div>
+            {/* Title */}
+            <h1 className="auth-form-title" style={styles.formTitle}>ລົງທະບຽນ/SignUp</h1>
 
-            {/* Register Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3.5 font-bold text-white text-lg flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 shadow-lg mt-2"
-              style={{
-                background: loading ? '#6b3a3a' : 'linear-gradient(135deg, #8B3A4A 0%, #6B2D3B 100%)',
-                boxShadow: '0 4px 15px rgba(107, 45, 59, 0.4)',
-              }}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  ກຳລັງລົງທະບຽນ...
-                </>
-              ) : (
-                <>
-                  <UserPlus size={20} />
-                  ລົງທະບຽນ (Register)
-                </>
-              )}
-            </button>
-          </form>
+            {/* Form */}
+            <form onSubmit={handleRegister} style={{ width: '100%' }}>
 
-          {/* Login Link */}
-          <div className="text-center mt-5">
-            <p className="text-gray-800 text-sm font-bold">
-              ມີບັນຊີແລ້ວບໍ?{' '}
-              <Link to="/login" className="font-bold text-white underline underline-offset-2 hover:text-gray-100 transition-colors">
-                ເຂົ້າສູ່ລະບົບ
+              {/* Username Field */}
+              <fieldset style={styles.fieldset}>
+                <legend style={styles.legend}>ຊື່ຜູ້ໃຊ້/USERNAME</legend>
+                <div style={styles.inputWrapper}>
+                  <User style={styles.inputIcon} />
+                  <input
+                    id="register-username"
+                    type="text"
+                    required
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    style={styles.input}
+                    placeholder="ປ້ອນຊື່ຜູ້ໃຊ້/USERNAME"
+                    autoComplete="username"
+                    autoFocus
+                  />
+                </div>
+              </fieldset>
+
+              {/* Email Field */}
+              <fieldset style={{ ...styles.fieldset, marginTop: 14 }}>
+                <legend style={styles.legend}>ອີເມວ/EMAIL</legend>
+                <div style={styles.inputWrapper}>
+                  <Mail style={styles.inputIcon} />
+                  <input
+                    id="register-email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    style={styles.input}
+                    placeholder="ປ້ອນອີເມວ/EMAIL"
+                    autoComplete="email"
+                  />
+                </div>
+              </fieldset>
+
+              {/* Phone Field */}
+              <fieldset style={{ ...styles.fieldset, marginTop: 14 }}>
+                <legend style={styles.legend}>ເບີໂທລະສັບ/PHONE</legend>
+                <div style={styles.inputWrapper}>
+                  <Phone style={styles.inputIcon} />
+                  <input
+                    id="register-phone"
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    style={styles.input}
+                    placeholder="ປ້ອນເບີໂທລະສັບ/PHONE"
+                    autoComplete="tel"
+                  />
+                </div>
+              </fieldset>
+
+              {/* Password Field */}
+              <fieldset style={{ ...styles.fieldset, marginTop: 14 }}>
+                <legend style={styles.legend}>ລະຫັດຜ່ານ/PASSWORD</legend>
+                <div style={styles.inputWrapper}>
+                  <Lock style={styles.inputIcon} />
+                  <input
+                    id="register-password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    style={styles.input}
+                    placeholder="ປ້ອນລະຫັດຜ່ານ/PASSWORD"
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={styles.eyeButton}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </fieldset>
+
+              {/* Register Button */}
+              <button
+                id="register-submit"
+                type="submit"
+                disabled={loading}
+                style={{
+                  ...styles.submitButton,
+                  marginTop: 18,
+                  background: loading ? '#888' : '#555',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 style={{ width: 20, height: 20, animation: 'spin 1s linear infinite' }} />
+                    ກຳລັງລົງທະບຽນ...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus style={{ width: 20, height: 20 }} />
+                    ລົງທະບຽນ/SignUp
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Login Link */}
+            <div style={styles.registerRow}>
+              <span style={{ color: '#555', fontSize: 14 }}>ມີບັນຊີແລ້ວບໍ? </span>
+              <Link to="/login" style={styles.registerLink}>
+                ເຂົ້າສູ່ລະບົບທີ່ນີ້
               </Link>
-            </p>
+            </div>
           </div>
         </div>
 
-        {/* ===== RIGHT PANEL — Teal Brand ===== */}
-        <div className="w-full md:w-1/2 p-8 md:p-10 flex flex-col items-center justify-center"
-          style={{ background: 'linear-gradient(160deg, #2A7F8F 0%, #1B6B7D 50%, #165A6B 100%)' }}>
-
-          {/* Logo */}
-          <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-xl"
-            style={{ background: 'linear-gradient(135deg, #34d399 0%, #059669 100%)' }}>
-            <ParkingCircle className="w-11 h-11 text-white" />
-          </div>
-
-          {/* Brand Text */}
-          <h2 className="text-2xl md:text-3xl font-bold text-white text-center tracking-wide mb-1">
-            PARKO(ປາຣ໌ຄໂຄ)
-          </h2>
-          <p className="text-lg md:text-xl font-bold text-white/90 text-center mb-10">
-            ໂປຣແກຣມບໍລິຫານຈັດການບ່ອນຈອດລົດ
-          </p>
-
-          {/* Demo Credentials Card */}
-          <div className="w-full max-w-[280px] bg-white/95 rounded-xl p-4 shadow-lg backdrop-blur-sm">
-            <p className="text-xs text-gray-500 font-bold text-center mb-3 tracking-wide">
-              Demo Credentials
-            </p>
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="text-center">
-                <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-primary-100 text-primary-700">
-                  Admin
-                </span>
-                <p className="text-gray-600 font-medium mt-1.5">admin / admin123</p>
-              </div>
-              <div className="text-center border-l border-gray-200">
-                <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-secondary-100 text-secondary-700">
-                  Staff
-                </span>
-                <p className="text-gray-600 font-medium mt-1.5">staff01 / staff123</p>
-              </div>
-            </div>
+        {/* Footer */}
+        <div className="auth-footer" style={styles.footer}>
+          <div className="auth-footer-inner" style={styles.footerInner}>
+            <p className="auth-footer-line" style={styles.footerLine1}>Powered by iwebxstudio technology</p>
+            <p className="auth-footer-line" style={styles.footerLine2}>© 2026 Parko.All rights reserved.</p>
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <p className="text-center text-gray-500 text-sm font-bold mt-8 tracking-wide">
-        COPYRIGHT © 2026 All rights reserved.
-      </p>
     </div>
   );
 }
+
+/* ============================================
+   Inline Styles (matching Login page design)
+   ============================================ */
+const styles: Record<string, React.CSSProperties> = {
+  pageWrapper: {
+    minHeight: '100dvh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '24px 16px',
+    boxSizing: 'border-box',
+    background: '#FDF1D7',
+  },
+
+  cardGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 740,
+    margin: 0,
+    padding: 0,
+    boxSizing: 'border-box',
+  },
+
+  card: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    overflow: 'hidden',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+    margin: 0,
+  },
+
+  /* ---------- LEFT Brand Panel ---------- */
+  brandPanel: {
+    width: '50%',
+    minHeight: 450,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '40px 28px',
+    background: '#A52422',
+    borderRight: '4px solid #FFAB10',
+  },
+
+  logoBox: {
+    width: 66,
+    height: 66,
+    borderRadius: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#FFAB10',
+    marginBottom: 18,
+    border: '4px solid #fff',
+  },
+
+  logoInnerCircle: {
+    fontSize: 28,
+    fontWeight: 800,
+    color: '#fff',
+    letterSpacing: 0,
+    lineHeight: 1,
+  },
+
+  brandTitle: {
+    fontSize: 22,
+    fontWeight: 800,
+    color: '#fff',
+    textAlign: 'center',
+    letterSpacing: 2,
+    margin: '0 0 2px 0',
+  },
+
+  brandSubtitle: {
+    fontSize: 17,
+    fontWeight: 700,
+    color: '#fff',
+    textAlign: 'center',
+    margin: '0 0 2px 0',
+  },
+
+  versionTag: {
+    fontSize: 15,
+    fontWeight: 700,
+    color: '#fff',
+    textAlign: 'center',
+    letterSpacing: 2,
+    margin: 0,
+  },
+
+  /* ---------- RIGHT Form Panel ---------- */
+  formPanel: {
+    width: '50%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '36px 30px',
+    background: '#fff',
+  },
+
+  formTitle: {
+    fontSize: 20,
+    fontWeight: 800,
+    color: '#333',
+    textAlign: 'center',
+    margin: '0 0 20px 0',
+  },
+
+  /* Fieldset approach for labeled border */
+  fieldset: {
+    border: '2px solid #5D5D5D',
+    borderRadius: 0,
+    padding: '4px 12px 8px 12px',
+    margin: 0,
+    width: '100%',
+  },
+
+  legend: {
+    fontSize: 14,
+    fontWeight: 700,
+    color: '#555',
+    padding: '0 6px',
+    marginLeft: -2,
+  },
+
+  inputWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  inputIcon: {
+    width: 20,
+    height: 20,
+    color: '#888',
+    flexShrink: 0,
+  },
+
+  input: {
+    flex: 1,
+    border: 'none',
+    outline: 'none',
+    fontSize: 15,
+    padding: '6px 0',
+    background: 'transparent',
+    color: '#333',
+    fontFamily: 'inherit',
+  },
+
+  eyeButton: {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    color: '#888',
+    padding: 4,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  /* Submit button */
+  submitButton: {
+    width: '100%',
+    padding: '14px 0',
+    border: 'none',
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 700,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    transition: 'all 0.2s ease',
+    fontFamily: 'inherit',
+  },
+
+  /* Register link */
+  registerRow: {
+    marginTop: 18,
+    textAlign: 'center',
+  },
+
+  registerLink: {
+    fontSize: 14,
+    fontWeight: 700,
+    color: '#A52422',
+    textDecoration: 'underline',
+    textUnderlineOffset: 3,
+  },
+
+  /* Footer */
+  footer: {
+    marginTop: 24,
+    marginBottom: 0,
+    textAlign: 'center',
+    width: '100%',
+    maxWidth: 740,
+  },
+
+  footerInner: {
+    display: 'inline-block',
+    textAlign: 'left',
+  },
+
+  footerLine1: {
+    fontSize: 18,
+    fontWeight: 800,
+    color: '#333',
+    margin: 0,
+    lineHeight: 1.4,
+  },
+
+  footerLine2: {
+    fontSize: 18,
+    fontWeight: 800,
+    color: '#333',
+    margin: 0,
+    lineHeight: 1.4,
+  },
+};

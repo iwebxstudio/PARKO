@@ -11,7 +11,12 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateUserDto, UpdateUserDto, ChangePasswordDto, ResetPasswordDto } from './dto';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  ChangePasswordDto,
+  ResetPasswordDto,
+} from './dto';
 
 @Injectable()
 export class UsersService {
@@ -148,8 +153,12 @@ export class UsersService {
 
     if (!user) throw new NotFoundException('User not found');
 
-    const isValid = await bcrypt.compare(dto.currentPassword, user.passwordHash);
-    if (!isValid) throw new BadRequestException('Current password is incorrect');
+    const isValid = await bcrypt.compare(
+      dto.currentPassword,
+      user.passwordHash,
+    );
+    if (!isValid)
+      throw new BadRequestException('Current password is incorrect');
 
     const passwordHash = await bcrypt.hash(dto.newPassword, 12);
 

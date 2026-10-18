@@ -2,7 +2,14 @@
 // PARKO — Lost Ticket DTOs
 // ============================================
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsOptional, IsEnum, IsNumber, Min } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsEnum,
+  IsNumber,
+  Min,
+} from 'class-validator';
 import { LostTicketResolution } from '@prisma/client';
 
 export class CreateLostTicketDto {
@@ -30,6 +37,12 @@ export class CreateLostTicketDto {
   @IsString()
   @IsOptional()
   idCardPhotoUrl?: string;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  penaltyAmount?: number;
 }
 
 export class ResolveLostTicketDto {

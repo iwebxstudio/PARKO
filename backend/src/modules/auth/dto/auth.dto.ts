@@ -3,12 +3,7 @@
 // Validation for authentication requests
 // ============================================
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsString,
-  IsNotEmpty,
-  MinLength,
-  MaxLength,
-} from 'class-validator';
+import { IsString, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
 
 export class LoginDto {
   @ApiProperty({ example: 'admin', description: 'Username' })

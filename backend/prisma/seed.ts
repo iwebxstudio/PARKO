@@ -14,7 +14,11 @@ async function main() {
   const adminPassword = await bcrypt.hash('admin123', 12);
   const admin = await prisma.user.upsert({
     where: { username: 'admin' },
-    update: {},
+    update: {
+      passwordHash: adminPassword,
+      role: 'ADMIN',
+      isActive: true,
+    },
     create: {
       username: 'admin',
       email: 'admin@parko.local',
@@ -25,16 +29,37 @@ async function main() {
   });
   console.log(`✅ Admin user created: ${admin.username}`);
 
-  // ─── Create Staff User ───────────────────
+  // ─── Create Staff Users ───────────────────
   const staffPassword = await bcrypt.hash('staff123', 12);
-  const staff = await prisma.user.upsert({
+  const staff01 = await prisma.user.upsert({
     where: { username: 'staff01' },
-    update: {},
+    update: {
+      passwordHash: staffPassword,
+      role: 'STAFF',
+      isActive: true,
+    },
     create: {
       username: 'staff01',
       email: 'staff01@parko.local',
       passwordHash: staffPassword,
       displayName: 'Staff 01',
+      role: 'STAFF',
+    },
+  });
+  console.log(`✅ Staff user created: ${staff01.username}`);
+
+  const staff = await prisma.user.upsert({
+    where: { username: 'staff' },
+    update: {
+      passwordHash: staffPassword,
+      role: 'STAFF',
+      isActive: true,
+    },
+    create: {
+      username: 'staff',
+      email: 'staff@parko.local',
+      passwordHash: staffPassword,
+      displayName: 'Staff',
       role: 'STAFF',
     },
   });
@@ -152,7 +177,7 @@ async function main() {
   console.log('🎉 Seed completed!');
   console.log('─────────────────────────────────');
   console.log('Admin login:  admin / admin123');
-  console.log('Staff login:  staff01 / staff123');
+  console.log('Staff login:  staff / staff123 (or staff01 / staff123)');
   console.log('Currency:     LAK (₭ Lao Kip)');
   console.log('─────────────────────────────────');
 }

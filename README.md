@@ -46,6 +46,51 @@ Client → Print Request → Local Print Agent → Thermal Printer
 
 ---
 
+## 2.3 Project Structure (Enterprise Standard)
+
+โครงสร้างโฟลเดอร์ถูกจัดระเบียบตามมาตรฐานสากล (Global Enterprise Standard) เพื่อความยืดหยุ่นในการขยายระบบ (Upscaling) และง่ายต่อการอัปเดตระยะยาว:
+
+```
+PARKO/
+├── backend/                       # NestJS REST & WebSocket API (Clean Architecture)
+│   ├── src/
+│   │   ├── core/                  # Core infrastructure (Database, Config, Health)
+│   │   ├── common/                # Shared decorators, guards, filters, pipes, utils
+│   │   └── modules/               # Domain business modules (parking, users, reports, etc.)
+│   └── test/                      # Unit & E2E integration tests
+│
+├── frontend/                      # React + Vite + TypeScript (Feature-Driven Architecture)
+│   ├── src/
+│   │   ├── assets/                # Static assets (fonts, icons)
+│   │   ├── components/
+│   │   │   ├── ui/                # Reusable design system UI kit (Button, Input, Modal, etc.)
+│   │   │   ├── feedback/          # EmptyState, ConfirmDialog
+│   │   │   └── layout/            # AppLayout navigation
+│   │   ├── constants/             # Route paths, vehicle types, storage keys
+│   │   ├── features/              # Feature modules (parking, membership, reports, etc.)
+│   │   ├── hooks/                 # Custom reusable hooks (useDebounce, useModal, usePagination)
+│   │   ├── services/              # Modular typed API services (parking, member, report, etc.)
+│   │   ├── types/                 # Domain types with root barrel export
+│   │   └── utils/                 # Formatting and safe storage helpers
+│
+├── services/                      # Auxiliary microservices
+│   └── print-agent/               # Hardware thermal printer daemon
+│
+├── infra/                         # Infrastructure as Code & DevOps
+│   ├── database/                  # PostgreSQL init scripts and automated backups
+│   ├── monitoring/                # Prometheus & Grafana configurations
+│   └── nginx/                     # Reverse proxy, SSL certificates, gateway config
+│
+├── scripts/                       # DevOps & maintenance automation scripts (backup/restore)
+├── docs/                          # Deployment manuals, architecture notes & guides
+├── logs/                          # Mounted container runtime logs
+├── docker-compose.yaml            # Production multi-container orchestration
+└── dev.bat                        # One-click Windows development launcher
+```
+
+
+---
+
 # 3. Core Modules
 
 ---
@@ -410,27 +455,61 @@ Trigger:
 
 ---
 
-# 9. Deployment
+# 9. Deployment & Quick Start (Docker)
+
+ระบบรองรับการติดตั้งและรันใช้งานทันทีผ่าน Docker และ Docker Compose ทั้งบน Linux และ Windows โดยมีขั้นตอนดังต่อไปนี้:
+
+## 9.1 ความต้องการระบบ (Prerequisites)
+- ติดตั้ง Docker Desktop หรือ Docker Engine (เวอร์ชัน 20.10 ขึ้นไป)
+
+## 9.2 ขั้นตอนการติดตั้งและเริ่มทำงาน (Quick Start)
+
+### วิธีรันแบบรวดเร็ว (ผ่านสคริปต์อัตโนมัติ)
+สคริปต์จะสร้างไฟล์ `.env` (หากยังไม่มี), สร้างโฟลเดอร์สำหรับ Mount, ดึง/สร้างอิมเมจ และตรวจสอบความพร้อมของระบบให้อัตโนมัติ:
+
+**บน Linux:**
+```bash
+chmod +x deploy.sh
+./deploy.sh
+```
+
+**บน Windows (PowerShell ในฐานะ Administrator):**
+```powershell
+.\deploy.ps1
+```
+
+### วิธีรันด้วย Docker Compose ด้วยตนเอง (One-Command Run)
+เพียงติดตั้ง Docker Desktop แล้วเปิด Terminal ที่โฟลเดอร์โปรเจกต์ รันคำสั่งเดียวได้ทันที:
+```bash
+docker-compose up -d
+```
+*(หรือ `docker compose up -d`)*
+
+ระบบจะสร้างฐานข้อมูล, Migrate โครงสร้างตาราง, Seed ข้อมูลผู้ดูแลระบบ, สร้าง SSL Certificate และเปิดเซิร์ฟเวอร์ให้อัตโนมัติ 100% โดยไม่ต้องพิมพ์หรือตั้งค่าอะไรเพิ่มเติม
+
+เมื่อเริ่มทำงานเรียบร้อยแล้ว สามารถเข้าใช้งานระบบผ่านเบราว์เซอร์ได้ทันทีที่:
+- **HTTP Endpoint**: `http://localhost:39741`
+- **HTTPS Endpoint**: `https://localhost:39742` (รองรับ SSL Self-Signed ปลอดภัยระดับ Enterprise)
+
+#### บัญชีผู้ใช้งานเริ่มต้น (Default Credentials):
+- 👑 **ผู้ดูแลระบบ (Admin)**: Username: `admin` | Password: `admin123`
+- 🚗 **เจ้าหน้าที่ลานจอด (Staff)**: Username: `staff01` | Password: `staff123`
 
 ---
 
-## Docker Services
+## 9.3 การดูแลรักษาและจัดการฐานข้อมูล (Database Utilities)
 
-* app (NestJS)
-* frontend (React)
-* db (PostgreSQL)
-* redis
-* print-agent
+### การสำรองข้อมูล (Backup)
+ระบบจำลองคอนเทนเนอร์สำรองข้อมูลอัตโนมัติทุก 12 ชั่วโมง และเก็บไฟล์ไว้ที่ `./infra/database/backup/` (เก็บย้อนหลัง 30 วัน) แต่คุณสามารถสั่งสำรองข้อมูลด้วยตนเองได้ทันที:
+- **บน Linux:** `./scripts/backup.sh`
+- **บน Windows:** `.\scripts\backup.ps1`
 
----
+### การกู้คืนข้อมูล (Restore)
+การกู้คืนข้อมูลจะทำการล้างข้อมูลปัจจุบันและกู้คืนจากไฟล์สคริปต์ SQL ที่ระบุ (หรือไฟล์ล่าสุดหากไม่ได้ระบุ):
+- **บน Linux:** `./scripts/restore.sh [เส้นทางไฟล์ backup]`
+- **บน Windows:** `.\scripts\restore.ps1 [เส้นทางไฟล์ backup]`
 
-## docker-compose.yml
-
-ประกอบด้วย:
-
-* network
-* volume
-* env config
+รายละเอียดการออกแบบและวิธีแก้ไขปัญหาเพิ่มเติมสามารถศึกษาได้ในคู่มือ [docs/deployment.md](docs/deployment.md)
 
 ---
 

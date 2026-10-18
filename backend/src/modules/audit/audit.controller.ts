@@ -1,5 +1,10 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Delete, Query, UseGuards } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Role } from '@prisma/client';
 import { AuditService } from './audit.service';
@@ -31,8 +36,26 @@ export class AuditController {
     @Query('dateTo') dateTo?: string,
   ) {
     return this.auditService.findAll(
-      parseInt(String(page)) || 1, parseInt(String(limit)) || 50,
+      parseInt(String(page)) || 1,
+      parseInt(String(limit)) || 50,
       { userId, entityType, dateFrom, dateTo },
     );
+  }
+
+  @Delete('old')
+  @ApiOperation({
+    summary:
+      'Delete audit logs older than a specific number of months (default 3)',
+  })
+  @ApiQuery({ name: 'months', required: false, type: Number })
+  deleteOldLogs(@Query('months') months?: string) {
+    const monthsNum = months ? parseInt(months) : 3;
+    return this.auditService.deleteOldLogs(monthsNum);
+  }
+
+  @Delete('all')
+  @ApiOperation({ summary: 'Delete all audit logs' })
+  deleteAllLogs() {
+    return this.auditService.deleteAllLogs();
   }
 }

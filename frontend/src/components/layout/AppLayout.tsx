@@ -2,43 +2,141 @@
 // PARKO — App Layout with Sidebar Navigation
 // ============================================
 import React, { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
-  LayoutDashboard, LogIn, LogOut as LogOutIcon, Car, ScanLine,
-  AlertTriangle, Users, BarChart3, DollarSign, Settings,
-  ClipboardList, Menu, X, ParkingCircle, ChevronDown,
+  LogIn, LogOut, Car, ScanLine,
+  AlertTriangle, CircleUserRound, Users, BarChart3, DollarSign, Settings,
+  ClipboardList, Menu, X, ChevronDown, Bell, FileSpreadsheet, History,
+  BellRing, CircleUser, FileWarning,
 } from 'lucide-react';
+import api from '../../api/client';
+import { io } from 'socket.io-client';
+
+
 
 export default function AppLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [expiringCount, setExpiringCount] = useState(0);
   const isAdmin = user?.role === 'ADMIN';
+  const location = useLocation();
+
+  const refreshExpiringCount = React.useCallback(() => {
+    if (!user) return;
+    api.get('/membership').then(res => {
+      const raw = res.data?.data || res.data;
+      const members = Array.isArray(raw) ? raw : [];
+      const now = new Date();
+      const sevenDaysLater = new Date(now);
+      sevenDaysLater.setDate(sevenDaysLater.getDate() + 7);
+      sevenDaysLater.setHours(23, 59, 59, 999);
+
+      const expiring = members.filter((m: any) => {
+        const hasActiveTicket = Array.isArray(m.tickets) && m.tickets.length > 0;
+        if (!hasActiveTicket) return false;
+
+        const end = new Date(m.endDate);
+        end.setHours(23, 59, 59, 999);
+        return end <= sevenDaysLater;
+      });
+      setExpiringCount(expiring.length);
+    }).catch(() => { });
+  }, [user]);
+
+  // Refresh whenever user changes or user navigates to any page
+  React.useEffect(() => {
+    refreshExpiringCount();
+  }, [refreshExpiringCount, location.pathname]);
+
+  // Listen for real-time notification count events, websocket, cross-tab, and poll periodically
+  React.useEffect(() => {
+    const handleCountUpdate = (e: any) => {
+      if (typeof e.detail === 'number') {
+        setExpiringCount(e.detail);
+      } else {
+        refreshExpiringCount();
+      }
+    };
+
+    window.addEventListener('notification-count-update', handleCountUpdate);
+    window.addEventListener('membership-updated', handleCountUpdate);
+
+    // Cross-tab broadcast
+    let channel: BroadcastChannel | null = null;
+    try {
+      channel = new BroadcastChannel('parko_channel');
+      channel.onmessage = (event) => {
+        if (event.data === 'membership_updated' || event.data === 'parking_updated') {
+          refreshExpiringCount();
+        } else if (event.data?.type === 'notification_count' && typeof event.data.count === 'number') {
+          setExpiringCount(event.data.count);
+        }
+      };
+    } catch {}
+
+    // WebSocket real-time update
+    const WS = import.meta.env.VITE_WS_URL || '';
+    const socket = io(`${WS}/parking`, { transports: ['websocket'] });
+    socket.on('parking_update', () => {
+      refreshExpiringCount();
+    });
+
+    const handleFocus = () => refreshExpiringCount();
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        refreshExpiringCount();
+      }
+    };
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    const interval = setInterval(refreshExpiringCount, 8000);
+
+    return () => {
+      channel?.close();
+      socket.disconnect();
+      window.removeEventListener('notification-count-update', handleCountUpdate);
+      window.removeEventListener('membership-updated', handleCountUpdate);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      clearInterval(interval);
+    };
+  }, [refreshExpiringCount]);
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
   };
 
-  const staffLinks = [
-    { to: '/staff/check-in', icon: LogIn, label: 'ລົດເຂົ້າ (Check in)' },
-    { to: '/staff/check-out', icon: ScanLine, label: 'ລົດອອກ (Check out)' },
-    { to: '/staff/lost-ticket', icon: AlertTriangle, label: 'ແຈ້ງປີ້ຫາຍ (Lost Ticket)' },
+  const allLinks = [
+    { to: '/staff/check-in', icon: LogIn, label: 'ລົດເຂົ້າ', roles: ['ADMIN', 'STAFF'] },
+    { to: '/staff/check-out', icon: ScanLine, label: 'ລົດອອກ', roles: ['ADMIN', 'STAFF'] },
+    { to: '/staff/lost-ticket', icon: AlertTriangle, label: 'ແຈ້ງປີ້ລົດຫາຍ', roles: ['ADMIN', 'STAFF'] },
+    { to: '/staff/lost-ticket-history', icon: FileWarning, label: 'ປະຫວັດປີ້ເສຍ', roles: ['ADMIN', 'STAFF'] },
+    { to: '/admin/history', icon: History, label: 'ປະຫວັດການຝາກ', roles: ['ADMIN', 'STAFF'] },
+    { to: '/admin/members', icon: Car, label: 'ຝາກມີກຳນົດ', roles: ['ADMIN', 'STAFF'] },
+    { to: '/admin/statistics', icon: BarChart3, label: 'ສະຖິຕິ', roles: ['ADMIN', 'STAFF'] },
+    { to: '/admin/reports', icon: FileSpreadsheet, label: 'ລາຍງານ', roles: ['ADMIN'] },
+    { to: '/admin/users', icon: Users, label: 'ຈັດການຜູ້ໃຊ້', roles: ['ADMIN'] },
+    { to: '/admin/notifications', icon: Bell, label: 'ແຈ້ງເຕືອນ', badge: expiringCount, roles: ['ADMIN', 'STAFF'] },
+    { to: '/admin/settings', icon: Settings, label: 'ຕັ້ງຄ່າລະບົບ', roles: ['ADMIN'] },
+    { to: '/admin/audit-log', icon: ClipboardList, label: 'Audit Log', roles: ['ADMIN'] },
   ];
 
-  const adminLinks = [
-    { to: '/admin/dashboard', icon: LayoutDashboard, label: 'ແຜງຄວບຄຸມ' },
-    { to: '/admin/users', icon: Users, label: 'ຈັດການຜູ້ໃຊ້' },
-    { to: '/admin/reports', icon: BarChart3, label: 'ລາຍງານ' },
-    { to: '/admin/settings', icon: Settings, label: 'ຕັ້ງຄ່າລະບົບ' },
-    { to: '/admin/audit-log', icon: ClipboardList, label: 'Audit Log' },
-  ];
+  const currentLinks = allLinks.filter(l => l.roles.includes(user?.role || ''));
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-bold ${isActive
-      ? 'bg-primary-50 text-primary-700 border border-primary-100'
-      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+    `flex items-center relative transition-all duration-150 text-[17px] font-bold rounded-none ${
+      sidebarCollapsed
+        ? 'w-10 h-10 mx-auto justify-center p-0'
+        : 'w-full gap-3 px-4 py-2.5'
+    } ${
+      isActive
+        ? 'bg-[#B02019] hover:bg-[#961B15] text-white shadow-md'
+        : 'text-white hover:bg-[#F9A825] hover:text-black active:bg-[#e09514] active:text-black'
     }`;
 
   return (
@@ -51,106 +149,195 @@ export default function AppLayout() {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar — entire sidebar scrolls together */}
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-40 w-72 bg-white/95 backdrop-blur-xl border-r border-gray-200 flex flex-col transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-          }`}
+        className={`fixed md:static inset-y-0 left-0 z-40 ${sidebarCollapsed ? 'md:w-20' : 'md:w-72'} w-72 overflow-y-auto overflow-x-hidden transform transition-all duration-300 shadow-xl flex flex-col sidebar-scrollbar ${isAdmin ? 'admin-sidebar-border' : 'staff-sidebar-border'
+          } ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+        style={{ background: '#5D5D5D' }}
       >
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-200">
-          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shadow-lg shadow-primary-500/30">
-            <ParkingCircle className="w-6 h-6 text-white" />
+        {/* Logo — Red header (Fixed at top) */}
+        <div className={`flex items-center ${sidebarCollapsed ? 'justify-center px-0' : 'gap-3 px-5'} shrink-0 sticky top-0 z-10 shadow-sm transition-all duration-300`} style={{ background: '#B02019', height: '72px' }}>
+          <div
+            className="w-10 h-10 rounded-none border-[3.5px] border-white flex items-center justify-center shadow-md shrink-0 select-none"
+            style={{ background: '#F9A825' }}
+          >
+            <span className="text-white font-black text-2xl leading-none font-sans">
+              P
+            </span>
           </div>
-          <div>
-            <h1 className="text-lg font-bold text-gray-900 tracking-wide">PARKO V2.0</h1>
-            <p className="text-[10px] text-gray-500 uppercase tracking-widest">Parking System</p>
-          </div>
+          {!sidebarCollapsed && <h1 className="text-lg font-bold text-white tracking-wide truncate transition-opacity duration-300">PARKO SYSTEM</h1>}
           <button
-            className="ml-auto md:hidden text-gray-500 hover:text-gray-900"
+            className="ml-auto md:hidden text-white/80 hover:text-white shrink-0"
             onClick={() => setSidebarOpen(false)}
           >
             <X size={20} />
           </button>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-          {/* Staff Section */}
-          <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-          </p>
-          {staffLinks.map((link) => (
+        {/* Navigation — Orange body (flows naturally) */}
+        <nav className={`${sidebarCollapsed ? 'px-0' : 'px-3'} py-3 space-y-1`}>
+          {currentLinks.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
               className={navLinkClass}
               onClick={() => setSidebarOpen(false)}
+              title={sidebarCollapsed ? link.label : undefined}
             >
-              <link.icon size={18} />
-              {link.label}
+              {({ isActive }) => (
+                <>
+                  <link.icon size={20} className="shrink-0" />
+                  {!sidebarCollapsed && (
+                    <>
+                      <span className="flex-1 truncate">{link.label}</span>
+                      {link.badge !== undefined && link.badge > 0 && (
+                        <span className={`${isActive ? 'bg-[#FFAB10] text-black font-extrabold' : 'bg-red-600 text-white font-bold'} text-[10px] px-2 py-0.5 rounded-full min-w-[20px] text-center shadow-sm`}>
+                          {link.badge}
+                        </span>
+                      )}
+                    </>
+                  )}
+                  {sidebarCollapsed && link.badge !== undefined && link.badge > 0 && (
+                    <span className={`absolute -top-1 -right-1 ${isActive ? 'bg-[#FFAB10] border-2 border-[#B02019]' : 'bg-red-600 border-2 border-[#5D5D5D]'} w-3.5 h-3.5 rounded-full`}></span>
+                  )}
+                </>
+              )}
             </NavLink>
           ))}
 
-          {/* Admin Section */}
-          {isAdmin && (
-            <>
-              <div className="my-3 border-t border-gray-100" />
-              <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-              </p>
-              {adminLinks.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  className={navLinkClass}
-                  onClick={() => setSidebarOpen(false)}
+          {/* User info — Split Orange/Red Bar with exact same spacing as menu items */}
+          <div>
+            {!sidebarCollapsed ? (
+              <div className="flex items-stretch h-11 w-full rounded-none overflow-hidden shadow-sm">
+                {/* Left: admin (Orange #F9A825) — flexible width */}
+                <div
+                  className="flex-auto flex items-center justify-center gap-2 px-3 select-none min-w-0"
+                  style={{ background: '#F9A825' }}
                 >
-                  <link.icon size={18} />
-                  {link.label}
-                </NavLink>
-              ))}
-            </>
-          )}
-        </nav>
+                  <CircleUserRound size={20} className="w-5 h-5 text-white shrink-0" strokeWidth={2.2} />
+                  <span className="text-white font-bold text-[17px] tracking-normal whitespace-nowrap">
+                    {(user?.role || 'admin').toLowerCase()}
+                  </span>
+                </div>
 
-        {/* User info */}
-        <div className="px-4 py-4 border-t border-gray-200">
-          <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-white text-sm font-bold">
-              {user?.displayName?.[0] || 'U'}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-gray-900 truncate">{user?.displayName}</p>
-              <p className="text-xs text-gray-500">{user?.role}</p>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="p-2 text-gray-500 hover:text-red-500 transition-colors rounded-lg hover:bg-gray-100"
-              title="Logout"
-            >
-              <LogOutIcon size={18} />
-            </button>
+                {/* Right: sign out Button (Red #B02019) — flexible width */}
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex-auto flex items-center justify-center gap-2 px-3 bg-[#B02019] hover:bg-[#961B15] active:bg-[#7e140f] text-white transition-colors cursor-pointer border-0 outline-none select-none min-w-0"
+                  title="sign out"
+                >
+                  <span className="font-bold text-[17px] tracking-normal whitespace-nowrap">
+                    sign out
+                  </span>
+                  <LogOut size={20} className="w-5 h-5 text-white shrink-0" strokeWidth={2.2} />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-10 h-10 mx-auto bg-[#B02019] hover:bg-[#961B15] active:bg-[#7e140f] text-white flex items-center justify-center transition-colors cursor-pointer rounded-none shadow-sm"
+                title="sign out"
+              >
+                <LogOut size={20} className="w-5 h-5 text-white" strokeWidth={2.2} />
+              </button>
+            )}
           </div>
-        </div>
+        </nav>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Top bar (mobile) */}
-        <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 text-gray-600 hover:text-gray-900"
-          >
-            <Menu size={24} />
-          </button>
-          <div className="flex items-center gap-2">
-            <ParkingCircle className="w-6 h-6 text-primary-500" />
-            <span className="font-bold text-gray-900">PARKO</span>
+        {/* Universal Navbar (Fixed at top) */}
+        <header
+          className="relative flex items-center justify-between px-3 sm:px-4 md:px-5 shrink-0 shadow-md z-10 overflow-hidden"
+          style={{ background: '#B02019', height: '72px' }}
+        >
+          {/* Diagonal Gray Section with White Slant Divider on the Right */}
+          <div className="absolute inset-y-0 right-0 w-[120px] sm:w-[130px] md:w-[295px] lg:w-[310px] pointer-events-none select-none">
+            {/* White slant layer (underneath, 4px wider to create clean white line) */}
+            <div
+              className="absolute inset-0 bg-white"
+              style={{
+                clipPath: 'polygon(0 0, 100% 0, 100% 100%, 46px 100%)',
+              }}
+            />
+            {/* Gray slant layer (on top of white, offset by 4px) */}
+            <div
+              className="absolute inset-0 bg-[#4D4D4D]"
+              style={{
+                clipPath: 'polygon(4px 0, 100% 0, 100% 100%, 50px 100%)',
+              }}
+            />
           </div>
-          <div className="w-10" />
+
+          {/* Left: Hamburger & Title */}
+          <div className="relative z-10 flex items-center gap-2.5 sm:gap-3.5">
+            <button
+              type="button"
+              onClick={() => {
+                if (window.innerWidth < 768) {
+                  setSidebarOpen(!sidebarOpen);
+                } else {
+                  setSidebarCollapsed(!sidebarCollapsed);
+                }
+              }}
+              className="text-white p-1 hover:opacity-80 active:scale-95 transition-all cursor-pointer flex items-center justify-center shrink-0"
+              title="Toggle Sidebar"
+              aria-label="Toggle Sidebar"
+            >
+              <Menu className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+            </button>
+            <span className="text-base sm:text-lg md:text-xl font-bold text-white tracking-wide select-none drop-shadow-xs whitespace-nowrap">
+              {isAdmin ? 'ໜ້າແອດມິນ' : 'ໜ້າພະນັກງານ'}
+            </span>
+          </div>
+
+          {/* Right: Bell, Divider, Greeting, User Profile */}
+          <div className="relative z-10 flex items-center gap-2 sm:gap-3 md:gap-4">
+            {/* Notification Bell */}
+            <button
+              type="button"
+              onClick={() => navigate('/admin/notifications')}
+              className="relative p-1 text-white hover:opacity-80 active:scale-95 transition-all cursor-pointer flex items-center justify-center"
+              title="ແຈ້ງເຕືອນ"
+              aria-label="ແຈ້ງເຕືອນ"
+            >
+              <BellRing className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+              {expiringCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm ring-1 ring-[#4D4D4D]">
+                  {expiringCount}
+                </span>
+              )}
+            </button>
+
+            {/* Vertical White Divider */}
+            <div className="hidden md:block w-[2px] h-8 sm:h-9 bg-white mx-1 lg:mx-2 shrink-0 rounded-none" />
+
+            {/* Greeting Text */}
+            <span className="hidden md:inline-block text-white font-bold text-base lg:text-[17px] tracking-wide whitespace-nowrap select-none">
+              Hi! {user?.role || 'ADMIN/STAFF'}
+            </span>
+
+            {/* User Profile (Transparent background, white icon matching Image 2, size-matched) */}
+            <button
+              type="button"
+              onClick={() => navigate(isAdmin ? '/admin/users' : '#')}
+              className="p-1 text-white hover:opacity-80 active:scale-95 transition-all cursor-pointer flex items-center justify-center"
+              title={user?.displayName || user?.username || 'User Profile'}
+              aria-label="User Profile"
+            >
+              <CircleUser className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+            </button>
+          </div>
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 gradient-mesh">
+        <div
+          className="flex-1 overflow-y-auto no-scrollbar p-3.5 bg-[#FDF1D7] flex flex-col"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
           <Outlet />
         </div>
       </main>

@@ -1,5 +1,9 @@
+// PARKO — System Settings / ຕັ້ງຄ່າລະບົບ (Admin)
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Save, Upload, DollarSign, Pencil, X, AlertTriangle, Info, Loader2 } from 'lucide-react';
+import {
+  Settings as SettingsIcon, Save, Upload, DollarSign,
+  Pencil, X, AlertTriangle, Loader2, Printer, Store, Image, FileText
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../api/client';
 
@@ -9,6 +13,7 @@ function Pricing() {
   const [dailyRate, setDailyRate] = useState('');
   const [weeklyRate, setWeeklyRate] = useState('');
   const [monthlyRate, setMonthlyRate] = useState('');
+  const [yearlyRate, setYearlyRate] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
@@ -32,6 +37,7 @@ function Pricing() {
     setDailyRate(String(Number(r.dailyRate)));
     setWeeklyRate(String(Number(r.weeklyRate)));
     setMonthlyRate(String(Number(r.monthlyRate)));
+    setYearlyRate(String(Number(r.yearlyRate || 0)));
     setErrors({});
   };
 
@@ -51,6 +57,9 @@ function Pricing() {
     if (!monthlyRate || monthlyRate.trim() === '') errs.monthlyRate = 'ຫ້າມເປັນຄ່າວ່າງ';
     else if (Number(monthlyRate) < 0) errs.monthlyRate = 'ຫ້າມຕິດລົບ';
 
+    if (!yearlyRate || yearlyRate.trim() === '') errs.yearlyRate = 'ຫ້າມເປັນຄ່າວ່າງ';
+    else if (Number(yearlyRate) < 0) errs.yearlyRate = 'ຫ້າມຕິດລົບ';
+
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -66,6 +75,7 @@ function Pricing() {
         dailyRate: Number(dailyRate),
         weeklyRate: Number(weeklyRate),
         monthlyRate: Number(monthlyRate),
+        yearlyRate: Number(yearlyRate),
       });
       toast.success('✅ ບັນທຶກລາຄາສຳເລັດແລ້ວ!');
       setEditing(null);
@@ -83,137 +93,230 @@ function Pricing() {
 
   if (loadingData) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <Loader2 size={40} className="text-emerald-500 animate-spin mb-4" />
-        <p className="text-gray-400 font-medium">ກຳລັງໂຫຼດຂໍ້ມູນລາຄາ...</p>
+      <div className="flex flex-col items-center justify-center py-12 bg-white shadow-sm">
+        <Loader2 size={36} className="text-[#F9A825] animate-spin mb-3" />
+        <p className="text-gray-800 font-bold text-base md:text-[17px]">ກຳລັງໂຫຼດຂໍ້ມູນລາຄາ...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3.5">
       {rules.map(r => {
         const isEditing = editing === r.id;
 
         return (
-          <div key={r.id} className="glass-card p-6">
+          <div
+            key={r.id}
+            className="bg-white shadow-[0_4px_14px_rgba(0,0,0,0.08)] border border-gray-200 rounded-none overflow-hidden transition-all hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)]"
+            style={{ borderRadius: 0 }}
+          >
             {/* Card Header */}
-            <div className="flex items-center justify-between mb-4">
+            <div
+              className="bg-[#F8F9FA] px-4 py-3 border-b border-gray-200 flex items-center justify-between"
+              style={{ borderRadius: 0 }}
+            >
               <div className="flex items-center gap-3">
-                <span className="text-3xl">{r.vehicleType?.icon}</span>
+                <div
+                  className="w-10 h-10 bg-white border border-gray-200 flex items-center justify-center text-2xl shrink-0 shadow-2xs"
+                  style={{ borderRadius: 0 }}
+                >
+                  {r.vehicleType?.icon}
+                </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">{r.vehicleType?.label}</h3>
-                  <p className="text-xs text-gray-500">{r.vehicleType?.description}</p>
+                  <h3 className="text-base md:text-[17px] font-bold text-gray-900 leading-tight">{r.vehicleType?.label}</h3>
                 </div>
               </div>
 
               {!isEditing ? (
                 <button
+                  type="button"
                   onClick={() => startEdit(r)}
-                  className="btn-secondary text-sm flex items-center gap-2 !py-2 !px-4"
+                  className="bg-[#F9A825] hover:bg-[#e0921a] active:bg-[#c97d10] text-black px-4 h-9 font-bold text-sm flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer rounded-none border-0"
+                  style={{ borderRadius: 0 }}
                 >
-                  <Pencil size={14} /> ແກ້ໄຂ
+                  <Pencil size={15} /> <span>ແກ້ໄຂ</span>
                 </button>
               ) : (
                 <button
+                  type="button"
                   onClick={cancelEdit}
-                  className="btn-secondary text-sm flex items-center gap-2 !py-2 !px-4 !bg-gray-100 !border-transparent hover:!bg-gray-200"
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 h-9 font-bold text-sm flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer rounded-none border-0"
+                  style={{ borderRadius: 0 }}
                 >
-                  <X size={14} /> ຍົກເລີກ
+                  <X size={15} /> <span>ຍົກເລີກ</span>
                 </button>
               )}
             </div>
 
             {/* Card Body */}
-            {isEditing ? (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Daily */}
-                  <div>
-                    <label className="text-xs font-bold text-gray-600 mb-1 block">ລາຍມື້ (Day)</label>
-                    <div className="relative">
+            <div className="p-4">
+              {isEditing ? (
+                <div className="space-y-3.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5">
+                    {/* Daily */}
+                    <div className="bg-[#FAFBFD] p-3 border border-gray-200" style={{ borderRadius: 0 }}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-bold text-gray-700">ລາຍມື້ (Day)</label>
+                        <span className="text-[10px] font-black bg-[#B02019] text-white px-1.5 py-0.5 rounded-none" style={{ borderRadius: 0 }}>₭/DAY</span>
+                      </div>
                       <input
                         type="number"
                         value={dailyRate}
-                        onChange={e => { setDailyRate(e.target.value); if (errors.dailyRate) { const n = { ...errors }; delete n.dailyRate; setErrors(n); } }}
+                        onChange={e => {
+                          setDailyRate(e.target.value);
+                          if (errors.dailyRate) {
+                            const n = { ...errors };
+                            delete n.dailyRate;
+                            setErrors(n);
+                          }
+                        }}
                         min={0}
-                        className={`input-field font-bold ${errors.dailyRate ? '!border-red-400 !bg-red-50' : ''}`}
-                        placeholder="0"
+                        className={`w-full h-10 px-3 bg-white border border-gray-300 font-bold text-base md:text-[17px] rounded-none focus:outline-none focus:border-[#B02019] ${
+                          errors.dailyRate ? 'border-red-500 bg-red-50' : ''
+                        }`}
+                        style={{ borderRadius: 0 }}
                       />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₭</span>
+                      {errors.dailyRate && <p className="text-xs font-bold text-red-600 mt-1">{errors.dailyRate}</p>}
                     </div>
-                    {errors.dailyRate && <p className="text-xs text-red-500 mt-1">{errors.dailyRate}</p>}
-                  </div>
 
-                  {/* Weekly */}
-                  <div>
-                    <label className="text-xs font-bold text-gray-600 mb-1 block">ລາຍອາທິດ (Week)</label>
-                    <div className="relative">
+                    {/* Weekly */}
+                    <div className="bg-[#FAFBFD] p-3 border border-gray-200" style={{ borderRadius: 0 }}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-bold text-gray-700">ລາຍອາທິດ (Week)</label>
+                        <span className="text-[10px] font-black bg-[#1D4ED8] text-white px-1.5 py-0.5 rounded-none" style={{ borderRadius: 0 }}>₭/WEEK</span>
+                      </div>
                       <input
                         type="number"
                         value={weeklyRate}
-                        onChange={e => { setWeeklyRate(e.target.value); if (errors.weeklyRate) { const n = { ...errors }; delete n.weeklyRate; setErrors(n); } }}
+                        onChange={e => {
+                          setWeeklyRate(e.target.value);
+                          if (errors.weeklyRate) {
+                            const n = { ...errors };
+                            delete n.weeklyRate;
+                            setErrors(n);
+                          }
+                        }}
                         min={0}
-                        className={`input-field font-bold ${errors.weeklyRate ? '!border-red-400 !bg-red-50' : ''}`}
-                        placeholder="0"
+                        className={`w-full h-10 px-3 bg-white border border-gray-300 font-bold text-base md:text-[17px] rounded-none focus:outline-none focus:border-[#B02019] ${
+                          errors.weeklyRate ? 'border-red-500 bg-red-50' : ''
+                        }`}
+                        style={{ borderRadius: 0 }}
                       />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₭</span>
+                      {errors.weeklyRate && <p className="text-xs font-bold text-red-600 mt-1">{errors.weeklyRate}</p>}
                     </div>
-                    {errors.weeklyRate && <p className="text-xs text-red-500 mt-1">{errors.weeklyRate}</p>}
-                  </div>
 
-                  {/* Monthly */}
-                  <div>
-                    <label className="text-xs font-bold text-gray-600 mb-1 block">ລາຍເດືອນ (Month)</label>
-                    <div className="relative">
+                    {/* Monthly */}
+                    <div className="bg-[#FAFBFD] p-3 border border-gray-200" style={{ borderRadius: 0 }}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-bold text-gray-700">ລາຍເດືອນ (Month)</label>
+                        <span className="text-[10px] font-black bg-[#0D9488] text-white px-1.5 py-0.5 rounded-none" style={{ borderRadius: 0 }}>₭/MONTH</span>
+                      </div>
                       <input
                         type="number"
                         value={monthlyRate}
-                        onChange={e => { setMonthlyRate(e.target.value); if (errors.monthlyRate) { const n = { ...errors }; delete n.monthlyRate; setErrors(n); } }}
+                        onChange={e => {
+                          setMonthlyRate(e.target.value);
+                          if (errors.monthlyRate) {
+                            const n = { ...errors };
+                            delete n.monthlyRate;
+                            setErrors(n);
+                          }
+                        }}
                         min={0}
-                        className={`input-field font-bold ${errors.monthlyRate ? '!border-red-400 !bg-red-50' : ''}`}
-                        placeholder="0"
+                        className={`w-full h-10 px-3 bg-white border border-gray-300 font-bold text-base md:text-[17px] rounded-none focus:outline-none focus:border-[#B02019] ${
+                          errors.monthlyRate ? 'border-red-500 bg-red-50' : ''
+                        }`}
+                        style={{ borderRadius: 0 }}
                       />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₭</span>
+                      {errors.monthlyRate && <p className="text-xs font-bold text-red-600 mt-1">{errors.monthlyRate}</p>}
                     </div>
-                    {errors.monthlyRate && <p className="text-xs text-red-500 mt-1">{errors.monthlyRate}</p>}
-                  </div>
-                </div>
 
-                <button
-                  onClick={() => save(r.id)}
-                  disabled={saving}
-                  className="btn-primary text-sm flex items-center gap-2 mt-5 disabled:opacity-50"
-                >
-                  {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                  ບັນທຶກລາຄາ
-                </button>
-              </>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="text-xs font-bold text-gray-600 mb-1 block">ລາຍມື້ (Day)</label>
-                  <div className="input-field bg-gray-50 border-gray-100 text-gray-600 font-bold flex justify-between">
-                    <span>{fmt(Number(r.dailyRate))}</span>
-                    <span className="text-gray-400">₭</span>
+                    {/* Yearly */}
+                    <div className="bg-[#FAFBFD] p-3 border border-gray-200" style={{ borderRadius: 0 }}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-bold text-gray-700">ລາຍປີ (Year)</label>
+                        <span className="text-[10px] font-black bg-[#9333EA] text-white px-1.5 py-0.5 rounded-none" style={{ borderRadius: 0 }}>₭/YEAR</span>
+                      </div>
+                      <input
+                        type="number"
+                        value={yearlyRate}
+                        onChange={e => {
+                          setYearlyRate(e.target.value);
+                          if (errors.yearlyRate) {
+                            const n = { ...errors };
+                            delete n.yearlyRate;
+                            setErrors(n);
+                          }
+                        }}
+                        min={0}
+                        className={`w-full h-10 px-3 bg-white border border-gray-300 font-bold text-base md:text-[17px] rounded-none focus:outline-none focus:border-[#B02019] ${
+                          errors.yearlyRate ? 'border-red-500 bg-red-50' : ''
+                        }`}
+                        style={{ borderRadius: 0 }}
+                      />
+                      {errors.yearlyRate && <p className="text-xs font-bold text-red-600 mt-1">{errors.yearlyRate}</p>}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-3 border-t border-gray-100">
+                    <button
+                      type="button"
+                      onClick={() => save(r.id)}
+                      disabled={saving}
+                      className="bg-[#B02019] hover:bg-[#961b15] active:bg-[#7d1611] text-white font-bold h-10 px-5 shadow-sm text-base md:text-[16px] flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 cursor-pointer rounded-none border-0"
+                      style={{ borderRadius: 0 }}
+                    >
+                      {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                      <span>ບັນທຶກລາຄາ</span>
+                    </button>
                   </div>
                 </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 mb-1 block">ລາຍອາທິດ (Week)</label>
-                  <div className="input-field bg-gray-50 border-gray-100 text-gray-600 font-bold flex justify-between">
-                    <span>{fmt(Number(r.weeklyRate))}</span>
-                    <span className="text-gray-400">₭</span>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="bg-[#FAFBFD] p-3.5 border border-gray-200 flex flex-col justify-between" style={{ borderRadius: 0 }}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">ລາຍມື້ (Day)</span>
+                      <span className="text-[10px] font-black bg-[#B02019] text-white px-1.5 py-0.5 rounded-none" style={{ borderRadius: 0 }}>DAY</span>
+                    </div>
+                    <div className="flex justify-between items-baseline font-bold mt-1">
+                      <span className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">{fmt(Number(r.dailyRate))}</span>
+                      <span className="text-gray-500 text-sm font-bold">₭</span>
+                    </div>
+                  </div>
+                  <div className="bg-[#FAFBFD] p-3.5 border border-gray-200 flex flex-col justify-between" style={{ borderRadius: 0 }}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">ລາຍອາທິດ (Week)</span>
+                      <span className="text-[10px] font-black bg-[#1D4ED8] text-white px-1.5 py-0.5 rounded-none" style={{ borderRadius: 0 }}>WEEK</span>
+                    </div>
+                    <div className="flex justify-between items-baseline font-bold mt-1">
+                      <span className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">{fmt(Number(r.weeklyRate))}</span>
+                      <span className="text-gray-500 text-sm font-bold">₭</span>
+                    </div>
+                  </div>
+                  <div className="bg-[#FAFBFD] p-3.5 border border-gray-200 flex flex-col justify-between" style={{ borderRadius: 0 }}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">ລາຍເດືອນ (Month)</span>
+                      <span className="text-[10px] font-black bg-[#0D9488] text-white px-1.5 py-0.5 rounded-none" style={{ borderRadius: 0 }}>MONTH</span>
+                    </div>
+                    <div className="flex justify-between items-baseline font-bold mt-1">
+                      <span className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">{fmt(Number(r.monthlyRate))}</span>
+                      <span className="text-gray-500 text-sm font-bold">₭</span>
+                    </div>
+                  </div>
+                  <div className="bg-[#FAFBFD] p-3.5 border border-gray-200 flex flex-col justify-between" style={{ borderRadius: 0 }}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">ລາຍປີ (Year)</span>
+                      <span className="text-[10px] font-black bg-[#9333EA] text-white px-1.5 py-0.5 rounded-none" style={{ borderRadius: 0 }}>YEAR</span>
+                    </div>
+                    <div className="flex justify-between items-baseline font-bold mt-1">
+                      <span className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">{fmt(Number(r.yearlyRate || 0))}</span>
+                      <span className="text-gray-500 text-sm font-bold">₭</span>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 mb-1 block">ລາຍເດືອນ (Month)</label>
-                  <div className="input-field bg-gray-50 border-gray-100 text-gray-600 font-bold flex justify-between">
-                    <span>{fmt(Number(r.monthlyRate))}</span>
-                    <span className="text-gray-400">₭</span>
-                  </div>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         );
       })}
@@ -241,6 +344,7 @@ export default function Settings() {
       if (pc) setPrinterType(pc.value.type || 'bluetooth');
     } catch { }
   };
+
   useEffect(() => { load(); }, []);
 
   const saveSetting = async (key: string, value: any, desc: string) => {
@@ -279,112 +383,288 @@ export default function Settings() {
     }
   };
 
-  const API_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3000';
+  const API_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || '';
   const logoUrl = settings.find((x: any) => x.key === 'parking_logo')?.value?.url;
   const qrUrl = settings.find((x: any) => x.key === 'qr_payment_image')?.value?.url;
 
   const imgSrc = (url: string) => url.startsWith('http') ? url : `${API_URL}${url}`;
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-3">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">ຕັ້ງຄ່າລະບົບ</h1>
-        </h1>
-        <p className="text-gray-500 mt-1">ຕັ້ງຄ່າລາຄາ, ຂໍ້ມູນບ່ອນຈອດລົດ, Logo, QR Code, ໃບບິນ, Printer</p>
-      </div>
-
-      {/* Pricing Settings injected at the top */}
-      <div className="mb-10">
-        <Pricing />
-      </div>
-
-      <div className="space-y-4">
-        {/* Parking Name */}
-        <div className="glass-card p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">🏢 ຊື່ລານຈອດລົດ</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-bold text-gray-600 mb-1 block">ຊື່ (ພາສາອັງກິດ)</label>
-              <input value={parkingName} onChange={e => setParkingName(e.target.value)} className="input-field" />
-            </div>
-            <div>
-              <label className="text-xs font-bold text-gray-600 mb-1 block">ຊື່ (ພາສາລາວ)</label>
-              <input value={parkingSub} onChange={e => setParkingSub(e.target.value)} className="input-field" />
+    <div className="font-sans w-full flex flex-col pb-6">
+      {/* Main Container Card */}
+      <div
+        className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-visible w-full border-0 flex flex-col"
+        style={{ borderRadius: 0 }}
+      >
+        {/* Top Header Bar — Dark Gray (#5D5D5D) */}
+        <div
+          className="bg-[#5D5D5D] px-3 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 lg:gap-3 rounded-none shrink-0"
+          style={{ borderRadius: 0 }}
+        >
+          {/* Left: Icon + Title */}
+          <div className="flex items-center justify-between w-full md:w-auto h-10">
+            <div className="flex items-center gap-2.5">
+              <SettingsIcon size={20} className="w-5 h-5 text-white shrink-0" />
+              <h1 className="text-base md:text-[17px] font-bold text-white tracking-normal whitespace-nowrap">
+                ຕັ້ງຄ່າລະບົບ
+              </h1>
             </div>
           </div>
-          <button onClick={() => saveSetting('parking_name', { name: parkingName, subtitle: parkingSub }, 'Parking name')}
-            className="btn-primary mt-4 w-fit text-sm flex items-center gap-2"><Save size={16} /> ບັນທຶກ</button>
         </div>
-        {/* Logo & QR */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="glass-card p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">🖼️ Logo</h3>
-            <label className="flex items-center gap-6 cursor-pointer group">
-              {logoUrl ? (
-                <div className="relative w-24 h-24 rounded-xl border-2 border-gray-200 overflow-hidden bg-white group-hover:border-primary-400 transition-colors">
-                  <img src={imgSrc(logoUrl)} className="w-full h-full object-contain p-2" alt="Logo" />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Pencil className="text-white w-6 h-6" />
+
+        {/* Top Red Stripe Divider */}
+        <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
+
+        {/* Main Body — Orange Background (p-3.5 matching Statistics) */}
+        <div className="bg-[#F9A825] p-3.5 flex flex-col justify-start space-y-3.5">
+          {/* SECTION 1: PRICING */}
+          <div>
+            <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
+              <DollarSign size={20} className="text-black shrink-0" />
+              <span>ຕັ້ງຄ່າລາຄາຄ່າຈອດ (Parking Pricing)</span>
+            </div>
+            <Pricing />
+          </div>
+
+          {/* SECTION 2: PARKING NAME */}
+          <div>
+            <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
+              <Store size={20} className="text-black shrink-0" />
+              <span>ຊື່ສະຖານທີ່ຈອດລົດ (Parking Name)</span>
+            </div>
+            <div
+              className="bg-white shadow-[0_4px_14px_rgba(0,0,0,0.08)] border border-gray-200 rounded-none p-4 sm:p-5"
+              style={{ borderRadius: 0 }}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="text-xs font-bold text-gray-700 mb-1.5 block">ຊື່ຫຼັກ / ພາສາອັງກິດ (Main Name)</label>
+                  <input
+                    value={parkingName}
+                    onChange={e => setParkingName(e.target.value)}
+                    placeholder="ຊື່ບ່ອນຈອດລົດ"
+                    className="w-full h-11 px-3.5 bg-gray-50/60 border border-gray-300 font-bold text-base md:text-[17px] text-gray-900 rounded-none focus:bg-white focus:outline-none focus:border-[#B02019] transition-colors"
+                    style={{ borderRadius: 0 }}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-700 mb-1.5 block">ຄຳອະທິບາຍ / ພາສາລາວ (Subtitle)</label>
+                  <input
+                    value={parkingSub}
+                    onChange={e => setParkingSub(e.target.value)}
+                    placeholder="ຄຳອະທິບາຍເພີ່ມເຕີມ"
+                    className="w-full h-11 px-3.5 bg-gray-50/60 border border-gray-300 font-bold text-base md:text-[17px] text-gray-900 rounded-none focus:bg-white focus:outline-none focus:border-[#B02019] transition-colors"
+                    style={{ borderRadius: 0 }}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end pt-3 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => saveSetting('parking_name', { name: parkingName, subtitle: parkingSub }, 'Parking name')}
+                  className="bg-[#B02019] hover:bg-[#961b15] active:bg-[#7d1611] text-white font-bold h-10 px-6 rounded-none shadow-sm text-base md:text-[16px] flex items-center gap-2 transition-all active:scale-95 cursor-pointer border-0"
+                  style={{ borderRadius: 0 }}
+                >
+                  <Save size={16} />
+                  <span>ບັນທຶກຊື່</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 3: LOGO & QR PAYMENT */}
+          <div>
+            <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
+              <Image size={20} className="text-black shrink-0" />
+              <span>ໂລໂກ ແລະ QR Code ຮັບເງິນ</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              {/* Logo Card */}
+              <div
+                className="bg-white shadow-[0_4px_14px_rgba(0,0,0,0.08)] border border-gray-200 rounded-none p-4 sm:p-5 flex flex-col justify-between"
+                style={{ borderRadius: 0 }}
+              >
+                <div>
+                  <div className="flex items-center gap-2.5 pb-3 mb-4 border-b border-gray-100">
+                    <div
+                      className="w-8 h-8 bg-[#B02019] text-white flex items-center justify-center shrink-0 rounded-none"
+                      style={{ borderRadius: 0 }}
+                    >
+                      <Image size={18} />
+                    </div>
+                    <div>
+                      <h3 className="text-base md:text-[17px] font-bold text-gray-900">ໂລໂກຢູ່ປີ້ລົດ (Ticket Logo)</h3>
+                      <p className="text-xs font-semibold text-gray-500">ຮູບພາບຈະຖືກພິມຢູ່ຫົວໃບບິນປີ້ລົດ</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-center gap-4">
+                    {logoUrl ? (
+                      <div
+                        className="relative w-28 h-28 border-2 border-gray-300 bg-white flex items-center justify-center shrink-0 rounded-none overflow-hidden group shadow-2xs"
+                        style={{ borderRadius: 0 }}
+                      >
+                        <img src={imgSrc(logoUrl)} className="w-full h-full object-contain p-2" alt="Logo" />
+                      </div>
+                    ) : (
+                      <div
+                        className="w-28 h-28 border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center shrink-0 rounded-none text-gray-400"
+                        style={{ borderRadius: 0 }}
+                      >
+                        <Image size={28} className="text-gray-300 mb-1" />
+                        <span className="text-[11px] font-bold text-gray-500">ບໍ່ມີໂລໂກ</span>
+                      </div>
+                    )}
+                    <div className="flex-1 flex flex-col items-start gap-2 w-full">
+                      <label
+                        className="bg-[#B02019] hover:bg-[#961b15] active:bg-[#7d1611] text-white font-bold h-10 px-5 rounded-none shadow-sm text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer transition-all w-full sm:w-auto border-0"
+                        style={{ borderRadius: 0 }}
+                      >
+                        <Upload size={16} />
+                        <span>ອັບໂຫລດ Logo</span>
+                        <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files?.[0] && uploadLogo(e.target.files[0])} />
+                      </label>
+                      <p className="text-xs text-gray-500 font-semibold">ຮອງຮັບໄຟລ໌ PNG, JPG ຂະໜາດນ້ອຍ</p>
+                    </div>
                   </div>
                 </div>
-              ) : (
-                <div className="w-24 h-24 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center bg-gray-50 group-hover:bg-gray-100 transition-colors">
-                  <div className="text-center"><Upload className="mx-auto text-gray-400" /><p className="text-xs font-bold text-gray-500 mt-2">ອັບໂຫລດ Logo</p></div>
-                </div>
-              )}
-              <div className="text-sm text-gray-500">
-                <p className="font-bold text-gray-700 mb-1">ປ່ຽນຮູບ Logo</p>
-                <p className="text-xs">ຮອງຮັບ PNG, JPG ຂະໜາດນ້ອຍ</p>
               </div>
-              <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files?.[0] && uploadLogo(e.target.files[0])} />
-            </label>
-          </div>
-          <div className="glass-card p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">💳 QR Payment</h3>
-            <label className="flex items-center gap-6 cursor-pointer group">
-              {qrUrl ? (
-                <div className="relative w-32 h-32 rounded-xl border-2 border-gray-200 overflow-hidden bg-white group-hover:border-primary-400 transition-colors">
-                  <img src={imgSrc(qrUrl)} className="w-full h-full object-contain p-2" alt="QR Payment" />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Pencil className="text-white w-8 h-8" />
+
+              {/* QR Code Card */}
+              <div
+                className="bg-white shadow-[0_4px_14px_rgba(0,0,0,0.08)] border border-gray-200 rounded-none p-4 sm:p-5 flex flex-col justify-between"
+                style={{ borderRadius: 0 }}
+              >
+                <div>
+                  <div className="flex items-center gap-2.5 pb-3 mb-4 border-b border-gray-100">
+                    <div
+                      className="w-8 h-8 bg-[#1D4ED8] text-white flex items-center justify-center shrink-0 rounded-none"
+                      style={{ borderRadius: 0 }}
+                    >
+                      <DollarSign size={18} />
+                    </div>
+                    <div>
+                      <h3 className="text-base md:text-[17px] font-bold text-gray-900">QR ໂອນເງິນ (QR Payment)</h3>
+                      <p className="text-xs font-semibold text-gray-500">ສຳລັບສະແກນຊຳລະເງິນຄ່າຈອດລົດ</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-center gap-4">
+                    {qrUrl ? (
+                      <div
+                        className="relative w-28 h-28 border-2 border-gray-300 bg-white flex items-center justify-center shrink-0 rounded-none overflow-hidden group shadow-2xs"
+                        style={{ borderRadius: 0 }}
+                      >
+                        <img src={imgSrc(qrUrl)} className="w-full h-full object-contain p-2" alt="QR Payment" />
+                      </div>
+                    ) : (
+                      <div
+                        className="w-28 h-28 border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center shrink-0 rounded-none text-gray-400"
+                        style={{ borderRadius: 0 }}
+                      >
+                        <DollarSign size={28} className="text-gray-300 mb-1" />
+                        <span className="text-[11px] font-bold text-gray-500">ບໍ່ມີ QR</span>
+                      </div>
+                    )}
+                    <div className="flex-1 flex flex-col items-start gap-2 w-full">
+                      <label
+                        className="bg-[#B02019] hover:bg-[#961b15] active:bg-[#7d1611] text-white font-bold h-10 px-5 rounded-none shadow-sm text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer transition-all w-full sm:w-auto border-0"
+                        style={{ borderRadius: 0 }}
+                      >
+                        <Upload size={16} />
+                        <span>ອັບໂຫລດ QR Code</span>
+                        <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files?.[0] && uploadQR(e.target.files[0])} />
+                      </label>
+                      <p className="text-xs text-gray-500 font-semibold">ຮອງຮັບໄຟລ໌ຮູບພາບ QR Code ທຸກທະນາຄານ</p>
+                    </div>
                   </div>
                 </div>
-              ) : (
-                <div className="w-32 h-32 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center bg-gray-50 group-hover:bg-gray-100 transition-colors">
-                  <div className="text-center"><Upload className="mx-auto text-gray-400" /><p className="text-xs font-bold text-gray-500 mt-2">ອັບໂຫລດ QR Payment</p></div>
-                </div>
-              )}
-              <div className="text-sm text-gray-500">
-                <p className="font-bold text-gray-700 mb-1">ປ່ຽນຮູບ QR Code</p>
-                <p className="text-xs">ສຳລັບສະແກນຈ່າຍເງິນ</p>
               </div>
-              <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files?.[0] && uploadQR(e.target.files[0])} />
-            </label>
+            </div>
+          </div>
+
+          {/* SECTION 4: RECEIPT FOOTER */}
+          <div>
+            <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
+              <FileText size={20} className="text-black shrink-0" />
+              <span>ຂໍ້ຄວາມທ້າຍປີ້ (Receipt Footer)</span>
+            </div>
+            <div
+              className="bg-white shadow-[0_4px_14px_rgba(0,0,0,0.08)] border border-gray-200 rounded-none p-4 sm:p-5"
+              style={{ borderRadius: 0 }}
+            >
+              <label className="text-xs font-bold text-gray-700 mb-1.5 block">ຂໍ້ຄວາມທ້າຍໃບບິນ (Receipt Footer Text)</label>
+              <input
+                value={receiptFooter}
+                onChange={e => setReceiptFooter(e.target.value)}
+                placeholder="ຂໍ້ຄວາມທ້າຍໃບບິນ ເຊັ່ນ: ຂອບໃຈທີ່ໃຊ້ບໍລິການ"
+                className="w-full h-11 px-3.5 bg-gray-50/60 border border-gray-300 font-bold text-base md:text-[17px] text-gray-900 rounded-none focus:bg-white focus:outline-none focus:border-[#B02019] mb-4 transition-colors"
+                style={{ borderRadius: 0 }}
+              />
+              <div className="flex justify-end pt-3 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => saveSetting('receipt_footer', { text: receiptFooter }, 'Receipt footer')}
+                  className="bg-[#B02019] hover:bg-[#961b15] active:bg-[#7d1611] text-white font-bold h-10 px-6 rounded-none shadow-sm text-base md:text-[16px] flex items-center gap-2 transition-all active:scale-95 cursor-pointer border-0"
+                  style={{ borderRadius: 0 }}
+                >
+                  <Save size={16} />
+                  <span>ບັນທຶກທ້າຍປີ້</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 5: PRINTER CONFIG */}
+          <div>
+            <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px] mb-3.5">
+              <Printer size={20} className="text-black shrink-0" />
+              <span>ຕັ້ງຄ່າເຄື່ອງພິມ (Printer Setup)</span>
+            </div>
+            <div
+              className="bg-white shadow-[0_4px_14px_rgba(0,0,0,0.08)] border border-gray-200 rounded-none p-4 sm:p-5"
+              style={{ borderRadius: 0 }}
+            >
+              <label className="text-xs font-bold text-gray-700 mb-2 block">ປະເພດການເຊື່ອມຕໍ່ເຄື່ອງພິມ (Connection Interface)</label>
+              <div className="flex flex-wrap gap-2.5 mb-4">
+                {['USB', 'BLUETOOTH', 'NETWORK'].map(t => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setPrinterType(t.toLowerCase())}
+                    className={`h-11 px-6 rounded-none text-base md:text-[17px] font-bold transition-all border-2 outline-none cursor-pointer flex items-center gap-2 ${
+                      printerType === t.toLowerCase()
+                        ? 'bg-[#B02019] text-white border-[#B02019] shadow-sm'
+                        : 'bg-white text-gray-800 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                    }`}
+                    style={{ borderRadius: 0 }}
+                  >
+                    <Printer size={18} className={printerType === t.toLowerCase() ? 'text-white' : 'text-gray-500'} />
+                    <span>{t}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="flex justify-end pt-3 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => saveSetting('printer_config', { type: printerType, paperWidth: 58, encoding: 'UTF-8' }, 'Printer config')}
+                  className="bg-[#B02019] hover:bg-[#961b15] active:bg-[#7d1611] text-white font-bold h-10 px-6 rounded-none shadow-sm text-base md:text-[16px] flex items-center gap-2 transition-all active:scale-95 cursor-pointer border-0"
+                  style={{ borderRadius: 0 }}
+                >
+                  <Save size={16} />
+                  <span>ບັນທຶກ Printer</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-        {/* Receipt Footer */}
-        <div className="glass-card p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">🧾 ໃບບິນ</h3>
-          <label className="text-xs font-bold text-gray-600 mb-1 block">Footer ໃບບິນ</label>
-          <input value={receiptFooter} onChange={e => setReceiptFooter(e.target.value)} className="input-field mb-4" />
-          <button onClick={() => saveSetting('receipt_footer', { text: receiptFooter }, 'Receipt footer')}
-            className="btn-primary text-sm flex items-center gap-2"><Save size={16} /> ບັນທຶກ</button>
-        </div>
-        {/* Printer */}
-        <div className="glass-card p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">🖨️ Printer</h3>
-          <div className="flex gap-2 mb-4">
-            {['USB', 'BLUETOOTH', 'NETWORK'].map(t => (
-              <button key={t} onClick={() => setPrinterType(t.toLowerCase())}
-                className={`px-6 py-3 rounded-2xl text-sm font-bold transition-all ${printerType === t.toLowerCase() ? 'bg-primary-500 text-white shadow-md shadow-primary-500/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-                {t}
-              </button>
-            ))}
-          </div>
-          <button onClick={() => saveSetting('printer_config', { type: printerType, paperWidth: 58, encoding: 'UTF-8' }, 'Printer config')}
-            className="btn-primary text-sm flex items-center gap-2"><Save size={16} /> ບັນທຶກ</button>
-        </div>
+
+        {/* Red Stripe Divider */}
+        <div className="h-[2.5px] bg-[#B02019] w-full shrink-0" />
+
+        {/* Footer Bar */}
+        <div
+          className="bg-[#5D5D5D] px-6 min-h-[60px] md:h-16 rounded-none shrink-0"
+          style={{ borderRadius: 0 }}
+        />
       </div>
     </div>
   );

@@ -1,0 +1,26 @@
+// ============================================
+// PARKO — Reports and Statistics Service
+// ============================================
+import api from '../api/client';
+
+export const reportService = {
+  getStatistics: async (params?: { startDate?: string; endDate?: string }) => {
+    const res = await api.get('/reports/statistics', { params });
+    return res.data;
+  },
+
+  getDailySummary: async (date?: string) => {
+    const res = await api.get('/reports/daily-summary', { params: { date } });
+    return res.data;
+  },
+
+  getRevenue: async (params?: { period?: 'daily' | 'weekly' | 'monthly' | 'yearly'; startDate?: string; endDate?: string }) => {
+    const res = await api.get('/reports/revenue', { params });
+    return res.data;
+  },
+
+  exportExcel: async (params?: { startDate?: string; endDate?: string }) => {
+    const res = await api.get('/reports/export', { params, responseType: 'blob' });
+    return res.data;
+  },
+};

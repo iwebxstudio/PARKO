@@ -1,29 +1,5 @@
 // ============================================
-// PARKO — Prisma Service
-// Manages database connection lifecycle
+// PARKO — Prisma Service (Unified Export)
+// Single source of truth in core/database
 // ============================================
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-
-@Injectable()
-export class PrismaService
-  extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy
-{
-  constructor() {
-    super({
-      log:
-        process.env.NODE_ENV === 'development'
-          ? ['query', 'info', 'warn', 'error']
-          : ['error'],
-    });
-  }
-
-  async onModuleInit() {
-    await this.$connect();
-  }
-
-  async onModuleDestroy() {
-    await this.$disconnect();
-  }
-}
+export * from '../core/database/prisma.service';

@@ -23,6 +23,7 @@ model User {
   lostTicketCases   LostTicketCase[] @relation("HandledBy")
   checkedInTickets  ParkingTicket[]  @relation("CheckedInBy")
   checkedOutTickets ParkingTicket[]  @relation("CheckedOutBy")
+  membershipsCreated Membership[]    @relation("MembershipCreatedBy")
   payments          Payment[]
   refreshTokens     RefreshToken[]
   settingsUpdated   SystemSetting[]
@@ -55,6 +56,7 @@ model VehicleType {
   createdAt    DateTime        @default(now()) @map("created_at")
   tickets      ParkingTicket[]
   pricingRules PricingRule[]
+  memberships  Membership[]
 
   @@map("vehicle_types")
 }
@@ -68,6 +70,7 @@ model PricingRule {
   dailyRate     Decimal     @default(0) @map("daily_rate") @db.Decimal(12, 2)
   weeklyRate    Decimal     @default(0) @map("weekly_rate") @db.Decimal(12, 2)
   monthlyRate   Decimal     @default(0) @map("monthly_rate") @db.Decimal(12, 2)
+  yearlyRate    Decimal     @default(0) @map("yearly_rate") @db.Decimal(12, 2)
   freeMinutes   Int         @default(0) @map("free_minutes")
   isActive      Boolean     @default(true) @map("is_active")
   effectiveFrom DateTime?   @map("effective_from")
@@ -85,6 +88,7 @@ model ParkingTicket {
   ticketNumber   String          @unique @map("ticket_number") @db.VarChar(10)
   vehicleTypeId  Int             @map("vehicle_type_id")
   plateNumber    String?         @map("plate_number") @db.VarChar(20)
+  plateLetters   String?         @map("plate_letters") @db.VarChar(10)
   plateProvince  String?         @map("plate_province") @db.VarChar(50)
   qrCodeData     String          @map("qr_code_data")
   status         TicketStatus    @default(ACTIVE)
@@ -98,6 +102,7 @@ model ParkingTicket {
   paymentStatus  PaymentStatus   @default(UNPAID) @map("payment_status")
   checkedInById  String          @map("checked_in_by") @db.Uuid
   checkedOutById String?         @map("checked_out_by") @db.Uuid
+  membershipId   String?         @map("membership_id") @db.Uuid
   notes          String?
   createdAt      DateTime        @default(now()) @map("created_at")
   updatedAt      DateTime        @updatedAt @map("updated_at")
@@ -105,13 +110,19 @@ model ParkingTicket {
   checkedInBy    User            @relation("CheckedInBy", fields: [checkedInById], references: [id])
   checkedOutBy   User?           @relation("CheckedOutBy", fields: [checkedOutById], references: [id])
   vehicleType    VehicleType     @relation(fields: [vehicleTypeId], references: [id])
+  membership     Membership?     @relation(fields: [membershipId], references: [id])
   payments       Payment[]
 
   @@index([ticketNumber])
   @@index([plateNumber])
   @@index([status])
   @@index([checkInAt])
+  @@index([checkOutAt])
+  @@index([status, checkInAt])
+  @@index([status, plateNumber])
   @@index([paymentStatus])
+  @@index([membershipId])
+  @@index([plateLetters])
   @@map("parking_tickets")
 }
 
@@ -238,4 +249,44 @@ enum LostTicketResolution {
   PENDING
   RESOLVED
   ESCALATED
+}
+
+enum MemberType {
+  WEEKLY
+  MONTHLY
+  CUSTOM
+}
+
+enum MemberStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+model Membership {
+  id             String          @id @default(uuid()) @db.Uuid
+  memberCode     String          @unique @map("member_code") @db.VarChar(20)
+  plateNumber    String          @map("plate_number") @db.VarChar(20)
+  plateProvince  String?         @map("plate_province") @db.VarChar(50)
+  vehicleTypeId  Int             @map("vehicle_type_id")
+  memberType     MemberType      @map("member_type")
+  startDate      DateTime        @map("start_date")
+  endDate        DateTime        @map("end_date")
+  paidAmount     Decimal         @default(0) @map("paid_amount") @db.Decimal(12, 2)
+  paymentMethod  PaymentMethod   @default(CASH) @map("payment_method")
+  status         MemberStatus    @default(ACTIVE)
+  notes          String?
+  createdById    String          @map("created_by") @db.Uuid
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  vehicleType    VehicleType     @relation(fields: [vehicleTypeId], references: [id])
+  createdBy      User            @relation("MembershipCreatedBy", fields: [createdById], references: [id])
+  tickets        ParkingTicket[]
+
+  @@index([plateNumber])
+  @@index([status])
+  @@index([memberCode])
+  @@index([endDate])
+  @@index([plateNumber, status])
+  @@map("memberships")
 }

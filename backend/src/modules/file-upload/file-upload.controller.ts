@@ -1,8 +1,20 @@
 import {
-  Controller, Post, UseGuards, UseInterceptors,
-  UploadedFile, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator,
+  Controller,
+  Post,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileUploadService } from './file-upload.service';
@@ -24,7 +36,19 @@ export class FileUploadController {
     },
   })
   @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 5242880 } }))
-  async upload(@UploadedFile() file: Express.Multer.File) {
+  async upload(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5242880 }),
+          new FileTypeValidator({
+            fileType: /(image\/jpeg|image\/png|image\/webp)$/,
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
     const url = await this.fileUploadService.saveFile(file);
     return { url };
   }

@@ -29,17 +29,29 @@ export class CheckInDto {
   @IsOptional()
   plateProvince?: string;
 
+  @ApiPropertyOptional({
+    example: 'AB',
+    description: 'Plate letters (ຕົວອັກສອນ)',
+  })
+  @IsString()
+  @IsOptional()
+  plateLetters?: string;
+
   @ApiPropertyOptional({ enum: ParkingType, default: ParkingType.HOURLY })
   @IsEnum(ParkingType)
   @IsOptional()
   parkingType?: ParkingType;
 
-  @ApiPropertyOptional({ description: 'Custom start date for weekly/monthly parking' })
+  @ApiPropertyOptional({
+    description: 'Custom start date for weekly/monthly parking',
+  })
   @IsDateString()
   @IsOptional()
   customStart?: string;
 
-  @ApiPropertyOptional({ description: 'Custom end date for weekly/monthly parking' })
+  @ApiPropertyOptional({
+    description: 'Custom end date for weekly/monthly parking',
+  })
   @IsDateString()
   @IsOptional()
   customEnd?: string;

@@ -2,15 +2,11 @@
 // PARKO — Auth Service
 // Handles JWT authentication & refresh tokens
 // ============================================
-import {
-  Injectable,
-  UnauthorizedException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -32,16 +28,24 @@ export class AuthService {
         OR: [
           { username: usernameOrContact },
           { email: usernameOrContact },
-          { phoneNumber: usernameOrContact }
-        ]
+          { phoneNumber: usernameOrContact },
+        ],
       },
     });
 
-    if (!user || !user.isActive) {
-      throw new UnauthorizedException('Invalid credentials or account disabled');
+    if (!user) {
+      throw new UnauthorizedException(
+        'Invalid credentials or account disabled',
+      );
     }
 
-    const isPasswordValid = await bcrypt.compare(pass, user.passwordHash);
+    if (!user.isActive) {
+      throw new UnauthorizedException('Account disabled');
+    }
+
+    const isPasswordValid = await bcrypt
+      .compare(pass, user.passwordHash)
+      .catch(() => false);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -65,7 +69,7 @@ export class AuthService {
       expiresIn: this.configService.get('jwt.accessExpiration'),
     });
 
-    const refreshToken = uuidv4();
+    const refreshToken = randomUUID();
     const refreshExpiration = this.configService.get('jwt.refreshExpiration');
 
     // Calculate expiration date for refresh token
@@ -135,7 +139,7 @@ export class AuthService {
       expiresIn: this.configService.get('jwt.accessExpiration'),
     });
 
-    const newRefreshToken = uuidv4();
+    const newRefreshToken = randomUUID();
     const refreshExpiration = this.configService.get('jwt.refreshExpiration');
     const expiresAt = new Date();
     const days = parseInt(refreshExpiration) || 7;
@@ -178,12 +182,14 @@ export class AuthService {
         OR: [
           { username: dto.username },
           { email: dto.email },
-          { phoneNumber: dto.phoneNumber }
-        ]
-      }
+          { phoneNumber: dto.phoneNumber },
+        ],
+      },
     });
     if (existing) {
-      throw new UnauthorizedException('User with this username, email or phone already exists');
+      throw new UnauthorizedException(
+        'User with this username, email or phone already exists',
+      );
     }
     const passwordHash = await bcrypt.hash(dto.password, 12);
     const user = await this.prisma.user.create({
@@ -193,10 +199,11 @@ export class AuthService {
         phoneNumber: dto.phoneNumber,
         displayName: dto.displayName || dto.username,
         passwordHash,
-        role: 'STAFF' // Default to STAFF
-      }
+        role: 'STAFF', // Default to STAFF
+      },
     });
-    const { passwordHash: _, ...result } = user;
+    const result = { ...user };
+    delete (result as Record<string, any>).passwordHash;
     return result;
   }
 

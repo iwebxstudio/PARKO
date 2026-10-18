@@ -1,19 +1,49 @@
 // PARKO — User Management (Admin)
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, Edit2, Trash2, X, Shield, User } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../api/client';
+import usersIcon from '../../components/icons/users.svg?raw';
+import userPlusIcon from '../../components/icons/user-plus.svg?raw';
+import userIcon from '../../components/icons/user.svg?raw';
+import pencilIcon from '../../components/icons/pencil.svg?raw';
+import squarePenIcon from '../../components/icons/square-pen.svg?raw';
+import trashIcon from '../../components/icons/trash-2.svg?raw';
+import searchIcon from '../../components/icons/search.svg?raw';
+import userSearchIcon from '../../components/icons/user-search.svg?raw';
+import mailIcon from '../../components/icons/mail.svg?raw';
+import lockIcon from '../../components/icons/lock.svg?raw';
+import saveIcon from '../../components/icons/save.svg?raw';
+import xIcon from '../../components/icons/x.svg?raw';
+
+function SvgIcon({ raw, className = "w-5 h-5" }: { raw: string; className?: string }) {
+  return (
+    <span
+      className={`inline-flex items-center justify-center shrink-0 [&>svg]:w-full [&>svg]:h-full [&>svg]:stroke-current ${className}`}
+      dangerouslySetInnerHTML={{ __html: raw }}
+    />
+  );
+}
 
 export default function UsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string } | null>(null);
   const [editing, setEditing] = useState<any>(null);
   const [form, setForm] = useState({ username: '', email: '', password: '', displayName: '', role: 'STAFF' });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 8;
 
   const load = async () => {
-    try { const { data } = await api.get('/users'); setUsers((data.data || data).users || []); } catch {}
+    try {
+      const { data } = await api.get('/users');
+      setUsers((data.data || data).users || []);
+    } catch { }
   };
-  useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    load();
+  }, []);
 
   const handleSave = async () => {
     try {
@@ -26,15 +56,28 @@ export default function UsersPage() {
         await api.post('/users', form);
       }
       toast.success(editing ? 'ອັບເດດສຳເລັດ' : 'ສ້າງສຳເລັດ');
-      setShowForm(false); setEditing(null); setForm({ username: '', email: '', password: '', displayName: '', role: 'STAFF' });
+      setShowForm(false);
+      setEditing(null);
+      setForm({ username: '', email: '', password: '', displayName: '', role: 'STAFF' });
       load();
-    } catch (e: any) { toast.error(e.response?.data?.message || 'Failed'); }
+    } catch (e: any) {
+      toast.error(e.response?.data?.message || 'Failed');
+    }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('ຢືນຢັນການລຶບ?')) return;
-    try { await api.delete(`/users/${id}`); toast.success('ລຶບສຳເລັດ'); load(); }
-    catch { toast.error('Failed'); }
+  const executeDelete = async (id: string) => {
+    const tId = toast.loading('ກຳລັງດຳເນີນການ...');
+    try {
+      await api.delete(`/users/${id}`);
+      toast.success('ລຶບສຳເລັດ', { id: tId });
+      load();
+    } catch {
+      toast.error('Failed to delete', { id: tId });
+    }
+  };
+
+  const confirmDelete = (id: string, name: string) => {
+    setDeleteConfirm({ id, name });
   };
 
   const openEdit = (u: any) => {
@@ -43,64 +86,458 @@ export default function UsersPage() {
     setShowForm(true);
   };
 
+  const filteredUsers = users.filter((u) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase().trim();
+    return (
+      (u.displayName && u.displayName.toLowerCase().includes(q)) ||
+      (u.username && u.username.toLowerCase().includes(q)) ||
+      (u.email && u.email.toLowerCase().includes(q)) ||
+      (u.role && u.role.toLowerCase().includes(q))
+    );
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / ITEMS_PER_PAGE));
+  const paginatedUsers = filteredUsers.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">ຈັດການຜູ້ໃຊ້</h1>
-          <p className="text-gray-500 mt-1">ເພີ່ມ, ແກ້ໄຂ, ລຶບ ຜູ້ໃຊ້ງານ</p>
+    <div className="font-sans w-full flex flex-col">
+      {/* Main Container Card */}
+      <div className="shadow-[0_12px_36px_rgba(0,0,0,0.22),0_4px_14px_rgba(0,0,0,0.12)] rounded-none overflow-hidden bg-[#FFFAEE] border-0 flex flex-col" style={{ borderRadius: 0 }}>
+        
+        {/* Header Bar */}
+        <div
+          className="bg-[#5D5D5D] px-3 sm:px-4 md:px-6 py-2.5 md:py-0 min-h-[60px] md:h-16 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3 rounded-none shrink-0"
+          style={{ borderRadius: 0 }}
+        >
+          {/* Top Row on Mobile / Left Section on Desktop: Icon + Title */}
+          <div className="flex items-center justify-between w-full md:w-auto h-10 shrink-0">
+            <div className="flex items-center gap-2.5">
+              <SvgIcon raw={usersIcon} className="w-5 h-5 text-white shrink-0" />
+              <h1 className="text-base md:text-[17px] font-bold text-white tracking-normal whitespace-nowrap">
+                ຈັດການ
+              </h1>
+            </div>
+          </div>
+
+          {/* Right: Search Box & Add User Button */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 w-full md:w-auto shrink-0">
+            {/* Search Input Box */}
+            <div className="flex items-center bg-white shadow-sm w-full md:w-[280px] lg:w-[315px] xl:w-[325px] rounded-l-none rounded-r-full overflow-hidden pl-3 sm:pl-3.5 h-10 min-h-[40px] shrink-0">
+              <div className="flex items-center justify-center text-[#F9A825] shrink-0">
+                <SvgIcon raw={userSearchIcon} className="w-5 h-5 text-[#F9A825]" />
+              </div>
+              <input
+                type="search"
+                name="userSearchFilter"
+                autoComplete="off"
+                data-lpignore="true"
+                placeholder="ຄົ້ນຫາຜູ້ໃຊ້"
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    if (!searchQuery.trim()) {
+                      toast.error('ກະລຸນາໃສ່ຊື່ຜູ້ໃຊ້ ຫຼື ອີເມວ');
+                      return;
+                    }
+                    setCurrentPage(1);
+                  }
+                }}
+                className="px-2.5 h-full text-base md:text-[17px] font-bold text-gray-800 placeholder:text-base md:placeholder:text-[17px] placeholder:font-bold placeholder:text-gray-500 focus:outline-none flex-1 min-w-0 bg-transparent [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setCurrentPage(1);
+                  }}
+                  className="px-1.5 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer shrink-0"
+                >
+                  <SvgIcon raw={xIcon} className="w-4 h-4" />
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  if (!searchQuery.trim()) {
+                    toast.error('ກະລຸນາໃສ່ຊື່ຜູ້ໃຊ້ ຫຼື ອີເມວ');
+                    return;
+                  }
+                  setCurrentPage(1);
+                }}
+                className="bg-[#F9A825] hover:bg-[#e69510] text-black font-bold px-3.5 sm:px-4.5 h-full text-base md:text-[17px] transition-colors rounded-r-full ml-auto flex items-center justify-center shrink-0 cursor-pointer"
+              >
+                ຄົ້ນຫາ
+              </button>
+            </div>
+
+            {/* Add User Button */}
+            <button
+              onClick={() => {
+                setShowForm(true);
+                setEditing(null);
+                setForm({ username: '', email: '', password: '', displayName: '', role: 'STAFF' });
+              }}
+              className="bg-white hover:bg-gray-100 text-[#232323] px-5 h-10 rounded-full font-bold shadow-md transition-all text-base md:text-[17px] shrink-0 flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+            >
+              <SvgIcon raw={userPlusIcon} className="w-5 h-5 text-[#232323]" />
+              <span>ເພີ່ມ User</span>
+            </button>
+          </div>
         </div>
-        <button onClick={() => { setShowForm(true); setEditing(null); setForm({ username:'',email:'',password:'',displayName:'',role:'STAFF' }); }}
-          className="btn-primary flex items-center gap-2"><Plus size={20} /> ເພີ່ມຜູ້ໃຊ້</button>
+
+        {/* Red Stripe Divider */}
+        <div className="h-[2.5px] bg-[#B02019] w-full" />
+
+        {/* Table Content */}
+        <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full text-center border-collapse">
+            <thead>
+              <tr
+                className="bg-gradient-to-r from-[#4C4C4C] via-[#6E6E6E] to-[#A8A8A8] text-white text-base md:text-[17px] font-bold h-16"
+                style={{ background: 'linear-gradient(90deg, #4C4C4C 0%, #6E6E6E 50%, #A8A8A8 100%)' }}
+              >
+                <th className="px-3 border-r border-white/30 w-16 text-base md:text-[17px] font-bold align-middle">ລ/ດ</th>
+                <th className="px-6 border-r border-white/30 text-base md:text-[17px] font-bold align-middle text-left">ຜູ້ໃຊ້</th>
+                <th className="px-6 border-r border-white/30 text-base md:text-[17px] font-bold align-middle text-left">ອີເມວ</th>
+                <th className="px-4 border-r border-white/30 w-36 text-base md:text-[17px] font-bold align-middle">ສິດ</th>
+                <th className="px-4 border-r border-white/30 w-36 text-base md:text-[17px] font-bold align-middle">ສະຖານະ</th>
+                <th className="px-4 w-32 text-base md:text-[17px] font-bold align-middle">ຈັດການ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedUsers.length === 0 ? (
+                <tr className="h-16">
+                  <td colSpan={6} className="py-12 text-center text-gray-500 font-bold bg-[#FFFAEE] text-base md:text-[17px] align-middle">
+                    ບໍ່ມີຂໍ້ມູນຜູ້ໃຊ້
+                  </td>
+                </tr>
+              ) : (
+                paginatedUsers.map((u, idx) => {
+                  const isEvenRow = idx % 2 === 1;
+                  const rowBg = isEvenRow ? 'bg-[#FFFAEE]' : 'bg-[#FDF1D7]';
+                  const borderClass = isEvenRow ? 'border-r border-gray-200' : 'border-r border-[#EADFC7]';
+                  const rowNumber = String((currentPage - 1) * ITEMS_PER_PAGE + idx + 1).padStart(2, '0');
+
+                  return (
+                    <tr
+                      key={u.id}
+                      className={`${rowBg} hover:bg-[#EAD0A0] transition-colors duration-150 text-base md:text-[17px] font-bold text-gray-800 h-14 cursor-default`}
+                    >
+                      {/* Column 1: ລ/ດ */}
+                      <td className={`px-3 ${borderClass} text-base md:text-[17px] font-bold align-middle`}>
+                        {rowNumber}
+                      </td>
+
+                      {/* Column 2: ຜູ້ໃຊ້ */}
+                      <td className={`px-6 ${borderClass} truncate max-w-[200px] text-base md:text-[17px] font-bold align-middle text-left`}>
+                        {u.displayName || u.username}
+                      </td>
+
+                      {/* Column 3: ອີເມວ */}
+                      <td className={`px-6 ${borderClass} truncate max-w-[240px] text-base md:text-[17px] font-bold align-middle text-left`}>
+                        {u.email || '-'}
+                      </td>
+
+                      {/* Column 4: ສິດ */}
+                      <td className={`px-4 ${borderClass} text-base md:text-[17px] font-bold align-middle`}>
+                        {u.role}
+                      </td>
+
+                      {/* Column 5: ສະຖານະ */}
+                      <td className={`px-4 ${borderClass} text-base md:text-[17px] font-bold align-middle`}>
+                        <span className={u.isActive !== false ? 'text-gray-800' : 'text-red-500'}>
+                          {u.isActive !== false ? 'Active' : 'Disabled'}
+                        </span>
+                      </td>
+
+                      {/* Column 6: ຈັດການ (Action Icons) */}
+                      <td className="px-4 align-middle">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => openEdit(u)}
+                            title="ແກ້ໄຂ"
+                            className="w-9 h-9 rounded flex items-center justify-center text-gray-700 hover:bg-[#F9A825] hover:text-white transition-all shadow-none hover:shadow-sm active:scale-95"
+                          >
+                            <SvgIcon raw={squarePenIcon} className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => confirmDelete(u.id, u.displayName || u.username)}
+                            title="ລຶບ"
+                            className="w-9 h-9 rounded flex items-center justify-center text-gray-700 hover:bg-[#B02019] hover:text-white transition-all shadow-none hover:shadow-sm active:scale-95"
+                          >
+                            <SvgIcon raw={trashIcon} className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Red Stripe Divider */}
+        <div className="h-[2.5px] bg-[#B02019] w-full" />
+
+        {/* Footer / Pagination Bar */}
+        <div
+          className="bg-[#5D5D5D] px-3 sm:px-4 md:px-6 py-3 md:py-0 min-h-[60px] md:h-16 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-none shrink-0"
+          style={{ borderRadius: 0 }}
+        >
+          {/* Left: Total Count */}
+          <div className="flex items-center gap-2 text-white font-bold text-base md:text-[17px]">
+            <span>ຈຳນວນ</span>
+            <span
+              className="bg-[#B02019] text-white h-10 min-w-[40px] px-3.5 flex items-center justify-center text-base md:text-[17px] font-bold shadow-sm rounded-none border-0 shrink-0 text-center"
+              style={{ borderRadius: 0 }}
+            >
+              {filteredUsers.length}
+            </span>
+            <span>ລາຍການ</span>
+          </div>
+
+          {/* Right: Pagination Controls */}
+          <div className="flex items-center gap-1.5 sm:gap-2 max-w-full overflow-x-auto no-scrollbar py-1">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="bg-[#B02019] hover:bg-[#961b15] text-white font-bold h-10 px-4 sm:w-24 flex items-center justify-center text-base md:text-[17px] transition-colors shadow-sm rounded-none border-0 outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shrink-0"
+              style={{ borderRadius: 0 }}
+            >
+              ຖອຍກັບ
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(page => {
+                let start = Math.max(1, currentPage - 2);
+                let end = Math.min(totalPages, start + 4);
+                if (end - start < 4) start = Math.max(1, end - 4);
+                return page >= start && page <= end;
+              })
+              .map(page => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`h-10 w-10 flex items-center justify-center font-bold text-base md:text-[17px] shadow-sm transition-colors text-white rounded-none border-0 outline-none cursor-pointer shrink-0 ${
+                    currentPage === page
+                      ? 'bg-[#B02019]'
+                      : 'bg-[#B02019] hover:bg-[#961b15]'
+                  }`}
+                  style={{ borderRadius: 0 }}
+                >
+                  {page}
+                </button>
+              ))}
+
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="bg-[#B02019] hover:bg-[#961b15] text-white font-bold h-10 px-4 sm:w-24 flex items-center justify-center text-base md:text-[17px] transition-colors shadow-sm rounded-none border-0 outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shrink-0"
+              style={{ borderRadius: 0 }}
+            >
+              ໄປໜ້າ
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Modal */}
+      {/* Add / Edit User Modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="glass-card p-6 w-full max-w-md animate-scale-in">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-gray-900">{editing ? 'ແກ້ໄຂ' : 'ເພີ່ມ'} ຜູ້ໃຊ້</h2>
-              <button onClick={() => setShowForm(false)} className="text-gray-500 hover:text-gray-900"><X size={24} /></button>
+          <div
+            className="bg-[#FFF9EE] w-full max-w-lg shadow-2xl rounded-none overflow-hidden animate-scale-in"
+            style={{ borderRadius: 0 }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="bg-[#5D5D5D] px-6 h-16 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <SvgIcon raw={userPlusIcon} className="w-5 h-5 text-white" />
+                <h2 className="text-base md:text-[18px] font-bold text-white tracking-normal">
+                  {editing ? 'ແກ້ໄຂ Users' : 'ເພີ່ມ Users'}
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#5D5D5D] hover:bg-gray-100 shadow transition-transform active:scale-95"
+                title="ປິດ"
+              >
+                <SvgIcon raw={xIcon} className="w-4 h-4 text-[#5D5D5D]" />
+              </button>
             </div>
-            <div className="space-y-4">
-              {!editing && <input value={form.username} onChange={e=>setForm({...form,username:e.target.value})} className="input-field" placeholder="Username" />}
-              <input value={form.displayName} onChange={e=>setForm({...form,displayName:e.target.value})} className="input-field" placeholder="Display Name" />
-              <input value={form.email} onChange={e=>setForm({...form,email:e.target.value})} className="input-field" placeholder="Email" type="email" />
-              <input value={form.password} onChange={e=>setForm({...form,password:e.target.value})} className="input-field" placeholder={editing ? "ປ່ຽນລະຫັດຜ່ານໃໝ່ (ປ່ອຍວ່າງຖ້າບໍ່ປ່ຽນ)" : "Password"} type="password" />
-              <select value={form.role} onChange={e=>setForm({...form,role:e.target.value})} className="input-field">
-                <option value="STAFF">Staff</option>
-                <option value="ADMIN">Admin</option>
-              </select>
-            </div>
-            <div className="flex gap-3 mt-6">
-              <button onClick={handleSave} className="btn-primary flex-1">ບັນທຶກ</button>
-              <button onClick={() => setShowForm(false)} className="btn-secondary flex-1">ຍົກເລີກ</button>
-            </div>
+
+            {/* Red Stripe Divider */}
+            <div className="h-[2.5px] bg-[#B02019] w-full" />
+
+            {/* Modal Form */}
+            <form
+              onSubmit={e => { e.preventDefault(); handleSave(); }}
+              autoComplete="off"
+            >
+              <div className="p-6 space-y-4">
+                {/* 1. UserName */}
+                {!editing && (
+                  <div>
+                    <label className="block text-base font-bold text-[#333333] mb-1.5">
+                      UserName
+                    </label>
+                    <div className="relative flex items-center bg-white border-2 border-[#555555]">
+                      <span className="pl-3.5 text-gray-500 flex items-center">
+                        <SvgIcon raw={userIcon} className="w-5 h-5 text-gray-500" />
+                      </span>
+                      <input
+                        type="text"
+                        name="app_user_username"
+                        autoComplete="off"
+                        value={form.username}
+                        onChange={e => setForm({ ...form, username: e.target.value })}
+                        className="w-full px-3 py-2.5 bg-transparent focus:outline-none font-bold text-base text-gray-800 placeholder-gray-400"
+                        placeholder="UserName"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. DisplayName */}
+                <div>
+                  <label className="block text-base font-bold text-[#333333] mb-1.5">
+                    DisplayName
+                  </label>
+                  <div className="relative flex items-center bg-white border-2 border-[#555555]">
+                    <span className="pl-3.5 text-gray-500 flex items-center">
+                      <SvgIcon raw={userIcon} className="w-5 h-5 text-gray-500" />
+                    </span>
+                    <input
+                      type="text"
+                      name="app_user_displayname"
+                      autoComplete="off"
+                      value={form.displayName}
+                      onChange={e => setForm({ ...form, displayName: e.target.value })}
+                      className="w-full px-3 py-2.5 bg-transparent focus:outline-none font-bold text-base text-gray-800 placeholder-gray-400"
+                      placeholder="DisplayName"
+                    />
+                  </div>
+                </div>
+
+                {/* 3. Email */}
+                <div>
+                  <label className="block text-base font-bold text-[#333333] mb-1.5">
+                    Email
+                  </label>
+                  <div className="relative flex items-center bg-white border-2 border-[#555555]">
+                    <span className="pl-3.5 text-gray-500 flex items-center">
+                      <SvgIcon raw={mailIcon} className="w-5 h-5 text-gray-500" />
+                    </span>
+                    <input
+                      type="email"
+                      name="app_user_email"
+                      autoComplete="off"
+                      value={form.email}
+                      onChange={e => setForm({ ...form, email: e.target.value })}
+                      className="w-full px-3 py-2.5 bg-transparent focus:outline-none font-bold text-base text-gray-800 placeholder-gray-400"
+                      placeholder="Email"
+                    />
+                  </div>
+                </div>
+
+                {/* 4. PassWord */}
+                <div>
+                  <label className="block text-base font-bold text-[#333333] mb-1.5">
+                    PassWord
+                  </label>
+                  <div className="relative flex items-center bg-white border-2 border-[#555555]">
+                    <span className="pl-3.5 text-gray-500 flex items-center">
+                      <SvgIcon raw={lockIcon} className="w-5 h-5 text-gray-500" />
+                    </span>
+                    <input
+                      type="password"
+                      name="app_user_password"
+                      autoComplete="new-password"
+                      value={form.password}
+                      onChange={e => setForm({ ...form, password: e.target.value })}
+                      className="w-full px-3 py-2.5 bg-transparent focus:outline-none font-bold text-base text-gray-800 placeholder-gray-400"
+                      placeholder={editing ? "ປ່ຽນລະຫັດຜ່ານໃໝ່ (ປ່ອຍວ່າງຖ້າບໍ່ປ່ຽນ)" : "PassWord"}
+                    />
+                  </div>
+                </div>
+
+                {/* 5. Role */}
+                <div>
+                  <label className="block text-base font-bold text-[#333333] mb-1.5">
+                    Role
+                  </label>
+                  <div className="relative flex items-center bg-white border-2 border-[#555555]">
+                    <select
+                      name="app_user_role"
+                      value={form.role}
+                      onChange={e => setForm({ ...form, role: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-transparent focus:outline-none font-bold text-base text-gray-800 cursor-pointer"
+                    >
+                      <option value="STAFF">STAFF</option>
+                      <option value="ADMIN">ADMIN</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Red Stripe Divider */}
+              <div className="h-[2.5px] bg-[#B02019] w-full" />
+
+              {/* Modal Footer */}
+              <div className="bg-[#5D5D5D] px-6 h-16 flex items-center justify-center">
+                <button
+                  type="submit"
+                  className="bg-white hover:bg-gray-100 text-[#232323] font-bold px-8 h-10 text-base md:text-[17px] shadow transition-colors flex items-center justify-center gap-2 active:scale-95 rounded-none"
+                  style={{ borderRadius: 0 }}
+                >
+                  <SvgIcon raw={saveIcon} className="w-5 h-5 text-[#232323]" />
+                  <span>ບັນທຶກ</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
 
-      {/* Table */}
-      <div className="glass-card overflow-hidden">
-        <table className="data-table">
-          <thead><tr><th>ຜູ້ໃຊ້</th><th>Email</th><th>Role</th><th>ສະຖານະ</th><th>ວັນສ້າງ</th><th></th></tr></thead>
-          <tbody>
-            {users.map(u => (
-              <tr key={u.id}>
-                <td className="font-bold text-gray-900">{u.displayName}<br/><span className="text-xs text-gray-500 font-medium">@{u.username}</span></td>
-                <td className="text-gray-500">{u.email}</td>
-                <td><span className={`badge ${u.role==='ADMIN'?'badge-active':'badge-completed'}`}>{u.role}</span></td>
-                <td><span className={`badge ${u.isActive?'badge-active':'badge-lost'}`}>{u.isActive?'Active':'Disabled'}</span></td>
-                <td className="text-gray-500 text-xs">{new Date(u.createdAt).toLocaleDateString()}</td>
-                <td><div className="flex gap-2">
-                  <button onClick={()=>openEdit(u)} className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-primary-600"><Edit2 size={16}/></button>
-                  <button onClick={()=>handleDelete(u.id)} className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-red-500"><Trash2 size={16}/></button>
-                </div></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Delete Confirmation Modal (Centered on Screen) */}
+      {deleteConfirm && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-4"
+          onClick={() => setDeleteConfirm(null)}
+        >
+          <div
+            className="bg-[#212529] text-white p-5 rounded-2xl shadow-2xl max-w-sm w-full flex flex-col gap-3 border border-gray-700/50"
+            onClick={e => e.stopPropagation()}
+          >
+            <p className="font-bold text-red-500 text-base md:text-[17px] text-center pt-1 leading-relaxed">
+              ຢືນຢັນການລຶບຜູ້ໃຊ້ "{deleteConfirm.name}" ຖາວອນ?
+            </p>
+            <div className="flex gap-2.5 mt-2">
+              <button
+                onClick={() => {
+                  const id = deleteConfirm.id;
+                  setDeleteConfirm(null);
+                  executeDelete(id);
+                }}
+                className="bg-[#EF4444] hover:bg-[#dc2626] text-white px-4 py-2.5 rounded-xl text-base font-bold flex-1 shadow-md transition-all active:scale-95"
+              >
+                ລົບເລີຍ
+              </button>
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2.5 rounded-xl text-base font-bold flex-1 border border-gray-200 shadow-md transition-all active:scale-95"
+              >
+                ຍົກເລີກ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

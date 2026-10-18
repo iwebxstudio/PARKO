@@ -14,16 +14,47 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Security
-  app.use(helmet({
-    crossOriginResourcePolicy: { policy: 'cross-origin' },
-  }));
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+    }),
+  );
 
-  // CORS
+  // CORS — explicit allowlist with credentials support
+  const defaultCorsOrigins = [
+    'http://localhost',
+    'http://localhost:80',
+    'http://localhost:3000',
+    'http://localhost:39741',
+    'https://localhost:39742',
+    'http://127.0.0.1',
+    'http://127.0.0.1:80',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:39741',
+    'https://127.0.0.1:39742',
+  ];
+  const configuredOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
+    : defaultCorsOrigins;
+
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      const isConfigured = configuredOrigins.includes(origin);
+      const isLocalOrPrivateLan =
+        /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$/.test(
+          origin,
+        );
+
+      if (isConfigured || isLocalOrPrivateLan) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Origin ${origin} not allowed by CORS`));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 
   // Global prefix
@@ -46,8 +77,8 @@ async function bootstrap() {
 
   // Swagger API documentation
   const config = new DocumentBuilder()
-    .setTitle('PARKO API')
-    .setDescription('Parking Management System API — Currency: LAK (Lao Kip)')
+    .setTitle('PARKO SYSTEM API')
+    .setDescription('PARKO SYSTEM API — Currency: LAK (Lao Kip)')
     .setVersion('1.0')
     .addBearerAuth()
     .addTag('Auth', 'Authentication endpoints')

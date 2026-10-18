@@ -136,3 +136,13 @@ dist
 *.njsproj
 *.sln
 *.sw?
+
+# Database backups
+database/backup/
+infra/database/backup/
+
+# Infrastructure local logs and certs
+infra/nginx/logs/
+infra/nginx/certs/*.crt
+infra/nginx/certs/*.key
+!infra/nginx/certs/.gitkeep

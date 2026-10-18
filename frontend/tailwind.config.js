@@ -58,7 +58,7 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['LaoSansPro', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['NotoSansLao', 'LaoSansPro', 'system-ui', '-apple-system', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',

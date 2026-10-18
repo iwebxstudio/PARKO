@@ -22,6 +22,7 @@ export class PricingService {
         dailyRate: dto.dailyRate || 0,
         weeklyRate: dto.weeklyRate || 0,
         monthlyRate: dto.monthlyRate || 0,
+        yearlyRate: dto.yearlyRate || 0,
         freeMinutes: dto.freeMinutes || 0,
         isActive: dto.isActive ?? true,
         effectiveFrom: dto.effectiveFrom ? new Date(dto.effectiveFrom) : null,
@@ -46,14 +47,18 @@ export class PricingService {
   }
 
   async update(id: string, dto: UpdatePricingRuleDto) {
-    const existing = await this.prisma.pricingRule.findUnique({ where: { id } });
+    const existing = await this.prisma.pricingRule.findUnique({
+      where: { id },
+    });
     if (!existing) throw new NotFoundException('Pricing rule not found');
 
     return this.prisma.pricingRule.update({
       where: { id },
       data: {
         ...dto,
-        effectiveFrom: dto.effectiveFrom ? new Date(dto.effectiveFrom) : undefined,
+        effectiveFrom: dto.effectiveFrom
+          ? new Date(dto.effectiveFrom)
+          : undefined,
         effectiveTo: dto.effectiveTo ? new Date(dto.effectiveTo) : undefined,
       },
       include: { vehicleType: true },
@@ -76,7 +81,10 @@ export class PricingService {
    * Get the rate for a specific vehicle type and parking type
    * Used by check-in to preview and lock-in the prepaid amount
    */
-  async getRate(vehicleTypeId: number, parkingType: string): Promise<{ rate: number; pricingRuleId: string }> {
+  async getRate(
+    vehicleTypeId: number,
+    parkingType: string,
+  ): Promise<{ rate: number; pricingRuleId: string }> {
     const rule = await this.prisma.pricingRule.findFirst({
       where: { vehicleTypeId, isActive: true },
       orderBy: { createdAt: 'desc' },
@@ -96,6 +104,9 @@ export class PricingService {
         break;
       case 'MONTHLY':
         rate = Number(rule.monthlyRate);
+        break;
+      case 'YEARLY':
+        rate = Number(rule.yearlyRate || 0);
         break;
       default:
         rate = Number(rule.dailyRate);

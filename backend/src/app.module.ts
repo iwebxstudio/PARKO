@@ -10,7 +10,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
 import configuration from './config/configuration';
-import { PrismaModule } from './prisma/prisma.module';
+import { validate } from './config/env.validation';
+import { PrismaModule, HealthModule } from './core';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ParkingModule } from './modules/parking/parking.module';
@@ -24,20 +25,24 @@ import { FileUploadModule } from './modules/file-upload/file-upload.module';
 import { PrinterModule } from './modules/printer/printer.module';
 import { AuditInterceptor } from './modules/audit/audit.interceptor';
 import { TransformInterceptor } from './common/interceptors';
+import { MembershipModule } from './modules/membership/membership.module';
 
 @Module({
   imports: [
-    // Configuration
+    // Configuration with fail-fast startup validation
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
+      validate,
     }),
 
     // Rate limiting — 100 requests per 60 seconds per IP
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 100,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
 
     // Serve uploaded files statically
     ServeStaticModule.forRoot({
@@ -46,6 +51,7 @@ import { TransformInterceptor } from './common/interceptors';
     }),
 
     // Core modules
+    HealthModule,
     PrismaModule,
     AuthModule,
     UsersModule,
@@ -54,6 +60,7 @@ import { TransformInterceptor } from './common/interceptors';
     ParkingModule,
     LostTicketModule,
     PricingModule,
+    MembershipModule,
 
     // Supporting modules
     ReportsModule,

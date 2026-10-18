@@ -25,6 +25,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
     let message = 'Internal server error';
     let errors: any = null;
 
+    const isProduction = process.env.NODE_ENV === 'production';
+
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
@@ -37,11 +39,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
         errors = resp.errors || null;
       }
     } else if (exception instanceof Error) {
-      message = exception.message;
+      // In production, hide internal server & database error details from clients
+      message = isProduction ? 'Internal server error' : exception.message;
       this.logger.error(
         `Unhandled exception: ${exception.message}`,
         exception.stack,
       );
+    } else {
+      this.logger.error('Unhandled unknown exception', String(exception));
     }
 
     response.status(status).json({

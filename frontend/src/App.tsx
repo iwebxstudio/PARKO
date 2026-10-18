@@ -1,19 +1,33 @@
-// PARKO — App Router
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+// PARKO SYSTEM — App Router
+import React, { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AppLayout from './components/layout/AppLayout';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import CheckIn from './pages/staff/CheckIn';
-import CheckOut from './pages/staff/CheckOut';
-import LostTicket from './pages/staff/LostTicket';
-import Dashboard from './pages/admin/Dashboard';
-import Users from './pages/admin/Users';
-import Reports from './pages/admin/Reports';
-import Settings from './pages/admin/Settings';
-import AuditLog from './pages/admin/AuditLog';
+
+// Lazy load pages for fast initial loads
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const CheckIn = lazy(() => import('./pages/staff/CheckIn'));
+const CheckOut = lazy(() => import('./pages/staff/CheckOut'));
+const LostTicket = lazy(() => import('./pages/staff/LostTicket'));
+const LostTicketHistory = lazy(() => import('./pages/staff/LostTicketHistory'));
+const History = lazy(() => import('./pages/admin/History'));
+const Users = lazy(() => import('./pages/admin/Users'));
+const Members = lazy(() => import('./pages/admin/Members'));
+const Notifications = lazy(() => import('./pages/admin/Notifications'));
+const Statistics = lazy(() => import('./pages/admin/Statistics'));
+const Reports = lazy(() => import('./pages/admin/Reports'));
+const Settings = lazy(() => import('./pages/admin/Settings'));
+const AuditLog = lazy(() => import('./pages/admin/AuditLog'));
+
+function PageLoader() {
+  return (
+    <div className="min-h-[50vh] flex items-center justify-center">
+      <div className="animate-spin w-8 h-8 border-3 border-primary-500 border-t-transparent rounded-full" />
+    </div>
+  );
+}
 
 function ProtectedRoute({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -24,27 +38,40 @@ function ProtectedRoute({ children, adminOnly = false }: { children: React.React
 }
 
 function AppRoutes() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  useEffect(() => {
+    document.title = 'PARKO SYSTEM';
+  }, [location.pathname]);
   return (
-    <Routes>
-      <Route path="/login" element={isAuthenticated ? <Navigate to={user?.role === 'ADMIN' ? '/admin/dashboard' : '/staff/check-in'} replace /> : <Login />} />
-      <Route path="/register" element={isAuthenticated ? <Navigate to={user?.role === 'ADMIN' ? '/admin/dashboard' : '/staff/check-in'} replace /> : <Register />} />
-      <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-        {/* Staff routes */}
-        <Route path="staff/check-in" element={<CheckIn />} />
-        <Route path="staff/check-out" element={<CheckOut />} />
-        <Route path="staff/lost-ticket" element={<LostTicket />} />
-        {/* Admin routes */}
-        <Route path="admin/dashboard" element={<ProtectedRoute adminOnly><Dashboard /></ProtectedRoute>} />
-        <Route path="admin/users" element={<ProtectedRoute adminOnly><Users /></ProtectedRoute>} />
-        <Route path="admin/reports" element={<ProtectedRoute adminOnly><Reports /></ProtectedRoute>} />
-        <Route path="admin/settings" element={<ProtectedRoute adminOnly><Settings /></ProtectedRoute>} />
-        <Route path="admin/audit-log" element={<ProtectedRoute adminOnly><AuditLog /></ProtectedRoute>} />
-        {/* Default redirect */}
-        <Route index element={<Navigate to="/staff/check-in" replace />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/staff/check-in" replace /> : <Login />} />
+        <Route path="/register" element={isAuthenticated ? <Navigate to="/staff/check-in" replace /> : <Register />} />
+        <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+          {/* Staff routes */}
+          <Route path="staff/check-in" element={<CheckIn />} />
+          <Route path="staff/check-out" element={<CheckOut />} />
+          <Route path="staff/lost-ticket" element={<LostTicket />} />
+          <Route path="staff/lost-ticket-history" element={<LostTicketHistory />} />
+          <Route path="admin/lost-tickets" element={<LostTicketHistory />} />
+          {/* Admin routes */}
+          <Route path="admin/dashboard" element={<Navigate to="/staff/check-out" replace />} />
+          <Route path="admin/history" element={<History />} />
+          <Route path="admin/users" element={<ProtectedRoute adminOnly><Users /></ProtectedRoute>} />
+          <Route path="admin/members" element={<Members />} />
+          <Route path="admin/notifications" element={<Notifications />} />
+          <Route path="admin/statistics" element={<Statistics />} />
+          <Route path="admin/reports" element={<ProtectedRoute adminOnly><Reports /></ProtectedRoute>} />
+          <Route path="admin/settings" element={<ProtectedRoute adminOnly><Settings /></ProtectedRoute>} />
+          <Route path="admin/audit-log" element={<ProtectedRoute adminOnly><AuditLog /></ProtectedRoute>} />
+          {/* Default redirect */}
+          <Route index element={<Navigate to="/staff/check-in" replace />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
   );
 }
 
@@ -53,13 +80,48 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <AppRoutes />
-        <Toaster position="top-right" toastOptions={{
-          duration: 3000,
-          style: { background: '#1e293b', color: '#f1f5f9', border: '1px solid #334155' },
-          success: { iconTheme: { primary: '#22c55e', secondary: '#fff' } },
-          error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
-        }} />
+        <Toaster
+          position="top-center"
+          gutter={10}
+          containerStyle={{
+            top: '50%',
+            bottom: 'auto',
+            transform: 'translateY(-50%)',
+          }}
+          toastOptions={{
+            duration: 3500,
+            style: {
+              background: '#1e293b',
+              color: '#ffffff',
+              border: 'none',
+              padding: '14px 26px',
+              fontWeight: 700,
+              fontSize: '15px',
+              borderRadius: '0px',
+              boxShadow: '0 12px 36px -4px rgba(0, 0, 0, 0.45)',
+            },
+            success: {
+              iconTheme: { primary: '#22c55e', secondary: '#ffffff' },
+              style: {
+                background: '#0f3a2b',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '0px',
+              },
+            },
+            error: {
+              iconTheme: { primary: '#ef4444', secondary: '#ffffff' },
+              style: {
+                background: '#1e293b',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '0px',
+              },
+            },
+          }}
+        />
       </AuthProvider>
     </BrowserRouter>
   );
 }
+

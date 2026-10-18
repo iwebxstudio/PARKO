@@ -37,7 +37,9 @@ export class NotificationsService {
             break;
         }
       } catch (err) {
-        this.logger.error(`Notification failed [${config.channel}]: ${err.message}`);
+        this.logger.error(
+          `Notification failed [${config.channel}]: ${err.message}`,
+        );
       }
     }
   }
@@ -86,12 +88,14 @@ export class NotificationsService {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        embeds: [{
-          title: `🅿️ PARKO — ${title}`,
-          description: message,
-          color: 0x3b82f6,
-          timestamp: new Date().toISOString(),
-        }],
+        embeds: [
+          {
+            title: `🅿️ PARKO — ${title}`,
+            description: message,
+            color: 0x3b82f6,
+            timestamp: new Date().toISOString(),
+          },
+        ],
       }),
     });
 

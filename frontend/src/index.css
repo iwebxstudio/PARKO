@@ -1,9 +1,15 @@
 @font-face {
+  font-family: 'NotoSansLao';
+  src: url('./assets/fonts/noto-sans-lao-bold.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'LaoSansPro';
-  src: url('/fonts/LaoSansPro-Regular.woff2') format('woff2'),
-       url('/fonts/LaoSansPro-Regular.woff') format('woff'),
-       url('/fonts/LaoSansPro-Regular.ttf') format('truetype');
-  font-weight: normal;
+  src: url('./assets/fonts/noto-sans-lao-bold.woff2') format('woff2');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -20,51 +26,135 @@
 @layer base {
   * {
     @apply box-border;
+    font-family: 'NotoSansLao', 'LaoSansPro', system-ui, -apple-system, sans-serif;
+  }
+
+  html, body, button, input, select, textarea {
+    font-family: 'NotoSansLao', 'LaoSansPro', system-ui, -apple-system, sans-serif;
   }
 
   body {
     @apply bg-gray-50 text-gray-900 font-sans antialiased;
     min-height: 100vh;
+    margin: 0;
+    padding: 0;
   }
 
-  /* Custom scrollbar */
+  /* Hide default gray scrollbar, allow smooth mouse wheel scroll */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 0px;
+    height: 0px;
+    display: none;
   }
-  ::-webkit-scrollbar-track {
-    @apply bg-gray-100;
+
+  html, body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
-  ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full;
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+    width: 0px;
+    height: 0px;
   }
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400;
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Table Responsive Horizontal Scrollbar — High Performance, Gray Modern Theme */
+  .table-responsive-scrollbar {
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    scrollbar-width: auto !important;
+    scrollbar-color: #9CA3AF #E5E7EB !important;
+    -ms-overflow-style: auto !important;
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+  }
+
+  .table-responsive-scrollbar::-webkit-scrollbar {
+    display: block !important;
+    height: 14px !important;
+    width: 14px !important;
+  }
+
+  .table-responsive-scrollbar::-webkit-scrollbar-track {
+    background: #E5E7EB !important;
+    border-radius: 9999px !important;
+  }
+
+  .table-responsive-scrollbar::-webkit-scrollbar-thumb {
+    background: #9CA3AF !important;
+    border-radius: 9999px !important;
+    border: 3px solid #E5E7EB !important;
+    transition: background-color 0.15s ease-in-out;
+  }
+
+  .table-responsive-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #6B7280 !important;
+  }
+
+  .table-responsive-scrollbar::-webkit-scrollbar-thumb:active {
+    background: #4B5563 !important;
+  }
+
+  /* Admin & Staff Sidebar: Hide scrollbar, allow smooth Scroll Wheel */
+  .sidebar-scrollbar,
+  .staff-sidebar-scrollbar {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar,
+  .staff-sidebar-scrollbar::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+    height: 0px !important;
+  }
+
+  /* Solid Borders for Admin and Staff — 8px (prominent border matching user request) */
+  .admin-sidebar-border {
+    border-right: 8px solid #ffffff !important;
+  }
+
+  .staff-sidebar-border {
+    border-right: 8px solid #ffffff !important;
   }
 }
 
 @layer components {
+
   /* White Card */
   .glass-card {
-    @apply bg-white border border-gray-100 rounded-none shadow-lg;
+    @apply bg-white rounded-none shadow-lg;
   }
 
   /* Gradient backgrounds */
   .gradient-primary {
-    background: linear-gradient(135deg, #34d399 0%, #059669 100%); /* Emerald */
+    background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+    /* Emerald */
   }
+
   .gradient-success {
     background: linear-gradient(135deg, #6ee7b7 0%, #10b981 100%);
   }
+
   .gradient-warning {
-    background: linear-gradient(135deg, #fcd34d 0%, #d97706 100%); /* Amber */
+    background: linear-gradient(135deg, #fcd34d 0%, #d97706 100%);
+    /* Amber */
   }
+
   .gradient-danger {
     background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
   }
+
   .gradient-purple {
-    background: linear-gradient(135deg, #7dd3fc 0%, #0284c7 100%); /* Sky Blue */
+    background: linear-gradient(135deg, #7dd3fc 0%, #0284c7 100%);
+    /* Sky Blue */
   }
+
   .gradient-mesh {
     background:
       radial-gradient(at 40% 20%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
@@ -74,42 +164,31 @@
 
   /* Button styles */
   .btn-primary {
-    @apply px-6 py-3 rounded-2xl font-bold text-white transition-all duration-200
-           bg-primary-500 hover:bg-primary-600 active:scale-95
-           shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30;
+    @apply px-6 py-3 rounded-2xl font-bold text-white transition-all duration-200 bg-primary-500 hover:bg-primary-600 active:scale-95 shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30;
   }
+
   .btn-secondary {
-    @apply px-6 py-3 rounded-2xl font-semibold transition-all duration-200
-           bg-white hover:bg-gray-50 text-gray-700
-           border border-gray-200 active:scale-95 shadow-sm;
+    @apply px-6 py-3 rounded-2xl font-semibold transition-all duration-200 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 active:scale-95 shadow-sm;
   }
+
   .btn-success {
-    @apply px-6 py-3 rounded-2xl font-bold text-white transition-all duration-200
-           bg-secondary-500 hover:bg-secondary-600 active:scale-95
-           shadow-md shadow-secondary-500/20;
+    @apply px-6 py-3 rounded-2xl font-bold text-white transition-all duration-200 bg-secondary-500 hover:bg-secondary-600 active:scale-95 shadow-md shadow-secondary-500/20;
   }
+
   .btn-danger {
-    @apply px-6 py-3 rounded-2xl font-bold text-white transition-all duration-200
-           bg-red-500 hover:bg-red-600 active:scale-95
-           shadow-md shadow-red-500/20;
+    @apply px-6 py-3 rounded-2xl font-bold text-white transition-all duration-200 bg-red-500 hover:bg-red-600 active:scale-95 shadow-md shadow-red-500/20;
   }
 
   /* Input styles */
   .input-field {
-    @apply w-full px-4 py-3 rounded-2xl bg-white border border-gray-200
-           text-gray-900 placeholder-gray-400
-           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
-           transition-all duration-200 shadow-sm;
+    @apply w-full px-4 py-3 rounded-2xl bg-white border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 shadow-sm;
   }
 
   /* Vehicle type card for check-in */
   .vehicle-card {
-    @apply flex flex-col items-center justify-center p-6 md:p-8 rounded-none
-           bg-white border-2 border-gray-100 cursor-pointer
-           transition-all duration-200 hover:border-primary-300
-           hover:bg-primary-50 hover:shadow-md
-           active:scale-95 select-none;
+    @apply flex flex-col items-center justify-center p-6 md:p-8 rounded-none bg-white border-2 border-gray-100 cursor-pointer transition-all duration-200 hover:border-primary-300 hover:bg-primary-50 hover:shadow-md active:scale-95 select-none;
   }
+
   .vehicle-card.selected {
     @apply border-primary-500 bg-primary-50 shadow-md shadow-primary-500/10 text-primary-700;
   }
@@ -123,15 +202,19 @@
   .data-table {
     @apply w-full text-left text-sm;
   }
+
   .data-table thead {
     @apply bg-gray-50 text-gray-500 uppercase text-xs tracking-wider border-b border-gray-200;
   }
+
   .data-table th {
     @apply px-4 py-4 font-semibold;
   }
+
   .data-table td {
     @apply px-4 py-4 border-b border-gray-100 text-gray-700;
   }
+
   .data-table tbody tr {
     @apply hover:bg-gray-50 transition-colors;
   }
@@ -140,28 +223,35 @@
   .badge {
     @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold;
   }
-  .badge-active { @apply bg-primary-100 text-primary-700; }
-  .badge-completed { @apply bg-secondary-100 text-secondary-700; }
-  .badge-lost { @apply bg-red-100 text-red-700; }
-  .badge-paid { @apply bg-primary-100 text-primary-700; }
-  .badge-unpaid { @apply bg-accent-100 text-accent-700; }
+
+  .badge-active {
+    @apply bg-primary-100 text-primary-700;
+  }
+
+  .badge-completed {
+    @apply bg-secondary-100 text-secondary-700;
+  }
+
+  .badge-lost {
+    @apply bg-red-100 text-red-700;
+  }
+
+  .badge-paid {
+    @apply bg-primary-100 text-primary-700;
+  }
+
+  .badge-unpaid {
+    @apply bg-accent-100 text-accent-700;
+  }
 
   /* Number pad button */
   .numpad-btn {
-    @apply flex items-center justify-center
-           w-full aspect-square rounded-xl
-           bg-sky-400 text-white font-bold text-2xl
-           shadow-md shadow-sky-400/25
-           transition-all duration-150 select-none
-           hover:bg-sky-500 active:scale-90 active:shadow-sm;
+    @apply flex items-center justify-center w-full aspect-square rounded-xl bg-sky-400 text-white font-bold text-2xl shadow-md shadow-sky-400/25 transition-all duration-150 select-none hover:bg-sky-500 active:scale-90 active:shadow-sm;
   }
 
   /* Plate color selection button */
   .plate-color-btn {
-    @apply px-5 py-2.5 rounded-xl text-sm font-bold
-           border-2 cursor-pointer
-           transition-all duration-200 select-none
-           hover:opacity-90 active:scale-95;
+    @apply px-5 py-2.5 rounded-xl text-sm font-bold border-2 cursor-pointer transition-all duration-200 select-none hover:opacity-90 active:scale-95;
   }
 }
 
@@ -170,7 +260,11 @@
   .vehicle-card {
     @apply p-4;
   }
-  .btn-primary, .btn-secondary, .btn-success, .btn-danger {
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-success,
+  .btn-danger {
     @apply py-4 text-lg;
   }
 }
@@ -181,10 +275,21 @@
 
 /* Scanning line animation */
 @keyframes scanLine {
-  0% { top: 8px; opacity: 1; }
-  50% { opacity: 0.6; }
-  100% { top: calc(100% - 8px); opacity: 1; }
+  0% {
+    top: 8px;
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+
+  100% {
+    top: calc(100% - 8px);
+    opacity: 1;
+  }
 }
+
 .animate-scan-line {
   animation: scanLine 2s ease-in-out infinite alternate;
   position: absolute;
@@ -196,21 +301,203 @@
   border-radius: 0 !important;
   padding: 0 !important;
 }
+
 #qr-reader video {
   border-radius: 0 !important;
   object-fit: cover !important;
 }
+
 #qr-reader__scan_region {
   min-height: 280px !important;
 }
+
 #qr-reader__header_message,
 #qr-reader__dashboard_section,
 #qr-reader__status_span {
   display: none !important;
 }
+
 #qr-reader img[alt="Info icon"] {
   display: none !important;
 }
+
 #qr-reader__dashboard {
   display: none !important;
+}
+
+/* ============================================
+   PARKO — Auth Responsive Layout (Login & Register)
+   ============================================ */
+.auth-page-wrapper {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  background: #FDF1D7;
+}
+
+.auth-card-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 740px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.auth-card {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  margin: 0;
+  background: #fff;
+}
+
+.auth-brand-panel {
+  width: 50%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 28px;
+  background: #A52422;
+  border-right: 4px solid #FFAB10;
+  box-sizing: border-box;
+}
+
+.auth-form-panel {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 30px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.auth-footer {
+  margin-top: 24px;
+  margin-bottom: 0;
+  text-align: center;
+  width: 100%;
+  padding: 0;
+}
+
+.auth-footer-inner {
+  display: inline-block;
+  text-align: left;
+}
+
+.auth-footer-line {
+  font-size: 18px;
+  font-weight: 800;
+  color: #333;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Mobile Responsive Mode (Screens <= 768px) */
+@media (max-width: 768px) {
+  .auth-page-wrapper {
+    padding: 16px 12px;
+    justify-content: flex-start;
+  }
+
+  .auth-card-group {
+    max-width: 100%;
+    margin: auto 0;
+  }
+
+  .auth-card {
+    flex-direction: column !important;
+  }
+
+  .auth-brand-panel {
+    width: 100% !important;
+    min-height: unset !important;
+    padding: 24px 20px 20px 20px !important;
+    border-right: none !important;
+    border-bottom: 4px solid #FFAB10 !important;
+  }
+
+  .auth-logo-box {
+    width: 54px !important;
+    height: 54px !important;
+    margin-bottom: 12px !important;
+    border-width: 3px !important;
+  }
+
+  .auth-logo-inner {
+    font-size: 24px !important;
+  }
+
+  .auth-brand-title {
+    font-size: 19px !important;
+    letter-spacing: 1.5px !important;
+  }
+
+  .auth-brand-subtitle {
+    font-size: 15px !important;
+  }
+
+  .auth-version-tag {
+    font-size: 13px !important;
+  }
+
+  .auth-form-panel {
+    width: 100% !important;
+    padding: 24px 20px !important;
+  }
+
+  .auth-form-title {
+    font-size: 18px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .auth-footer {
+    margin-top: 18px !important;
+  }
+
+  .auth-footer-line {
+    font-size: 14px !important;
+  }
+}
+
+/* ============================================
+   React Hot Toast — Centered Flat Notification Standard
+   ============================================ */
+div[data-rht-toaster] {
+  top: 50% !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: auto !important;
+  pointer-events: none !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+div[data-rht-toaster] > div {
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: auto !important;
+  display: flex !important;
+  justify-content: center !important;
+  margin-top: -24px !important;
+}
+
+div[data-rht-toaster] [role="status"],
+div[data-rht-toaster] [role="alert"],
+div[data-rht-toaster] > div > div {
+  border: none !important;
+  border-radius: 0px !important;
 }

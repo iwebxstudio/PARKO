@@ -34,12 +34,16 @@ export class ParkingGateway
 
   handleConnection(client: Socket) {
     this.connectedClients++;
-    this.logger.log(`Client connected: ${client.id} | Total: ${this.connectedClients}`);
+    this.logger.log(
+      `Client connected: ${client.id} | Total: ${this.connectedClients}`,
+    );
   }
 
   handleDisconnect(client: Socket) {
     this.connectedClients--;
-    this.logger.log(`Client disconnected: ${client.id} | Total: ${this.connectedClients}`);
+    this.logger.log(
+      `Client disconnected: ${client.id} | Total: ${this.connectedClients}`,
+    );
   }
 
   /**
