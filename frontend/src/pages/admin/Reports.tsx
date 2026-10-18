@@ -7,7 +7,8 @@ import React, { useState, useEffect } from 'react';
 import {
   CircleParking, LogIn, LogOut, CalendarDays, CalendarRange, CalendarCheck2,
   History, Layers, Wallet, Banknote, Coins, CircleDollarSign, Car,
-  FileSpreadsheet, FileText, RefreshCw, Loader2
+  FileSpreadsheet, FileText, RefreshCw, Loader2,
+  FileWarning, AlertTriangle, CheckCircle2, Clock, Printer
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import * as XLSX from 'xlsx';
@@ -44,6 +45,9 @@ const svgCar = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stro
 const svgBike = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>`;
 const svgZap = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`;
 const svgTruck = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18.5" r="2.5"/><circle cx="6.5" cy="18.5" r="2.5"/></svg>`;
+const svgFileWarning = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>`;
+const svgCheckCircle = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
+const svgClock = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
 
 interface StatCardProps {
   title: string;
@@ -87,7 +91,7 @@ export default function Reports() {
   const defaultDateFrom = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0];
   const defaultDateTo = new Date().toISOString().split('T')[0];
 
-  // ກຳນົດຕົວແປສະຖານະວັນທີເລີ່ມຕົ້ນ ແລະ ສິ້ນສຸດ ສຳລັບແຍກຕາມແຕ່ລະໝວດລາຍງານ (ທັງໝົດ 4 ໝວດ)
+  // ກຳນົດຕົວແປສະຖານະວັນທີເລີ່ມຕົ້ນ ແລະ ສິ້ນສຸດ ສຳລັບແຍກຕາມແຕ່ລະໝວດລາຍງານ (ທັງໝົດ 5 ໝວດ)
   const [dateFrom1, setDateFrom1] = useState(defaultDateFrom);
   const [dateTo1, setDateTo1] = useState(defaultDateTo);
 
@@ -100,11 +104,16 @@ export default function Reports() {
   const [dateFrom4, setDateFrom4] = useState(defaultDateFrom);
   const [dateTo4, setDateTo4] = useState(defaultDateTo);
 
+  const [dateFrom5, setDateFrom5] = useState(defaultDateFrom);
+  const [dateTo5, setDateTo5] = useState(defaultDateTo);
+
   // ສະຖານະການເກັບຂໍ້ມູນທີ່ໄດ້ຮັບມາຈາກ API ຂອງລະບົບ (Data States)
   const [stats, setStats] = useState<any>(null);
   const [vehInData, setVehInData] = useState<any>(null);
   const [vehOutData, setVehOutData] = useState<any>(null);
   const [revData, setRevData] = useState<any>(null);
+  const [lostReportData, setLostReportData] = useState<any>(null);
+  const [lostCasesList, setLostCasesList] = useState<any[]>([]);
 
   // ສະຖານະການໂຫຼດຂໍ້ມູນໃນແຕ່ລະສ່ວນຍ່ອຍເພື່ອສະແດງ Spinner ໃຫ້ຜູ້ໃຊ້ຮັບຊາບ (Loading States)
   const [loadingStats, setLoadingStats] = useState(false);
@@ -112,6 +121,7 @@ export default function Reports() {
   const [loading2, setLoading2] = useState(false);
   const [loading3, setLoading3] = useState(false);
   const [loading4, setLoading4] = useState(false);
+  const [loading5, setLoading5] = useState(false);
   const [exportingSection, setExportingSection] = useState<string | null>(null);
 
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
@@ -122,16 +132,23 @@ export default function Reports() {
   const loadInitial = async () => {
     setLoadingStats(true);
     try {
-      const [s, vi, vo, r] = await Promise.all([
+      const [s, vi, vo, r, lt, casesResp] = await Promise.allSettled([
         api.get('/reports/dashboard-stats'),
         api.get(`/reports/vehicles?period=daily&dateFrom=${defaultDateFrom}&dateTo=${defaultDateTo}T23:59:59&type=in`),
         api.get(`/reports/vehicles?period=daily&dateFrom=${defaultDateFrom}&dateTo=${defaultDateTo}T23:59:59&type=out`),
         api.get(`/reports/revenue?period=daily&dateFrom=${defaultDateFrom}&dateTo=${defaultDateTo}T23:59:59`),
+        api.get(`/reports/lost-tickets?period=daily&dateFrom=${defaultDateFrom}&dateTo=${defaultDateTo}T23:59:59`),
+        api.get(`/lost-tickets?limit=100`),
       ]);
-      setStats(s.data?.data || s.data);
-      setVehInData(vi.data?.data || vi.data);
-      setVehOutData(vo.data?.data || vo.data);
-      setRevData(r.data?.data || r.data);
+      if (s.status === 'fulfilled') setStats(s.value.data?.data || s.value.data);
+      if (vi.status === 'fulfilled') setVehInData(vi.value.data?.data || vi.value.data);
+      if (vo.status === 'fulfilled') setVehOutData(vo.value.data?.data || vo.value.data);
+      if (r.status === 'fulfilled') setRevData(r.value.data?.data || r.value.data);
+      if (lt.status === 'fulfilled') setLostReportData(lt.value.data?.data || lt.value.data);
+      if (casesResp.status === 'fulfilled') {
+        const cData = casesResp.value.data?.data?.cases || casesResp.value.data?.cases || [];
+        setLostCasesList(cData);
+      }
       setLastUpdated(new Date());
     } catch {
       toast.error('ໂຫຼດຂໍ້ມູນບໍ່ສຳເລັດ (Failed to load dashboard data)');
@@ -216,6 +233,37 @@ export default function Reports() {
     }
   };
 
+  // ຟັງຊັນດຶງຂໍ້ມູນສະຖິຕິປີ້ເສຍ / ລົດປີ້ຫາຍ (Section 5: Lost Tickets) ຕາມຊ່ວງວັນທີທີ່ກຳນົດ
+  const fetchLostTickets = async (from = dateFrom5, to = dateTo5) => {
+    setLoading5(true);
+    try {
+      const [resReport, resCases] = await Promise.all([
+        api.get(`/reports/lost-tickets?period=daily&dateFrom=${from}&dateTo=${to}T23:59:59`),
+        api.get(`/lost-tickets?limit=100`),
+      ]);
+      const data = resReport.data?.data || resReport.data;
+      setLostReportData(data);
+      const casesData = resCases.data?.data?.cases || resCases.data?.cases || [];
+      const fromTime = new Date(from).getTime();
+      const toTime = new Date(`${to}T23:59:59`).getTime();
+      const filteredCases = casesData.filter((c: any) => {
+        const t = new Date(c.createdAt).getTime();
+        return t >= fromTime && t <= toTime;
+      });
+      const finalCases = filteredCases.length > 0 ? filteredCases : casesData;
+      setLostCasesList(finalCases);
+      const total = data?.summary?.totalCases ?? finalCases.length;
+      toast.success(`ດຶງຂໍ້ມູນລົດປີ້ຫາຍສຳເລັດ: ${fmt(total)} ກໍລະນີ`);
+      setLastUpdated(new Date());
+      return { report: data, cases: finalCases };
+    } catch {
+      toast.error('ດຶງຂໍ້ມູນລົດປີ້ຫາຍບໍ່ສຳເລັດ');
+      return null;
+    } finally {
+      setLoading5(false);
+    }
+  };
+
   // ຄິດໄລ່ ແລະ ຄັດແຍກຈຳນວນລົດທີ່ກຳລັງຈອດຢູ່ແຍກຕາມແຕ່ລະປະເພດພາຫະນະ (ລົດໃຫຍ່, ລົດຈັກ, ລົດໄຟຟ້າ, ລົດບັນທຸກ)
   const carParked = stats?.vehicles?.byType?.find((v: any) => v.name === 'car' || v.label === 'ລົດໃຫຍ່')?.count || 0;
   const bikeParked = stats?.vehicles?.byType?.find((v: any) => v.name === 'motorcycle' || v.label === 'ລົດຈັກ')?.count || 0;
@@ -235,17 +283,257 @@ export default function Reports() {
     </div>
   `;
 
+  // ຟັງຊັນຊ່ວຍສັ່ງພິມເອກະສານ HTML ເປັນ PDF (ຮອງຮັບທັງ Window ໃໝ່ ແລະ Iframe Fallback ຫາກຖືກບລັອກ Popup)
+  const printHtmlDocument = (htmlContent: string, targetWindow?: Window | null) => {
+    if (targetWindow && !targetWindow.closed) {
+      try {
+        targetWindow.document.open();
+        targetWindow.document.write(htmlContent);
+        targetWindow.document.close();
+        setTimeout(() => {
+          try {
+            targetWindow.focus();
+            targetWindow.print();
+          } catch (e) {
+            console.error('Target window print failed:', e);
+          }
+        }, 500);
+        return;
+      } catch (err) {
+        console.warn('Failed writing to popup window, falling back to iframe print:', err);
+      }
+    }
+
+    // Fallback: Invisible iframe that bypasses browser popup blockers 100%
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    iframe.setAttribute('title', 'parko-print-frame');
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document || iframe.contentDocument;
+    if (doc) {
+      doc.open();
+      doc.write(htmlContent);
+      doc.close();
+      setTimeout(() => {
+        try {
+          iframe.contentWindow?.focus();
+          iframe.contentWindow?.print();
+        } catch (e) {
+          console.error('Iframe print error:', e);
+        }
+        setTimeout(() => {
+          try {
+            document.body.removeChild(iframe);
+          } catch {}
+        }, 60000);
+      }, 500);
+    }
+  };
+
+  // ຟັງຊັນສັ່ງພິມໃບບັນທຶກກໍລະນີລົດປີ້ຫາຍສະເພາະຄັນ (Print Single Lost Ticket Incident Slip)
+  const printSingleLostTicket = (c: any) => {
+    const printWindow = window.open('', '_blank');
+    const plateStr = `${c.ticket?.plateLetters ? c.ticket.plateLetters + ' ' : ''}${c.ticket?.plateNumber || '---'}${c.ticket?.plateProvince ? ' (' + c.ticket.plateProvince + ')' : ''}`;
+    const vehTypeStr = c.ticket?.vehicleType?.label || c.ticket?.vehicleType?.name || '---';
+    const statusStr = c.resolution === 'RESOLVED' ? 'ແກ້ໄຂແລ້ວ (RESOLVED)' : c.resolution === 'ESCALATED' ? 'ສົ່ງຕໍ່ກວດສອບ (ESCALATED)' : 'ລໍຖ້າແກ້ໄຂ (PENDING)';
+    const statusBg = c.resolution === 'RESOLVED' ? '#DCFCE7; color: #166534;' : c.resolution === 'ESCALATED' ? '#F3E8FF; color: #6B21A8;' : '#FEE2E2; color: #991B1B;';
+    const notesHtml = c.notes ? `<div class="field-row"><div class="field-label">ໝາຍເຫດເພີ່ມເຕີມ:</div><div class="field-value" style="font-weight: 500;">${c.notes}</div></div>` : '';
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ໃບບັນທຶກລົດປີ້ຫາຍ - ${c.ticket?.ticketNumber || 'PARKO'}</title>
+  <style>
+    @page { size: A4 portrait; margin: 0 !important; }
+    @media print {
+      .no-print { display: none !important; }
+      html, body { margin: 0 !important; padding: 15mm 20mm !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    }
+    body {
+      font-family: 'Noto Sans Lao', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #111827;
+      margin: 0;
+      padding: 15mm 20mm;
+      font-size: 13px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .header {
+      border-bottom: 2.5px solid #B02019;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .title { font-size: 22px; font-weight: 900; color: #B02019; margin: 0 0 4px 0; }
+    .subtitle { font-size: 14px; font-weight: 700; color: #374151; margin: 0; }
+    .meta { font-size: 12px; color: #4B5563; font-weight: 600; text-align: right; }
+    .slip-box {
+      border: 2px solid #E5E7EB;
+      background: #FFFFFF;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .field-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px dashed #E5E7EB;
+      font-size: 13.5px;
+    }
+    .field-label { font-weight: 700; color: #4B5563; width: 40%; }
+    .field-value { font-weight: 800; color: #111827; width: 60%; text-align: right; }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .penalty-box {
+      margin-top: 16px;
+      background: #FEF2F2;
+      border: 1.5px solid #F87171;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .penalty-label { font-size: 15px; font-weight: 800; color: #991B1B; }
+    .penalty-val { font-size: 22px; font-weight: 900; color: #B02019; }
+    .footer-sign {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+      padding-top: 20px;
+      page-break-inside: avoid;
+    }
+    .sign-box { text-align: center; width: 190px; font-size: 12px; color: #374151; }
+    .sign-line { border-bottom: 1px dotted #9CA3AF; margin-top: 55px; margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <div class="no-print" style="position: sticky; top: 0; z-index: 99999; background: #111827; color: #FFFFFF; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #B02019; margin: -15mm -20mm 20px -20mm;">
+    <div style="font-weight: 800; font-size: 15px;">
+      📄 ໃບບັນທຶກລົດປີ້ຫາຍ (Lost Ticket Incident Record)
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button onclick="window.print()" style="background: #B02019; color: #FFFFFF; border: none; padding: 9px 20px; font-weight: 800; font-size: 14px; cursor: pointer;">
+        🖨️ ພິມ / ບັນທຶກ PDF (Print)
+      </button>
+      <button onclick="window.close()" style="background: #374151; color: #FFFFFF; border: none; padding: 9px 16px; font-weight: 700; font-size: 14px; cursor: pointer;">
+        ✕ ປິດໜ້າຕ່າງ
+      </button>
+    </div>
+  </div>
+
+  <div class="header">
+    <div>
+      <h1 class="title">PARKO — ລະບົບຄຸ້ມຄອງບ່ອນຈອດລົດ</h1>
+      <p class="subtitle">ໃບບັນທຶກລົດປີ້ຫາຍ / ປີ້ເສຍ (Lost Ticket Incident Report)</p>
+    </div>
+    <div class="meta">
+      <div>ວັນທີແຈ້ງ: <strong>${new Date(c.createdAt).toLocaleDateString('lo-LA')} ${new Date(c.createdAt).toLocaleTimeString('lo-LA', { hour: '2-digit', minute: '2-digit' })}</strong></div>
+      <div>ລະຫັດກໍລະນີ: <strong>${c.id?.slice(0, 8)?.toUpperCase()}</strong></div>
+    </div>
+  </div>
+
+  <div class="slip-box">
+    <div class="field-row">
+      <div class="field-label">ເລກລະຫັດປີ້ (Ticket Number):</div>
+      <div class="field-value" style="font-family: monospace; font-size: 16px; color: #B02019;">${c.ticket?.ticketNumber || '---'}</div>
+    </div>
+    <div class="field-row">
+      <div class="field-label">ປ້າຍທະບຽນລົດ (License Plate):</div>
+      <div class="field-value" style="font-size: 15px;">${plateStr}</div>
+    </div>
+    <div class="field-row">
+      <div class="field-label">ປະເພດພາຫະນະ (Vehicle Type):</div>
+      <div class="field-value">${vehTypeStr}</div>
+    </div>
+    <div class="field-row">
+      <div class="field-label">ເວລາລົດເຂົ້າ (Check In Time):</div>
+      <div class="field-value">${c.ticket?.checkInTime ? new Date(c.ticket.checkInTime).toLocaleString('lo-LA') : '---'}</div>
+    </div>
+    <div class="field-row">
+      <div class="field-label">ວັນທີ-ເວລາແຈ້ງປີ້ເສຍ (Reported Time):</div>
+      <div class="field-value">${new Date(c.createdAt).toLocaleString('lo-LA')}</div>
+    </div>
+    <div class="field-row">
+      <div class="field-label">ຊື່ເຈົ້າຂອງລົດ / ຜູ້ຂັບຂີ່:</div>
+      <div class="field-value">${c.driverName || '---'}</div>
+    </div>
+    <div class="field-row">
+      <div class="field-label">ເບີໂທລະສັບຕິດຕໍ່:</div>
+      <div class="field-value">${c.driverPhone || '---'}</div>
+    </div>
+    <div class="field-row">
+      <div class="field-label">ເລກບັດປະຈຳຕົວ / ສຳມະໂນຄົວ:</div>
+      <div class="field-value">${c.driverIdCard || '---'}</div>
+    </div>
+    <div class="field-row">
+      <div class="field-label">ພະນັກງານຜູ້ບັນທຶກ:</div>
+      <div class="field-value">${c.staff?.fullName || c.staff?.username || 'ພະນັກງານປະຈຳປ້ອມ'}</div>
+    </div>
+    <div class="field-row">
+      <div class="field-label">ສະຖານະກໍລະນີ (Status):</div>
+      <div class="field-value"><span class="badge" style="background: ${statusBg}">${statusStr}</span></div>
+    </div>
+    ${notesHtml}
+
+    <div class="penalty-box">
+      <div class="penalty-label">ຄ່າປັບໃໝປີ້ເສຍ (Penalty Fee):</div>
+      <div class="penalty-val">${Number(c.penaltyAmount || 0).toLocaleString('lo-LA')} ₭</div>
+    </div>
+  </div>
+
+  <div class="footer-sign">
+    <div class="sign-box">
+      <div>ລາຍເຊັນເຈົ້າຂອງລົດ / ຜູ້ຂັບຂີ່</div>
+      <div class="sign-line"></div>
+      <div>(..................................................)</div>
+    </div>
+    <div class="sign-box">
+      <div>ລາຍເຊັນພະນັກງານຜູ້ບັນທຶກ</div>
+      <div class="sign-line"></div>
+      <div>(..................................................)</div>
+    </div>
+    <div class="sign-box">
+      <div>ຫົວໜ້າຄຸ້ມຄອງ / ຜູ້ອະນຸມັດ</div>
+      <div class="sign-line"></div>
+      <div>(..................................................)</div>
+    </div>
+  </div>
+
+  <script>
+    setTimeout(function() {
+      try {
+        window.focus();
+        window.print();
+      } catch(e) {}
+    }, 400);
+  </script>
+</body>
+</html>
+    `;
+    printHtmlDocument(html, printWindow);
+  };
+
   // =========================================================
   // ລະບົບສົ່ງອອກເອກະສານລາຍງານເປັນ PDF (PDF Export - ສ້າງແບບຟອມມາດຕະຖານຕາມໂຄງສ້າງໃໝ່)
   // =========================================================
-  const exportPdfSection = async (section: 1 | 2 | 3 | 4 | 'all') => {
+  const exportPdfSection = async (section: 1 | 2 | 3 | 4 | 5 | 'all') => {
     setExportingSection(`pdf-${section}`);
+    // ເປີດ window ໄວ້ກ່ອນເພື່ອປ້ອງກັນ Popup Blocker ຂອງບຣາວເຊີ (ຖ້າຖືກບລັອກ ລະບົບຈະ Fallback ໄປໃຊ້ iframe ອັດຕະໂນມັດ)
     const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      toast.error('ກະລຸນາອະນຸຍາດ Popup ເພື່ອສ້າງ PDF (Please allow popups)');
-      setExportingSection(null);
-      return;
-    }
 
     let title = '';
     let dateRangeStr = '';
@@ -509,8 +797,118 @@ export default function Reports() {
           </tbody>
         </table>
       `;
+    } else if (section === 5) {
+      title = 'ລາຍງານລົດປີ້ຫາຍ (Lost Ticket Report)';
+      dateRangeStr = `ຊ່ວງວັນທີ: ${dateFrom5} ເຖິງ ${dateTo5}`;
+      let curData = lostReportData;
+      let curCases = lostCasesList;
+      if (!curData || curCases.length === 0) {
+        const res = await fetchLostTickets(dateFrom5, dateTo5);
+        curData = res?.report;
+        curCases = res?.cases || [];
+      }
+      const totalCases = curData?.summary?.totalCases ?? stats?.lostTickets?.all ?? 0;
+      const totalPenalty = curData?.summary?.totalPenalty ?? stats?.lostTickets?.totalPenalty ?? 0;
+      const pendingCases = curData?.summary?.pendingCases ?? stats?.lostTickets?.pending ?? 0;
+      const resolvedCases = curData?.summary?.resolvedCases ?? stats?.lostTickets?.resolved ?? 0;
+
+      contentHtml = `
+        <div class="card-grid" style="grid-template-columns: repeat(4, 1fr);">
+          ${renderPdfCard('ປີ້ເສຍວັນນີ້', fmt(stats?.lostTickets?.today), 'ກໍລະນີ', '#D97706', svgFileWarning)}
+          ${renderPdfCard('ປີ້ເສຍເດືອນນີ້', fmt(stats?.lostTickets?.month), 'ກໍລະນີ', '#7C3AED', svgCalendar)}
+          ${renderPdfCard('ລໍຖ້າແກ້ໄຂ', fmt(pendingCases), 'ກໍລະນີ', '#DC2626', svgClock)}
+          ${renderPdfCard('ແກ້ໄຂສຳເລັດ', fmt(resolvedCases), 'ກໍລະນີ', '#059669', svgCheckCircle)}
+        </div>
+
+        <div class="section-title">ຕາຕະລາງສະຫຼຸບຂໍ້ມູນລົດປີ້ຫາຍ (Lost Ticket Summary Data)</div>
+        <table>
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 50px;">ລ/ດ</th>
+              <th>ລາຍການ (Item)</th>
+              <th class="text-right" style="width: 160px;">ຈຳນວນ (Amount)</th>
+              <th class="text-center" style="width: 90px;">ຫົວໜ່ວຍ</th>
+              <th>ໝາຍເຫດ (Remarks)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-center">1</td>
+              <td><strong>ປີ້ເສຍວັນນີ້ (Today)</strong></td>
+              <td class="text-right font-black" style="color: #D97706;">${fmt(stats?.lostTickets?.today)}</td>
+              <td class="text-center">ກໍລະນີ</td>
+              <td class="text-muted">ຈຳນວນແຈ້ງປີ້ເສຍໃນວັນທີປັດຈຸບັນ</td>
+            </tr>
+            <tr>
+              <td class="text-center">2</td>
+              <td><strong>ປີ້ເສຍເດືອນນີ້ (This Month)</strong></td>
+              <td class="text-right font-black" style="color: #7C3AED;">${fmt(stats?.lostTickets?.month)}</td>
+              <td class="text-center">ກໍລະນີ</td>
+              <td class="text-muted">ຈຳນວນແຈ້ງປີ້ເສຍສະສົມໃນເດືອນນີ້</td>
+            </tr>
+            <tr>
+              <td class="text-center">3</td>
+              <td><strong>ລໍຖ້າແກ້ໄຂ (Pending)</strong></td>
+              <td class="text-right font-black" style="color: #DC2626;">${fmt(pendingCases)}</td>
+              <td class="text-center">ກໍລະນີ</td>
+              <td class="text-muted">ກໍລະນີທີ່ກຳລັງລໍຖ້າການກວດສອບ ແລະ ແກ້ໄຂ</td>
+            </tr>
+            <tr>
+              <td class="text-center">4</td>
+              <td><strong>ແກ້ໄຂສຳເລັດ (Resolved)</strong></td>
+              <td class="text-right font-black" style="color: #059669;">${fmt(resolvedCases)}</td>
+              <td class="text-center">ກໍລະນີ</td>
+              <td class="text-muted">ກໍລະນີທີ່ແກ້ໄຂ ແລະ ຊຳລະຄ່າປັບໃໝຮຽບຮ້ອຍ</td>
+            </tr>
+            <tr>
+              <td class="text-center">5</td>
+              <td><strong>ປີ້ເສຍທັງໝົດ (All Time)</strong></td>
+              <td class="text-right font-black" style="color: #1E293B;">${fmt(stats?.lostTickets?.all ?? totalCases)}</td>
+              <td class="text-center">ກໍລະນີ</td>
+              <td class="text-muted">ຈຳນວນລົດປີ້ເສຍທັງໝົດໃນລະບົບ</td>
+            </tr>
+            <tr class="total-row">
+              <td class="text-center">6</td>
+              <td><strong>ຍອດຄ່າປັບໃໝລວມ (Total Penalties)</strong></td>
+              <td class="text-right font-black" style="color: #B02019;">${fmt(totalPenalty)}</td>
+              <td class="text-center">₭ (KIP)</td>
+              <td class="text-muted">ລວມຍອດຄ່າປັບໃໝປີ້ເສຍທັງໝົດ</td>
+            </tr>
+          </tbody>
+        </table>
+
+        ${curCases && curCases.length > 0 ? `
+          <div class="section-title">ລາຍການລົດປີ້ຫາຍໃນຊ່ວງທີ່ເລືອກ (${dateFrom5} ຫາ ${dateTo5})</div>
+          <table>
+            <thead>
+              <tr>
+                <th class="text-center" style="width: 40px;">ລ/ດ</th>
+                <th>ເລກປີ້</th>
+                <th>ປ້າຍທະບຽນ</th>
+                <th>ປະເພດລົດ</th>
+                <th>ວັນທີແຈ້ງເສຍ</th>
+                <th class="text-right">ຄ່າປັບໃໝ</th>
+                <th class="text-center">ສະຖານະ</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${curCases.map((c: any, idx: number) => `
+                <tr>
+                  <td class="text-center">${idx + 1}</td>
+                  <td><strong>${c.ticket?.ticketNumber || '---'}</strong></td>
+                  <td>${c.ticket?.plateLetters ? c.ticket.plateLetters + ' ' : ''}${c.ticket?.plateNumber || '---'} ${c.ticket?.plateProvince ? '(' + c.ticket.plateProvince + ')' : ''}</td>
+                  <td>${c.ticket?.vehicleType?.label || c.ticket?.vehicleType?.name || '---'}</td>
+                  <td>${new Date(c.createdAt).toLocaleDateString('lo-LA')}</td>
+                  <td class="text-right font-black" style="color: #B02019;">${fmt(Number(c.penaltyAmount || 0))} ₭</td>
+                  <td class="text-center">${c.resolution === 'RESOLVED' ? 'ແກ້ໄຂແລ້ວ' : c.resolution === 'ESCALATED' ? 'ສົ່ງຕໍ່ກວດສອບ' : 'ລໍຖ້າແກ້ໄຂ'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        ` : ''}
+      `;
     } else {
-      // ກໍລະນີສັ່ງພິມ ຫຼື ສົ່ງອອກລາຍງານທັງໝົດ 4 ໝວດລວມເຂົ້າໃນເອກະສານດຽວກັນ (Export All 4 Sections in One Document)
+      // ກໍລະນີສັ່ງພິມ ຫຼື ສົ່ງອອກລາຍງານທັງໝົດ 5 ໝວດລວມເຂົ້າໃນເອກະສານດຽວກັນ (Export All 5 Sections in One Document)
       title = 'ລາຍງານລວມລະບົບຈອດລົດ PARKO (System Overview Report)';
       dateRangeStr = '';
 
@@ -545,6 +943,14 @@ export default function Reports() {
           ${renderPdfCard('ລົດຈັກ', fmt(bikeParked), 'ຄັນ', '#1D4ED8', svgBike)}
           ${renderPdfCard('ລົດໄຟຟ້າ', fmt(evParked), 'ຄັນ', '#059669', svgZap)}
           ${renderPdfCard('ລົດບັນທຸກ', fmt(truckParked), 'ຄັນ', '#7C3AED', svgTruck)}
+        </div>
+
+        <div class="section-title">5. ລົດປີ້ຫາຍ / ປີ້ເສຍ (Lost Tickets)</div>
+        <div class="card-grid" style="grid-template-columns: repeat(4, 1fr);">
+          ${renderPdfCard('ປີ້ເສຍວັນນີ້', fmt(stats?.lostTickets?.today), 'ກໍລະນີ', '#D97706', svgFileWarning)}
+          ${renderPdfCard('ປີ້ເສຍເດືອນນີ້', fmt(stats?.lostTickets?.month), 'ກໍລະນີ', '#7C3AED', svgCalendar)}
+          ${renderPdfCard('ລໍຖ້າແກ້ໄຂ', fmt(stats?.lostTickets?.pending), 'ກໍລະນີ', '#DC2626', svgClock)}
+          ${renderPdfCard('ແກ້ໄຂສຳເລັດ', fmt(stats?.lostTickets?.resolved), 'ກໍລະນີ', '#059669', svgCheckCircle)}
         </div>
       `;
     }
@@ -701,6 +1107,11 @@ export default function Reports() {
       font-size: 11px;
       color: #374151;
     }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+    }
     .sign-line {
       border-bottom: 1px dotted #9CA3AF;
       margin-top: 48px;
@@ -709,6 +1120,21 @@ export default function Reports() {
   </style>
 </head>
 <body>
+  <div class="no-print" style="position: sticky; top: 0; z-index: 99999; background: #111827; color: #FFFFFF; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #B02019; margin: -12mm -15mm 20px -15mm;">
+    <div style="font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+      <span>📄</span>
+      <span>ລາຍງານລະບົບ PARKO — ກົດປຸ່ມເພື່ອພິມ ຫຼື ບັນທຶກເປັນ PDF</span>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button onclick="window.print()" style="background: #B02019; color: #FFFFFF; border: none; padding: 9px 20px; font-weight: 800; font-size: 14px; cursor: pointer; border-radius: 0;">
+        🖨️ ພິມ / ບັນທຶກເປັນ PDF (Print)
+      </button>
+      <button onclick="window.close()" style="background: #4B5563; color: #FFFFFF; border: none; padding: 9px 16px; font-weight: 700; font-size: 14px; cursor: pointer; border-radius: 0;">
+        ✕ ປິດໜ້າຕ່າງ
+      </button>
+    </div>
+  </div>
+
   <div class="header">
     <div>
       <h1 class="title">PARKO — ລະບົບຄຸ້ມຄອງບ່ອນຈອດລົດ</h1>
@@ -742,26 +1168,25 @@ export default function Reports() {
   </div>
 
   <script>
-    window.onload = function() {
-      setTimeout(function() {
+    setTimeout(function() {
+      try {
+        window.focus();
         window.print();
-      }, 300);
-    };
+      } catch(e) {}
+    }, 400);
   </script>
 </body>
 </html>
     `;
 
-    printWindow.document.open();
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
+    printHtmlDocument(htmlContent, printWindow);
     setExportingSection(null);
   };
 
   // =========================================================
   // ລະບົບສົ່ງອອກຂໍ້ມູນເປັນໄຟລ໌ Excel (Excel Export - ສ້າງຕາຕະລາງຕາມໂຄງສ້າງໃໝ່)
   // =========================================================
-  const exportExcelSection = async (section: 1 | 2 | 3 | 4 | 'all') => {
+  const exportExcelSection = async (section: 1 | 2 | 3 | 4 | 5 | 'all') => {
     setExportingSection(`excel-${section}`);
     const toastId = toast.loading('ກຳລັງສ້າງ Excel...');
     try {
@@ -834,6 +1259,44 @@ export default function Reports() {
         aoa.push([3, 'ລົດໄຟຟ້າ (EV)', evParked, 'ຄັນ', totalParked > 0 ? `${((evParked / totalParked) * 100).toFixed(1)}%` : '0%']);
         aoa.push([4, 'ລົດບັນທຸກ (Truck)', truckParked, 'ຄັນ', totalParked > 0 ? `${((truckParked / totalParked) * 100).toFixed(1)}%` : '0%']);
         aoa.push(['', 'ລວມທັງໝົດ (Total)', totalParked, 'ຄັນ', '100%']);
+      } else if (section === 5) {
+        fname = `PARKO_LostTickets_${dateFrom5}_${dateTo5}`;
+        sheetName = 'Lost Tickets';
+        let curData = lostReportData;
+        let curCases = lostCasesList;
+        if (!curData || curCases.length === 0) {
+          const res = await fetchLostTickets(dateFrom5, dateTo5);
+          curData = res?.report;
+          curCases = res?.cases || [];
+        }
+
+        aoa.push(['PARKO — ລະບົບຄຸ້ມຄອງບ່ອນຈອດລົດ']);
+        aoa.push(['ລາຍງານລົດປີ້ຫາຍ (Lost Ticket Report)']);
+        aoa.push(['ຊ່ວງວັນທີ', `${dateFrom5} - ${dateTo5}`]);
+        aoa.push([]);
+        aoa.push(['ສະຫຼຸບພາບລວມ (Overview)']);
+        aoa.push(['ລ/ດ', 'ລາຍການ (Item)', 'ຈຳນວນ (Amount)', 'ຫົວໜ່ວຍ', 'ໝາຍເຫດ (Remarks)']);
+        aoa.push([1, 'ປີ້ເສຍວັນນີ້ (Today)', stats?.lostTickets?.today || 0, 'ກໍລະນີ', 'ຈຳນວນແຈ້ງປີ້ເສຍໃນວັນທີປັດຈຸບັນ']);
+        aoa.push([2, 'ປີ້ເສຍເດືອນນີ້ (This Month)', stats?.lostTickets?.month || 0, 'ກໍລະນີ', 'ຈຳນວນແຈ້ງປີ້ເສຍສະສົມໃນເດືອນນີ້']);
+        aoa.push([3, 'ລໍຖ້າແກ້ໄຂ (Pending)', curData?.summary?.pendingCases ?? stats?.lostTickets?.pending ?? 0, 'ກໍລະນີ', 'ກຳລັງລໍຖ້າການກວດສອບ']);
+        aoa.push([4, 'ແກ້ໄຂສຳເລັດ (Resolved)', curData?.summary?.resolvedCases ?? stats?.lostTickets?.resolved ?? 0, 'ກໍລະນີ', 'ແກ້ໄຂ ແລະ ຊຳລະຄ່າປັບໃໝຮຽບຮ້ອຍ']);
+        aoa.push([5, 'ປີ້ເສຍທັງໝົດ (All Time)', stats?.lostTickets?.all || 0, 'ກໍລະນີ', 'ຈຳນວນລົດປີ້ເສຍທັງໝົດ']);
+        aoa.push([6, 'ຍອດຄ່າປັບໃໝລວມ (Total Penalty)', curData?.summary?.totalPenalty ?? stats?.lostTickets?.totalPenalty ?? 0, 'LAK (₭)', 'ລວມຍອດຄ່າປັບໃໝ']);
+        aoa.push([]);
+        aoa.push(['ລາຍການລະອຽດລົດປີ້ຫາຍ (Detailed Lost Ticket Cases)']);
+        aoa.push(['ລ/ດ', 'ເລກປີ້ (Ticket No)', 'ປ້າຍທະບຽນ (Plate)', 'ປະເພດລົດ (Type)', 'ວັນທີແຈ້ງເສຍ (Date)', 'ຄ່າປັບໃໝ (Penalty)', 'ສະຖານະ (Status)', 'ໝາຍເຫດ (Notes)']);
+        curCases.forEach((c: any, idx: number) => {
+          aoa.push([
+            idx + 1,
+            c.ticket?.ticketNumber || '',
+            `${c.ticket?.plateLetters ? c.ticket.plateLetters + ' ' : ''}${c.ticket?.plateNumber || ''}`,
+            c.ticket?.vehicleType?.label || c.ticket?.vehicleType?.name || '',
+            new Date(c.createdAt).toLocaleDateString('lo-LA'),
+            Number(c.penaltyAmount || 0),
+            c.resolution === 'RESOLVED' ? 'ແກ້ໄຂແລ້ວ' : c.resolution === 'ESCALATED' ? 'ສົ່ງຕໍ່ກວດສອບ' : 'ລໍຖ້າແກ້ໄຂ',
+            c.notes || ''
+          ]);
+        });
       } else {
         // ສົ່ງອອກລາຍງານສະຫຼຸບລວມທັງໝົດທຸກໝວດໄວ້ໃນ Sheet ດຽວ (Export All in 1 Overview Sheet)
         fname = `PARKO_AllReports_${new Date().toISOString().split('T')[0]}`;
@@ -856,6 +1319,11 @@ export default function Reports() {
         aoa.push(['4. ປະເພດລົດກຳລັງຈອດ (Vehicle Types)']);
         aoa.push(['ລົດໃຫຍ່', carParked, 'ລົດຈັກ', bikeParked]);
         aoa.push(['ລົດໄຟຟ້າ', evParked, 'ລົດບັນທຸກ', truckParked]);
+        aoa.push([]);
+        aoa.push(['5. ລົດປີ້ຫາຍ / ປີ້ເສຍ (Lost Tickets)']);
+        aoa.push(['ປີ້ເສຍວັນນີ້', stats?.lostTickets?.today || 0, 'ປີ້ເສຍເດືອນນີ້', stats?.lostTickets?.month || 0]);
+        aoa.push(['ລໍຖ້າແກ້ໄຂ', stats?.lostTickets?.pending || 0, 'ແກ້ໄຂສຳເລັດ', stats?.lostTickets?.resolved || 0]);
+        aoa.push(['ປີ້ເສຍທັງໝົດ', stats?.lostTickets?.all || 0, 'ຍອດຄ່າປັບໃໝລວມ (₭)', stats?.lostTickets?.totalPenalty || 0]);
       }
 
       const wb = XLSX.utils.book_new();
@@ -916,7 +1384,7 @@ export default function Reports() {
                   disabled={exportingSection === 'pdf-all'}
                   className="bg-[#B02019] hover:bg-[#8e1913] active:bg-[#73140f] text-white font-bold h-10 px-3.5 flex items-center justify-center gap-1.5 text-sm sm:text-base transition-colors shadow-sm rounded-none border-0 outline-none cursor-pointer disabled:opacity-50"
                   style={{ borderRadius: 0 }}
-                  title="ສ້າງ PDF ລວມ 4 ໝວດ"
+                  title="ສ້າງ PDF ລວມ 5 ໝວດ"
                 >
                   {exportingSection === 'pdf-all' ? <Loader2 size={16} className="animate-spin text-white" /> : <FileText size={17} className="text-white shrink-0" />}
                   <span>PDF ລວມ</span>
@@ -927,7 +1395,7 @@ export default function Reports() {
                   disabled={exportingSection === 'excel-all'}
                   className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold h-10 px-3.5 flex items-center justify-center gap-1.5 text-sm sm:text-base transition-colors shadow-sm rounded-none border-0 outline-none cursor-pointer disabled:opacity-50"
                   style={{ borderRadius: 0 }}
-                  title="ດາວໂຫຼດ Excel ລວມ 4 ໝວດ"
+                  title="ດາວໂຫຼດ Excel ລວມ 5 ໝວດ"
                 >
                   {exportingSection === 'excel-all' ? <Loader2 size={16} className="animate-spin text-white" /> : <FileSpreadsheet size={17} className="text-white shrink-0" />}
                   <span>Excel ລວມ</span>
@@ -1366,6 +1834,220 @@ export default function Reports() {
             </div>
           </div>
 
+          {/* ========================================================= */}
+          {/* ໝວດທີ 5: ລາຍງານລົດປີ້ຫາຍ / ປີ້ເສຍ (Section 5: Lost Tickets) */}
+          {/* ========================================================= */}
+          <div className="flex flex-col space-y-2.5">
+            {/* ແຖບຫົວສີຂາວ ພ້ອມຟອມເລືອກຊ່ວງວັນທີ ແລະ ປຸ່ມດຶງຂໍ້ມູນ/ສົ່ງອອກ */}
+            <div
+              className="bg-white p-3 sm:px-4 sm:py-3 shadow-[0_2px_10px_rgba(0,0,0,0.08)] flex flex-col md:flex-row items-start md:items-center justify-between gap-3 rounded-none"
+              style={{ borderRadius: 0 }}
+            >
+              <div className="flex items-center gap-2.5">
+                <FileWarning size={22} className="text-[#D97706] shrink-0" />
+                <h2 className="text-base sm:text-[18px] font-bold text-gray-900 tracking-normal whitespace-nowrap">
+                  ລົດປີ້ຫາຍ (Lost Tickets)
+                </h2>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full md:w-auto">
+                <div className="relative flex-1 sm:flex-initial">
+                  <input
+                    type="date"
+                    value={dateFrom5}
+                    onChange={(e) => setDateFrom5(e.target.value)}
+                    className="h-10 px-3 bg-white border border-gray-300 text-gray-900 text-sm sm:text-[15px] font-bold focus:outline-none focus:border-[#B02019] rounded-none shadow-xs w-full sm:w-[155px]"
+                    style={{ borderRadius: 0 }}
+                  />
+                </div>
+                <div className="relative flex-1 sm:flex-initial">
+                  <input
+                    type="date"
+                    value={dateTo5}
+                    onChange={(e) => setDateTo5(e.target.value)}
+                    className="h-10 px-3 bg-white border border-gray-300 text-gray-900 text-sm sm:text-[15px] font-bold focus:outline-none focus:border-[#B02019] rounded-none shadow-xs w-full sm:w-[155px]"
+                    style={{ borderRadius: 0 }}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => fetchLostTickets()}
+                  disabled={loading5}
+                  className="bg-[#B02019] hover:bg-[#8e1913] active:bg-[#73140f] text-white font-bold h-10 px-4 text-sm sm:text-base flex items-center justify-center gap-1.5 shadow-sm rounded-none border-0 cursor-pointer transition-colors"
+                  style={{ borderRadius: 0 }}
+                >
+                  {loading5 ? <Loader2 size={16} className="animate-spin text-white" /> : null}
+                  <span>ດຶງຂໍ້ມູນ</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => exportPdfSection(5)}
+                  disabled={exportingSection === 'pdf-5'}
+                  className="bg-[#B02019] hover:bg-[#8e1913] active:bg-[#73140f] text-white font-bold h-10 px-3.5 text-sm sm:text-base flex items-center justify-center gap-1.5 shadow-sm rounded-none border-0 cursor-pointer transition-colors"
+                  style={{ borderRadius: 0 }}
+                  title="ສ້າງ PDF ລົດປີ້ຫາຍ"
+                >
+                  {exportingSection === 'pdf-5' ? <Loader2 size={16} className="animate-spin text-white" /> : <FileText size={17} className="text-white shrink-0" />}
+                  <span>PDF</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => exportExcelSection(5)}
+                  disabled={exportingSection === 'excel-5'}
+                  className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold h-10 px-3.5 text-sm sm:text-base flex items-center justify-center gap-1.5 shadow-sm rounded-none border-0 cursor-pointer transition-colors"
+                  style={{ borderRadius: 0 }}
+                  title="ດາວໂຫຼດ Excel ລົດປີ້ຫາຍ"
+                >
+                  {exportingSection === 'excel-5' ? <Loader2 size={16} className="animate-spin text-white" /> : <FileSpreadsheet size={17} className="text-white shrink-0" />}
+                  <span>Excel</span>
+                </button>
+              </div>
+            </div>
+
+            {/* ກາດສະແດງສະຖິຕິລົດປີ້ຫາຍ 6 ໃບ */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
+              <StatCard
+                title="ປີ້ເສຍວັນນີ້"
+                value={fmt(stats?.lostTickets?.today)}
+                unit="ກໍລະນີ"
+                icon={FileWarning}
+                bannerBg="bg-[#D97706]"
+              />
+              <StatCard
+                title="ປີ້ເສຍເດືອນນີ້"
+                value={fmt(stats?.lostTickets?.month)}
+                unit="ກໍລະນີ"
+                icon={CalendarDays}
+                bannerBg="bg-[#7C3AED]"
+              />
+              <StatCard
+                title="ລໍຖ້າແກ້ໄຂ"
+                value={fmt(lostReportData?.summary?.pendingCases ?? stats?.lostTickets?.pending)}
+                unit="ກໍລະນີ"
+                icon={Clock}
+                bannerBg="bg-[#DC2626]"
+              />
+              <StatCard
+                title="ແກ້ໄຂສຳເລັດ"
+                value={fmt(lostReportData?.summary?.resolvedCases ?? stats?.lostTickets?.resolved)}
+                unit="ກໍລະນີ"
+                icon={CheckCircle2}
+                bannerBg="bg-[#059669]"
+              />
+              <StatCard
+                title="ປີ້ເສຍທັງໝົດ"
+                value={fmt(stats?.lostTickets?.all)}
+                unit="ກໍລະນີ"
+                icon={Layers}
+                bannerBg="bg-[#1E293B]"
+              />
+              <StatCard
+                title="ລວມຄ່າປັບໃໝ"
+                value={fmt(lostReportData?.summary?.totalPenalty ?? stats?.lostTickets?.totalPenalty)}
+                unit="₭"
+                icon={CircleDollarSign}
+                bannerBg="bg-[#B02019]"
+              />
+            </div>
+
+            {/* ຕາຕະລາງລາຍລະອຽດລົດປີ້ຫາຍ */}
+            {lostCasesList.length > 0 && (
+              <div className="bg-white p-3 sm:p-4 shadow-[0_2px_10px_rgba(0,0,0,0.08)] rounded-none">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5 pb-2 border-b border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle size={18} className="text-[#B02019]" />
+                    <h3 className="text-sm sm:text-base font-bold text-gray-900">
+                      ລາຍການລົດປີ້ຫາຍ ({lostCasesList.length} ລາຍການ)
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => exportPdfSection(5)}
+                      disabled={exportingSection === 'pdf-5'}
+                      className="bg-[#B02019] hover:bg-[#8e1913] text-white font-bold h-8 sm:h-9 px-3 text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-sm rounded-none border-0 cursor-pointer transition-colors"
+                      style={{ borderRadius: 0 }}
+                      title="ພິມ / ບັນທຶກເປັນໄຟລ໌ PDF"
+                    >
+                      {exportingSection === 'pdf-5' ? <Loader2 size={14} className="animate-spin text-white" /> : <Printer size={15} className="text-white" />}
+                      <span>ພິມລາຍງານ PDF</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => exportExcelSection(5)}
+                      disabled={exportingSection === 'excel-5'}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-8 sm:h-9 px-3 text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-sm rounded-none border-0 cursor-pointer transition-colors"
+                      style={{ borderRadius: 0 }}
+                      title="ດາວໂຫຼດ Excel"
+                    >
+                      {exportingSection === 'excel-5' ? <Loader2 size={14} className="animate-spin text-white" /> : <FileSpreadsheet size={15} className="text-white" />}
+                      <span>Excel</span>
+                    </button>
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs md:text-sm">
+                    <thead>
+                      <tr className="bg-gray-100 border-b border-gray-200 text-gray-700 font-bold uppercase text-[11px] md:text-xs">
+                        <th className="py-2.5 px-3">ເລກປີ້</th>
+                        <th className="py-2.5 px-3">ປ້າຍທະບຽນ</th>
+                        <th className="py-2.5 px-3">ປະເພດລົດ</th>
+                        <th className="py-2.5 px-3">ວັນທີແຈ້ງເສຍ</th>
+                        <th className="py-2.5 px-3 text-right">ຄ່າປັບໃໝ</th>
+                        <th className="py-2.5 px-3 text-center">ສະຖານະ</th>
+                        <th className="py-2.5 px-3 text-right">ພິມໃບແຈ້ງ</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 font-medium">
+                      {lostCasesList.map((c: any) => (
+                        <tr key={c.id} className="hover:bg-amber-50/40 transition-colors">
+                          <td className="py-2 px-3 font-bold font-mono text-gray-900">{c.ticket?.ticketNumber || '---'}</td>
+                          <td className="py-2 px-3 font-bold text-gray-800">
+                            {c.ticket?.plateLetters ? `${c.ticket?.plateLetters} ` : ''}
+                            {c.ticket?.plateNumber || '---'}
+                            {c.ticket?.plateProvince ? <span className="text-[11px] text-gray-500 ml-1">({c.ticket?.plateProvince})</span> : null}
+                          </td>
+                          <td className="py-2 px-3 text-gray-600">{c.ticket?.vehicleType?.label || c.ticket?.vehicleType?.name || '---'}</td>
+                          <td className="py-2 px-3 text-gray-600 whitespace-nowrap">
+                            {new Date(c.createdAt).toLocaleDateString('lo-LA')} {new Date(c.createdAt).toLocaleTimeString('lo-LA', { hour: '2-digit', minute: '2-digit' })}
+                          </td>
+                          <td className="py-2 px-3 text-right font-bold text-[#B02019] whitespace-nowrap">
+                            {Number(c.penaltyAmount || 0).toLocaleString('lo-LA')} ₭
+                          </td>
+                          <td className="py-2 px-3 text-center">
+                            <span
+                              className={`inline-block px-2 py-0.5 text-[11px] font-bold ${
+                                c.resolution === 'RESOLVED'
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : c.resolution === 'ESCALATED'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : 'bg-red-100 text-red-800'
+                              }`}
+                            >
+                              {c.resolution === 'RESOLVED' ? 'ແກ້ໄຂແລ້ວ' : c.resolution === 'ESCALATED' ? 'ສົ່ງຕໍ່ກວດສອບ' : 'ລໍຖ້າແກ້ໄຂ'}
+                            </span>
+                          </td>
+                          <td className="py-2 px-3 text-right whitespace-nowrap">
+                            <button
+                              type="button"
+                              onClick={() => printSingleLostTicket(c)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 hover:bg-[#B02019] text-gray-700 hover:text-white font-bold text-xs border border-gray-300 hover:border-[#B02019] transition-all cursor-pointer"
+                              style={{ borderRadius: 0 }}
+                              title="ພິມໃບບັນທຶກປີ້ເສຍກໍລະນີນີ້"
+                            >
+                              <Printer size={13} />
+                              <span>ພິມ PDF</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+
         </div>
 
         {/* ເສັ້ນຂັ້ນສີແດງດ້ານລຸ່ມ (Bottom Red Stripe Divider) */}
@@ -1382,7 +2064,7 @@ export default function Reports() {
               className="bg-[#B02019] text-white h-10 min-w-10 px-2 flex items-center justify-center text-base md:text-[17px] font-bold shadow-sm rounded-none border-0 shrink-0 text-center"
               style={{ borderRadius: 0 }}
             >
-              4
+              5
             </span>
             <span>ໝວດລາຍງານ</span>
           </div>

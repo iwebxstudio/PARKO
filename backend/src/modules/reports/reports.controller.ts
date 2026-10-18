@@ -57,6 +57,24 @@ export class ReportsController {
     );
   }
 
+  @Get('lost-tickets')
+  @Roles(Role.ADMIN, Role.STAFF)
+  @ApiOperation({ summary: 'Get lost ticket statistics report' })
+  @ApiQuery({ name: 'period', required: false, enum: ['daily', 'monthly', 'yearly'] })
+  @ApiQuery({ name: 'dateFrom', required: false })
+  @ApiQuery({ name: 'dateTo', required: false })
+  getLostTicketReport(
+    @Query('period') period?: 'daily' | 'monthly' | 'yearly',
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
+  ) {
+    return this.reportsService.getLostTicketReport(
+      period || 'daily',
+      dateFrom,
+      dateTo,
+    );
+  }
+
   @Get('dashboard-stats')
   @Roles(Role.ADMIN, Role.STAFF)
   @ApiOperation({ summary: 'Get comprehensive dashboard statistics' })

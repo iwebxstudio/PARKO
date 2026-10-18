@@ -9,8 +9,11 @@ import {
   LogIn, LogOut, BarChart3,
   CircleParking, CalendarDays, CalendarRange, TrendingUp,
   CalendarCheck2, History, Layers,
-  Banknote, Coins, CircleDollarSign
+  Banknote, Coins, CircleDollarSign,
+  FileWarning, AlertTriangle, CheckCircle2, Clock,
+  ChevronRight, ExternalLink, FileText
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import toast from 'react-hot-toast';
@@ -126,6 +129,9 @@ export default function Statistics() {
   const [revData, setRevData] = useState<any>(null);
   const [vehInData, setVehInData] = useState<any>(null);
   const [vehOutData, setVehOutData] = useState<any>(null);
+  const [lostData, setLostData] = useState<any>(null);
+  const [lostChartData, setLostChartData] = useState<any>(null);
+  const [recentCases, setRecentCases] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
@@ -133,21 +139,99 @@ export default function Statistics() {
     setLoading(true);
     try {
       const dateToEnd = dateTo + 'T23:59:59';
-      const [s, r, vi, vo] = await Promise.all([
+      const [s, r, vi, vo, ltReport, ltList] = await Promise.allSettled([
         api.get(`/reports/dashboard-stats`),
         api.get(`/reports/revenue?period=${period}&dateFrom=${dateFrom}&dateTo=${dateToEnd}`),
         api.get(`/reports/vehicles?period=${period}&dateFrom=${dateFrom}&dateTo=${dateToEnd}&type=in`),
         api.get(`/reports/vehicles?period=${period}&dateFrom=${dateFrom}&dateTo=${dateToEnd}&type=out`),
+        api.get(`/reports/lost-tickets?period=${period}&dateFrom=${dateFrom}&dateTo=${dateToEnd}`),
+        api.get(`/lost-tickets?limit=5`),
       ]);
-      const statsData = s.data?.data || s.data;
-      setStats(statsData);
 
-      const revPayload = r.data?.data || r.data;
-      const viPayload = vi.data?.data || vi.data;
-      const voPayload = vo.data?.data || vo.data;
-      setRevData(revPayload);
-      setVehInData(viPayload);
-      setVehOutData(voPayload);
+      let statsObj: any = null;
+      if (s.status === 'fulfilled') {
+        statsObj = s.value.data?.data || s.value.data;
+        setStats(statsObj);
+        if (statsObj?.lostTickets) {
+          setLostData(statsObj.lostTickets);
+        }
+      }
+
+      if (r.status === 'fulfilled') {
+        setRevData(r.value.data?.data || r.value.data);
+      }
+      if (vi.status === 'fulfilled') {
+        setVehInData(vi.value.data?.data || vi.value.data);
+      }
+      if (vo.status === 'fulfilled') {
+        setVehOutData(vo.value.data?.data || vo.value.data);
+      }
+      if (ltReport.status === 'fulfilled') {
+        const ltr = ltReport.value.data?.data || ltReport.value.data;
+        setLostChartData(ltr);
+        if (ltr?.summary) {
+          setLostData((prev: any) => ({
+            today: prev?.today ?? 0,
+            month: prev?.month ?? 0,
+            year: prev?.year ?? 0,
+            all: ltr.summary.totalCases ?? 0,
+            pending: ltr.summary.pendingCases ?? 0,
+            resolved: ltr.summary.resolvedCases ?? 0,
+            escalated: ltr.summary.escalatedCases ?? 0,
+            totalPenalty: ltr.summary.totalPenalty ?? 0,
+          }));
+        }
+      }
+      if (ltList.status === 'fulfilled') {
+        const listData = ltList.value.data?.data || ltList.value.data;
+        setRecentCases(listData?.cases || []);
+      }
+
+      // Fallback: ຖ້າ backend ຍັງບໍ່ທັນສົ່ງ lostTickets ມາໃນ dashboard-stats
+      if (!statsObj?.lostTickets) {
+        try {
+          const { data: allCasesResp } = await api.get('/lost-tickets?limit=100');
+          const allCases = (allCasesResp?.data?.cases || allCasesResp?.cases || []) as any[];
+          const now = new Date();
+          const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+          const startOfYear = new Date(now.getFullYear(), 0, 1).getTime();
+
+          const todayCount = allCases.filter(c => new Date(c.createdAt).getTime() >= startOfToday).length;
+          const monthCount = allCases.filter(c => new Date(c.createdAt).getTime() >= startOfMonth).length;
+          const yearCount = allCases.filter(c => new Date(c.createdAt).getTime() >= startOfYear).length;
+          const pendingCount = allCases.filter(c => c.resolution === 'PENDING').length;
+          const resolvedCount = allCases.filter(c => c.resolution === 'RESOLVED').length;
+          const escalatedCount = allCases.filter(c => c.resolution === 'ESCALATED').length;
+          const totalPenalty = allCases.reduce((sum, c) => sum + Number(c.penaltyAmount || 0), 0);
+
+          setLostData({
+            today: todayCount,
+            month: monthCount,
+            year: yearCount,
+            all: allCasesResp?.pagination?.total ?? allCases.length,
+            pending: pendingCount,
+            resolved: resolvedCount,
+            escalated: escalatedCount,
+            totalPenalty: totalPenalty,
+          });
+
+          if (ltReport.status !== 'fulfilled' || !ltReport.value.data) {
+            const dateMap = new Map<string, number>();
+            allCases.forEach(c => {
+              const dStr = new Date(c.createdAt).toISOString().split('T')[0];
+              dateMap.set(dStr, (dateMap.get(dStr) || 0) + 1);
+            });
+            const sortedDates = Array.from(dateMap.keys()).sort();
+            setLostChartData({
+              data: sortedDates.map(d => ({ date: d, total: dateMap.get(d) || 0 }))
+            });
+          }
+        } catch {
+          // Ignored fallback
+        }
+      }
+
       setLastUpdated(new Date());
     } catch {
       toast.error('ໂຫຼດຂໍ້ມູນບໍ່ສຳເລັດ (Load failed)');
@@ -181,6 +265,14 @@ export default function Statistics() {
     datasets: [{
       label: 'ລາຍຮັບ', data: revData.data?.map((d: any) => d.total) || [],
       backgroundColor: '#10B981', borderWidth: 0, hoverBackgroundColor: '#059669', borderRadius: 0,
+    }],
+  } : null;
+
+  const chartLost = lostChartData ? {
+    labels: lostChartData.data?.map((d: any) => d.date) || [],
+    datasets: [{
+      label: 'ປີ້ເສຍ', data: lostChartData.data?.map((d: any) => d.total) || [],
+      backgroundColor: '#EA580C', borderWidth: 0, hoverBackgroundColor: '#C2410C', borderRadius: 0,
     }],
   } : null;
 
@@ -299,6 +391,186 @@ export default function Statistics() {
                   />
                 );
               })}
+            </div>
+          </div>
+
+          {/* ໝວດທີ 5: ສະຖິຕິລົດປີ້ຫາຍ (Section 5: Lost Ticket Statistics) */}
+          <div>
+            <div className="flex items-center justify-between mb-3.5">
+              <div className="flex items-center gap-2 text-black font-bold text-base md:text-[17px]">
+                <FileWarning size={20} className="text-black shrink-0" />
+                <span>ລົດປີ້ຫາຍ / ປີ້ເສຍ (Lost Tickets)</span>
+              </div>
+              <Link
+                to="/admin/lost-tickets"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-gray-100 text-black text-xs md:text-sm font-bold shadow-sm transition-all border border-gray-200"
+                style={{ borderRadius: 0 }}
+              >
+                <span>ຈັດການປີ້ເສຍທັງໝົດ</span>
+                <ChevronRight size={15} />
+              </Link>
+            </div>
+
+            {/* ບັດສະຖິຕິລົດປີ້ຫາຍ (Lost Ticket Stat Cards) */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
+              <StatCard
+                title="ປີ້ເສຍວັນນີ້"
+                value={fmt(lostData?.today ?? stats?.lostTickets?.today)}
+                unit="ກໍລະນີ"
+                icon={FileWarning}
+                bannerBg="bg-[#D97706]"
+              />
+              <StatCard
+                title="ປີ້ເສຍເດືອນນີ້"
+                value={fmt(lostData?.month ?? stats?.lostTickets?.month)}
+                unit="ກໍລະນີ"
+                icon={CalendarDays}
+                bannerBg="bg-[#7C3AED]"
+              />
+              <StatCard
+                title="ລໍຖ້າແກ້ໄຂ"
+                value={fmt(lostData?.pending ?? stats?.lostTickets?.pending)}
+                unit="ກໍລະນີ"
+                icon={Clock}
+                bannerBg="bg-[#DC2626]"
+              />
+              <StatCard
+                title="ແກ້ໄຂສຳເລັດ"
+                value={fmt(lostData?.resolved ?? stats?.lostTickets?.resolved)}
+                unit="ກໍລະນີ"
+                icon={CheckCircle2}
+                bannerBg="bg-[#059669]"
+              />
+              <StatCard
+                title="ປີ້ເສຍທັງໝົດ"
+                value={fmt(lostData?.all ?? stats?.lostTickets?.all)}
+                unit="ກໍລະນີ"
+                icon={Layers}
+                bannerBg="bg-[#1E293B]"
+              />
+              <StatCard
+                title="ລວມຄ່າປັບໃໝ"
+                value={fmt(lostData?.totalPenalty ?? stats?.lostTickets?.totalPenalty)}
+                unit="₭"
+                icon={CircleDollarSign}
+                bannerBg="bg-[#B02019]"
+              />
+            </div>
+
+            {/* ກຣາຟສະຖິຕິປີ້ເສຍ (Lost Ticket Chart) */}
+            <ChartBox
+              title="ກຣາຟສະຖິຕິລົດປີ້ຫາຍ (Lost Ticket Trend)"
+              icon={FileWarning}
+              colorClass="bg-amber-50 text-amber-600"
+              chartData={chartLost}
+              unit="ກໍລະນີ"
+              loading={loading}
+            />
+
+            {/* ກາດລາຍການລົດປີ້ຫາຍລ່າສຸດ (Recent Lost Ticket Vehicles Card) */}
+            <div
+              className="bg-white p-4 shadow-[0_4px_12px_rgba(0,0,0,0.12)] rounded-none mt-3"
+              style={{ borderRadius: 0 }}
+            >
+              <div className="flex items-center justify-between mb-3 pb-1 border-b border-gray-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-none bg-red-50 text-red-600" style={{ borderRadius: 0 }}>
+                    <AlertTriangle size={18} className="shrink-0" />
+                  </div>
+                  <h3 className="text-base md:text-[17px] font-bold text-gray-900">
+                    ລາຍການລົດປີ້ຫາຍລ່າສຸດ (Recent Lost Ticket Cases)
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Link
+                    to="/admin/reports"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#B02019] hover:bg-[#8e1913] text-white text-xs font-bold shadow-sm transition-all rounded-none"
+                    style={{ borderRadius: 0 }}
+                  >
+                    <FileText size={13} />
+                    <span>ລາຍງານ PDF</span>
+                  </Link>
+                  <Link
+                    to="/admin/lost-tickets"
+                    className="text-xs md:text-sm font-bold text-[#B02019] hover:underline inline-flex items-center gap-1"
+                  >
+                    <span>ເບິ່ງທັງໝົດ</span>
+                    <ExternalLink size={14} />
+                  </Link>
+                </div>
+              </div>
+
+              {recentCases.length === 0 ? (
+                <div className="py-8 text-center text-gray-500 font-medium text-sm">
+                  ບໍ່ມີລາຍການລົດປີ້ຫາຍໃນລະບົບ
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs md:text-sm">
+                    <thead>
+                      <tr className="bg-gray-100 border-b border-gray-200 text-gray-700 font-bold uppercase text-[11px] md:text-xs">
+                        <th className="py-2.5 px-3">ເລກປີ້</th>
+                        <th className="py-2.5 px-3">ປ້າຍທະບຽນ</th>
+                        <th className="py-2.5 px-3">ປະເພດລົດ</th>
+                        <th className="py-2.5 px-3">ວັນທີແຈ້ງເສຍ</th>
+                        <th className="py-2.5 px-3 text-right">ຄ່າປັບໃໝ</th>
+                        <th className="py-2.5 px-3 text-center">ສະຖານະ</th>
+                        <th className="py-2.5 px-3 text-right">ຈັດການ</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 font-medium">
+                      {recentCases.map((c: any) => (
+                        <tr key={c.id} className="hover:bg-amber-50/40 transition-colors">
+                          <td className="py-2.5 px-3 font-bold text-gray-900 font-mono">
+                            {c.ticket?.ticketNumber || '---'}
+                          </td>
+                          <td className="py-2.5 px-3 font-bold text-gray-800">
+                            {c.ticket?.plateLetters ? `${c.ticket?.plateLetters} ` : ''}
+                            {c.ticket?.plateNumber || '---'}
+                            {c.ticket?.plateProvince ? (
+                              <span className="text-[11px] text-gray-500 ml-1">({c.ticket?.plateProvince})</span>
+                            ) : null}
+                          </td>
+                          <td className="py-2.5 px-3 text-gray-600">
+                            {c.ticket?.vehicleType?.label || c.ticket?.vehicleType?.name || '---'}
+                          </td>
+                          <td className="py-2.5 px-3 text-gray-600 whitespace-nowrap">
+                            {new Date(c.createdAt).toLocaleDateString('lo-LA')} {new Date(c.createdAt).toLocaleTimeString('lo-LA', { hour: '2-digit', minute: '2-digit' })}
+                          </td>
+                          <td className="py-2.5 px-3 text-right font-bold text-[#B02019] whitespace-nowrap">
+                            {Number(c.penaltyAmount || 0).toLocaleString('lo-LA')} ₭
+                          </td>
+                          <td className="py-2.5 px-3 text-center">
+                            <span
+                              className={`inline-block px-2 py-0.5 text-[11px] font-bold ${
+                                c.resolution === 'RESOLVED'
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : c.resolution === 'ESCALATED'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : 'bg-red-100 text-red-800'
+                              }`}
+                            >
+                              {c.resolution === 'RESOLVED'
+                                ? 'ແກ້ໄຂແລ້ວ'
+                                : c.resolution === 'ESCALATED'
+                                ? 'ສົ່ງຕໍ່ກວດສອບ'
+                                : 'ລໍຖ້າແກ້ໄຂ'}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-3 text-right">
+                            <Link
+                              to="/admin/lost-tickets"
+                              className="text-xs font-bold text-[#1D4ED8] hover:text-[#1E40AF] underline"
+                            >
+                              ກວດສອບ
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>

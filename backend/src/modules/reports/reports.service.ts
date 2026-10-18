@@ -256,6 +256,30 @@ export class ReportsService {
       })
       .sort((a, b) => b.count - a.count);
 
+    // ສະຖິຕິປີ້ເສຍ / ລົດປີ້ຫາຍ (Lost Ticket Cases) ຕາມຮອບເວລາ
+    const lostToday = await this.prisma.lostTicketCase.count({
+      where: { createdAt: { gte: startOfToday } },
+    });
+    const lostMonth = await this.prisma.lostTicketCase.count({
+      where: { createdAt: { gte: startOfMonth } },
+    });
+    const lostYear = await this.prisma.lostTicketCase.count({
+      where: { createdAt: { gte: startOfYear } },
+    });
+    const lostAll = await this.prisma.lostTicketCase.count();
+    const lostPending = await this.prisma.lostTicketCase.count({
+      where: { resolution: 'PENDING' },
+    });
+    const lostResolved = await this.prisma.lostTicketCase.count({
+      where: { resolution: 'RESOLVED' },
+    });
+    const lostEscalated = await this.prisma.lostTicketCase.count({
+      where: { resolution: 'ESCALATED' },
+    });
+    const lostPenaltyAgg = await this.prisma.lostTicketCase.aggregate({
+      _sum: { penaltyAmount: true },
+    });
+
     return {
       vehicles: {
         parked,
@@ -268,6 +292,87 @@ export class ReportsService {
         month: Number(revMonthAgg._sum.amount || 0),
         year: Number(revYearAgg._sum.amount || 0),
         all: Number(revAllAgg._sum.amount || 0),
+      },
+      lostTickets: {
+        today: lostToday,
+        month: lostMonth,
+        year: lostYear,
+        all: lostAll,
+        pending: lostPending,
+        resolved: lostResolved,
+        escalated: lostEscalated,
+        totalPenalty: Number(lostPenaltyAgg._sum.penaltyAmount || 0),
+      },
+    };
+  }
+
+  /**
+   * ດຶງຂໍ້ມູນລາຍງານສະຖິຕິປີ້ເສຍ (Lost Tickets) ແຍກຕາມຊ່ວງເວລາ (ລາຍວັນ, ລາຍເດືອນ, ລາຍປີ)
+   */
+  async getLostTicketReport(
+    period: 'daily' | 'monthly' | 'yearly',
+    dateFrom?: string,
+    dateTo?: string,
+  ) {
+    const from = dateFrom
+      ? new Date(dateFrom)
+      : new Date(new Date().setDate(new Date().getDate() - 30));
+    const to = dateTo ? new Date(dateTo) : new Date();
+
+    const cases = await this.prisma.lostTicketCase.findMany({
+      where: { createdAt: { gte: from, lte: to } },
+      include: {
+        ticket: {
+          include: { vehicleType: true },
+        },
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    const grouped = new Map<
+      string,
+      { total: number; pending: number; resolved: number; escalated: number; penalty: number }
+    >();
+
+    for (const c of cases) {
+      let key: string;
+      const d = new Date(c.createdAt);
+      switch (period) {
+        case 'daily':
+          key = d.toISOString().split('T')[0];
+          break;
+        case 'monthly':
+          key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+          break;
+        case 'yearly':
+          key = String(d.getFullYear());
+          break;
+      }
+
+      if (!grouped.has(key)) {
+        grouped.set(key, { total: 0, pending: 0, resolved: 0, escalated: 0, penalty: 0 });
+      }
+      const entry = grouped.get(key)!;
+      entry.total++;
+      if (c.resolution === 'PENDING') entry.pending++;
+      if (c.resolution === 'RESOLVED') entry.resolved++;
+      if (c.resolution === 'ESCALATED') entry.escalated++;
+      entry.penalty += Number(c.penaltyAmount || 0);
+    }
+
+    return {
+      period,
+      dateRange: { from: from.toISOString(), to: to.toISOString() },
+      data: Array.from(grouped.entries()).map(([key, val]) => ({
+        date: key,
+        ...val,
+      })),
+      summary: {
+        totalCases: cases.length,
+        pendingCases: cases.filter((c) => c.resolution === 'PENDING').length,
+        resolvedCases: cases.filter((c) => c.resolution === 'RESOLVED').length,
+        escalatedCases: cases.filter((c) => c.resolution === 'ESCALATED').length,
+        totalPenalty: cases.reduce((sum, c) => sum + Number(c.penaltyAmount || 0), 0),
       },
     };
   }

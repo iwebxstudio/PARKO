@@ -1,306 +1,284 @@
-# PARKO–ໂປຣແກຣມລະບົບຄຸ້ມຄອງບໍລິຫານບ່ອນຈອດລົດ
+# PARKO — ລະບົບຄຸ້ມຄອງລານຈອດລົດອັດສະລິຍະ (Smart Parking Management System)
 
-## 1. ພາບລວມລະບົບ
+[![NestJS](https://img.shields.io/badge/NestJS-11.x-E0234E?logo=nestjs)](https://nestjs.com/)
+[![React](https://img.shields.io/badge/React-19.x-61DAFB?logo=react)](https://react.dev/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16.x-336791?logo=postgresql)](https://www.postgresql.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-6.x-2D3748?logo=prisma)](https://www.prisma.io/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](https://www.docker.com/)
 
-**PARKO** ແມ່ນໂປຣແກຣມລະບົບຄຸ້ມຄອງບໍລິຫານບ່ອນຈອດລົດ ຮອງຮັບລົດທຸກປະເພດ ທັງລົດມີປ້າຍ ແລະ ບໍ່ມີປ້າຍ. ໃຊ້ງານໄດ້ຜ່ານໂທລະສັບ ແລະ ຄອມພິວເຕີ ແທັບເລັດ ສາມາດພິມປີ້/ໃບຮັບເງິນຜ່ານ Thermal Printer (USB/Bluetooth).
+---
 
-ລະບົບເນັ້ນ High-Performance, Enterprise Security, Clean code, ລະບົບນິ່ງຄວາມສະຖຽນ ແລະ ຮອງຮັບການອັບເກຣດລະບົບໄດ້ໃນອານາຕົດ.
+## 1. ພາບລວມໂຄງການ (Project Overview)
 
-## 2. Tech Stack
+**PARKO** ແມ່ນລະບົບຄຸ້ມຄອງ ແລະ ບໍລິຫານຈັດການລານຈອດລົດອັດສະລິຍະແບບຄົບວົງຈອນ (Full-stack Smart Parking Management Solution) ທີ່ອອກແບບຕາມມາດຕະຖານ Enterprise Architecture ຮອງຮັບການໃຊ້ງານຜ່ານທັງຄອມພິວເຕີ (Desktop), ແທັບເລັດ (Tablet) ແລະ ໂທລະສັບມືຖື (Mobile) ພ້ອມທັງເຊື່ອມຕໍ່ເຄື່ອງພິມຄວາມຮ້ອນ (Thermal Printer ESC/POS).
 
-- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v3
-- **Backend:** NestJS 11, TypeScript, Clean Architecture
-- **Database:** PostgreSQL 16
-- **ORM:** Prisma ORM 6
-- **Realtime:** WebSocket Gateway (Socket.io)
-- **Authentication:** JWT Access Token 15 ນາທີ + Refresh Token Rotation
-- **Cache/Queue:** Redis 7
-- **Printing:** Node.js Local Print Agent + ESC/POS
-- **Gateway/Security:** Nginx + SSL/TLS
-- **Deployment:** Docker, Docker Compose, Health Check ແລະ Auto Restart
+### ຈຸດປະສົງ ແລະ ບັນຫາທີ່ລະບົບແກ້ໄຂ
+- **ລົບລ້າງລະບົບເຈ້ຍແບບດັ້ງເດີມ:** ແກ້ໄຂບັນຫາການຈົດປີ້ເຈ້ຍດ້ວຍມືທີ່ຊັກຊ້າ, ເກີດຂໍ້ຜິດພາດງ່າຍ, ແລະ ບໍ່ສາມາດກວດສອບຍ້ອນຫຼັງໄດ້.
+- **ປ້ອງກັນການຮົ່ວໄຫຼຂອງລາຍຮັບ:** ລະບົບຄຳນວນຄ່າຈອດລົດແບບອັດຕະໂນມັດຕາມເວລາຈິງ (Real-time LAK) ພ້ອມບັນທຶກປະຫວັດການເງິນ ແລະ Audit Log ທຸກທຸລະກຳ ປ້ອງກັນການທຸຈະລິດ.
+- **ຮອງຮັບຍານພາຫະນະທຸກຮູບແບບ:** ຈັດການໄດ້ທັງລົດໃຫຍ່, ລົດຈັກ, ລົດໄຟຟ້າ (EV), ລົດບັນທຸກ, ທັງລົດທີ່ມີປ້າຍທະບຽນ, ບໍ່ມີປ້າຍ ຫຼື ປ້າຍຕ່າງປະເທດ ດ້ວຍລະຫັດປີ້ QR Code ເອກະລັກ.
+- **ຈັດການກໍລະນີປີ້ເສຍ (Lost Ticket) ຢ່າງຮັດກຸມ:** ມີຂັ້ນຕອນບັນທຶກຫຼັກຖານຮູບພາບຜູ້ຂັບຂີ່, ຕົວລົດ ແລະ ເອກະສານຢືນຢັນຕົວຕົນ ພ້ອມລະບົບອະນຸມັດໂດຍ Admin.
 
-**Architecture Flow**
+---
 
-```text
-Mobile/Desktop → HTTPS/REST API → NestJS → PostgreSQL/Redis
-WebSocket → Realtime Dashboard
-Print Request → Local Print Agent → Thermal Printer
-```
+## 2. ຄວາມສາມາດຫຼັກຂອງລະບົບ (Features)
 
-## 3. ໂຄງສ້າງໂປຣເຈັກ
+| ໂມດູນຫຼັກ | ລາຍລະອຽດການເຮັດວຽກ |
+| :--- | :--- |
+| **Check-in (ລົດເຂົ້າ)** | ບັນທຶກລົດເຂົ້າພາຍໃນ 2 ຄລິກ (< 2 ວິນາທີ), ສ້າງ Ticket ID ພ້ອມ QR Code, ບັນທຶກເວລາເຂົ້າ, ປະເພດລົດ, ປ້າຍທະບຽນ ແລະ ສັ່ງພິມປີ້ເຂົ້າອັດຕະໂນມັດ |
+| **Check-out (ລົດອອກ)** | ສະແກນ QR Code, ຄົ້ນຫາຕາມເລກປີ້ ຫຼື ປ້າຍທະບຽນ; ຄິດໄລ່ໄລຍະເວລາຈອດ ແລະ ຄ່າບໍລິການອັດຕະໂນມັດ ປ້ອງກັນລົດອອກໂດຍບໍ່ໄດ້ຮັບອະນຸຍາດ |
+| **ຄິດໄລ່ຄ່າຈອດ (Fee Engine)** | ຮອງຮັບຊ່ວງເວລາຈອດຟຣີ (Grace Period), ອັດຕາຄິດໄລ່ລາຍຊົ່ວໂມງ, ເໝົາລາຍວັນ, ລາຍອາທິດ, ລາຍເດືອນ, ລາຍປີ ແລະ ລະບົບສະມາຊິກ (Membership) ແຍກຕາມປະເພດລົດ |
+| **ຊຳລະເງິນ (Payments)** | ຮອງຮັບທັງເງິນສົດ (Cash) ແລະ ສະແກນ QR Code (Static/Dynamic QR); ບັນທຶກສະຖານະ `UNPAID`, `PAID`, `CANCELLED` ພ້ອມພິມໃບຮັບເງິນ |
+| **ປີ້ເສຍ (Lost Ticket)** | ແຈ້ງປີ້ເສຍພ້ອມອັບໂຫຼດຮູບຫຼັກຖານ (ຮູບລົດ, ຮູບຜູ້ຂັບຂີ່, ບັດປະຈຳຕົວ), ຄິດໄລ່ຄ່າປັບໃໝ ແລະ ລໍຖ້າການອະນຸມັດຈາກ Admin ພ້ອມ Audit Log |
+| **Dashboard & ສະຖິຕິ** | ສະແດງຈຳນວນລົດເຂົ້າ-ອອກ, ອັດຕາບ່ອນຈອດຫວ່າງ/ເຕັມ, ແລະ ລາຍຮັບລວມແບບ Real-time ຜ່ານ WebSocket |
+| **ລາຍງານ (Reports & Export)** | ສະຫຼຸບລາຍງານລາຍຮັບ, ປະຫວັດທຸລະກຳ, ປີ້ເສຍ ພ້ອມ Export ເປັນໄຟລ໌ Excel (.xlsx) ແລະ PDF |
+| **ສິດການໃຊ້ງານ (RBAC)** | ແບ່ງສິດລະຫວ່າງ **ADMIN** (ຈັດການຜູ້ໃຊ້, ຕັ້ງລາຄາ, ອະນຸມັດປີ້ເສຍ, ລາຍງານ) ແລະ **STAFF** (Check-in, Check-out, ຮັບເງິນ) |
+
+---
+
+## 3. ເຕັກໂນໂລຊີທີ່ນຳໃຊ້ (Tech Stack)
+
+### Frontend
+- **Framework & Core:** [React 19](https://react.dev/) (`19.2.5`), [TypeScript](https://www.typescriptlang.org/) (`~6.0.2`)
+- **Build Tool:** [Vite 8](https://vitejs.dev/) (`8.0.10`) ສຳລັບ Lightning-fast Bundling & HMR
+- **Styling:** [Tailwind CSS v3](https://tailwindcss.com/) (`3.4.19`), PostCSS, Lucide React Icons
+- **Realtime & Client:** Socket.io-client (`4.8.3`), Axios (`1.15.2`), React Router DOM v7
+- **Data & Charts:** Chart.js (`4.5.1`), XLSX (`0.18.5`), Html5-qrcode (`2.3.8`), JsBarcode
+
+### Backend
+- **Framework:** [NestJS 11](https://nestjs.com/) (`11.0.1`) ໂຄງສ້າງ Clean Architecture
+- **Language & Runtime:** [Node.js 20+](https://nodejs.org/) (LTS), TypeScript (`5.7.3`)
+- **ORM:** [Prisma ORM 6](https://www.prisma.io/) (`6.4.1`)
+- **Security & Auth:** Passport JWT, BcryptJS, Helmet (`8.1.0`), Class-Validator, Express Rate Limit
+- **Realtime & Media:** Socket.io Gateway, Multer, Sharp (Image Processing)
+- **Document & Print:** PDFMake, ExcelJS, ESC/POS Network/USB Thermal Agent
+
+### Infrastructure & Database
+- **Database:** [PostgreSQL 16](https://www.postgresql.org/) (Alpine-based, Tuned Buffers & Cache)
+- **Cache & Rate Limit:** [Redis 7](https://redis.io/) (Alpine, LRU Eviction Policy)
+- **Gateway & Web Server:** [Nginx](https://nginx.org/) (Reverse Proxy, SSL/TLS Termination, Gzip, Rate Limiting)
+- **Containerization:** [Docker Engine](https://www.docker.com/) & Docker Compose v2
+
+---
+
+## 4. ໂຄງສ້າງໂຟນເດີ (Project Structure)
 
 ```text
 PARKO/
-├── backend/
-│   ├── prisma/          # Schema, Migration, Seed
-│   ├── src/
-│   │   ├── core/        # Database, Config, Health Check
-│   │   ├── common/      # Guards, Pipes, Filters, Utilities
-│   │   └── modules/     # Parking, Users, Payments, Reports
-│   └── test/            # Unit & E2E Tests
-├── frontend/
+├── backend/                  # NestJS REST API Server & WebSocket Gateway
+│   ├── prisma/               # Prisma Database Schema, Migrations, Seed script
 │   └── src/
-│       ├── components/  # UI, Layout, Feedback
-│       ├── features/    # Check-in, Check-out, Reports
-│       ├── services/    # API Integration
-│       ├── hooks/       # Custom React Hooks
-│       ├── types/       # TypeScript Types
-│       └── utils/       # Helper Functions
-├── services/
-│   └── print-agent/     # ຄວບຄຸມ Thermal Printer
-├── infra/
-│   ├── database/        # Database & Backup
-│   ├── monitoring/      # Prometheus & Grafana
-│   └── nginx/           # Gateway & SSL
-├── scripts/             # Backup, Restore, Maintenance
-├── logs/                # Runtime Logs
-├── docker-compose.yml   # Production
-├── docker-compose.dev.yml
-├── deploy.sh
-├── deploy.ps1
-└── dev.bat
+│       ├── common/           # Decorators, Filters, Guards, Interceptors, Pipes
+│       ├── core/             # Database connection, Redis client, App configuration
+│       └── modules/          # Auth, Users, Parking, Payments, LostTickets, Reports...
+├── frontend/                 # React 19 Single Page Application (SPA)
+│   └── src/
+│       ├── components/       # Reusable UI components (Modals, Badges, Tables)
+│       ├── pages/            # ຫນ້າຫຼັກ: Staff Portal (CheckIn, CheckOut) & Admin Dashboard
+│       ├── services/         # Axios API clients, Socket.io connection, Print services
+│       └── types/            # TypeScript interfaces ແລະ Type definitions
+├── infra/                    # ໂຄງສ້າງພື້ນຖານ (Infrastructure)
+│   ├── database/backup/      # ບ່ອນຈັດເກັບໄຟລ໌ Database Backup (.sql)
+│   └── nginx/                # ໄຟລ໌ຕັ້ງຄ່າ Nginx Reverse Proxy (nginx.conf) ແລະ SSL Certs
+├── scripts/                  # ສະຄຣິບ Backup ແລະ Restore ຖານຂໍ້ມູນ (.sh / .ps1)
+├── services/print-agent/     # Node.js Agent ສຳລັບເຊື່ອມຕໍ່ເຄື່ອງພິມ ESC/POS Thermal Printer
+├── docker-compose.yml        # Docker Multi-container Production Orchestration
+├── docker-compose.dev.yml    # Docker Development Dependencies (PostgreSQL + Redis)
+├── deploy.ps1 / deploy.sh    # ສະຄຣິບ One-click Build & Deploy ອັດຕະໂນມັດ
+└── .env.example              # ແມ່ແບບການຕັ້ງຄ່າຕົວປ່ຽນສະພາບແວດລ້ອມ (Environment Variables)
 ```
 
-## 4. ໂມດູນຫຼັກ
+---
 
-### 4.1 ຜູ້ໃຊ້ ແລະ ສິດ (RBAC)
+## 5. ສິ່ງທີ່ຕ້ອງມີ ແລະ ວິທີຕິດຕັ້ງ (Prerequisites & Installation)
 
-- **ADMIN:** ຈັດການຜູ້ໃຊ້, ລາຄາ, ລາຍງານການເງິນ ແລະ ອະນຸມັດປີ້ເສຍ.
-- **STAFF:** ບັນທຶກລົດເຂົ້າ-ອອກ, ຮັບຊຳລະເງິນ ແລະ ແຈ້ງປີ້ເສຍ.
+### 5.1 ສິ່ງທີ່ຕ້ອງມີກ່ອນຕິດຕັ້ງ (Prerequisites)
+- **Docker:** Docker Engine 20.10+ ແລະ Docker Compose v2.0+ ຂຶ້ນໄປ
+- **OS Support:** Windows 10/11 (WSL2), Ubuntu/Debian Linux, ຫຼື macOS
+- **System Spec:** CPU 2 Cores ຂຶ້ນໄປ, RAM ຢ່າງໜ້ອຍ 4 GB (ແນະນຳ 8 GB ສຳລັບ Production), ພື້ນທີ່ຫວ່າງ 10 GB
+- *(ສຳລັບ Local Dev ແບບບໍ່ໃຊ້ Docker)*: Node.js >= 20.0.0, npm >= 10.0.0, PostgreSQL 16, Redis 7
 
-### 4.2 ຈັດການລົດເຂົ້າ-ອອກ
+### 5.2 ຂັ້ນຕອນການຕິດຕັ້ງ (Step-by-Step Installation)
 
-**Check-in**
-
-- ເລືອກປະເພດລົດ: Car, Motorcycle, EV ຫຼື Truck/Other.
-- ປ້ອນປ້າຍທະບຽນ ຫຼື ປະໄວ້ວ່າງ.
-- ສ້າງ Ticket ID 5 ຕົວເລກ ແລະ QR Code; ບັນທຶກເວລາເຂົ້າ ແລະ ຜູ້ດຳເນີນການ.
-- ພິມປີ້ອັດຕະໂນມັດ.
-
-**Check-out**
-
-- ຄົ້ນຫາປີ້ດ້ວຍ QR Code, Ticket ID ຫຼື ປ້າຍທະບຽນ.
-- ຫ້າມອະນຸຍາດລົດອອກຖ້າບໍ່ມີຂໍ້ມູນຢືນຢັນໃນລະບົບ. ໃບປີ້ເຈ້ຍເປັນຫຼັກຖານສຳຮອງເພື່ອກວດສອບດ້ວຍມື.
-
-### 4.3 ຄິດໄລ່ຄ່າຈອດ
-
-ຮອງຮັບລາຄາລາຍຊົ່ວໂມງ, ເໝົາລາຍວັນ, ສະມາຊິກລາຍເດືອນ ແລະ ກົດເກນລາຄາຕາມຊ່ວງເວລາ.
-
-```text
-fee = pricing_strategy(entry_time, exit_time, vehicle_type, pricing_rule)
+#### ຂັ້ນຕອນທີ 1: Clone Repository
+```bash
+git clone https://github.com/your-org/parko.git
+cd parko
 ```
 
-### 4.4 ຊຳລະເງິນ
-
-- **Static QR:** QR ບັນຊີຂອງລານຈອດ.
-- **Dynamic QR:** QR ທີ່ມີຍອດເງິນ; ວາງແຜນເຊື່ອມຕໍ່ API ທະນາຄານ.
-- **Cash/Manual:** ຮັບເງິນສົດ ແລະ ອອກໃບຮັບເງິນ.
-
-ສະຖານະ: `PENDING`, `PAID`, `MANUAL_PAID`.
-
-### 4.5 ປີ້ເສຍ (Lost Ticket)
-
-ຕ້ອງເກັບຫຼັກຖານ: ຮູບລົດ/ປ້າຍທະບຽນ, ຮູບໜ້າຜູ້ຂັບຂີ່, ຮູບເອກະສານຢືນຢັນຕົວຕົນ, ໝາຍເຫດ, ເວລາ ແລະ ຄ່າປັບໃໝ. Admin ຕ້ອງອະນຸມັດ, ບັນທຶກ `is_lost_ticket = true` ແລະ ເກັບ Audit Log.
-
-### 4.6 ຄວາມຈຸລານຈອດ
-
-ກຳນົດຈຳນວນລົດສູງສຸດຕາມປະເພດ ແລະ ແຈ້ງເຕືອນ Dashboard ເມື່ອບ່ອນຈອດໃກ້ເຕັມ.
-
-### 4.7 ພິມປີ້ ແລະ ແຈ້ງເຕືອນ
-
-- **Printing:** React ສົ່ງຄຳສັ່ງ HTTP/WebSocket ໄປ Local Print Agent (Node.js), ແປງເປັນ ESC/POS ແລະ ພິມຜ່ານ USB/Bluetooth ຂະໜາດ 58mm/80mm.
-- **Notification:** Email (SMTP), Telegram Bot ແລະ Discord Webhook ສຳລັບເຫດສຳຄັນ, ປີ້ເສຍ ແລະ ລາຍການຊຳລະຜິດປົກກະຕິ.
-
-### 4.8 Audit Log
-
-ບັນທຶກ Login/Logout, Check-in/Check-out, ປີ້ເສຍ, ການອະນຸມັດ ແລະ ການປ່ຽນລາຄາ/ການຕັ້ງຄ່າ ເພື່ອກວດສອບຍ້ອນຫຼັງ.
-
-## 5. ຖານຂໍ້ມູນ
-
-ໃຊ້ PostgreSQL 16 + Prisma ORM 6.
-
-| ຕາຕະລາງ           | ໜ້າທີ່                                             |
-| ----------------- | -------------------------------------------------- |
-| `users`           | ຜູ້ໃຊ້, ອີເມວ, Password Hash ແລະ Role              |
-| `tickets`         | ປີ້, ປະເພດລົດ, ປ້າຍທະບຽນ, ເວລາເຂົ້າ-ອອກ ແລະ ສະຖານະ |
-| `payments`        | ຍອດເງິນ, ວິທີຊຳລະ ແລະ ສະຖານະ                       |
-| `pricing_rules`   | ກົດເກນລາຄາ                                         |
-| `lost_tickets`    | ຫຼັກຖານ, ຄ່າປັບໃໝ ແລະ ຜູ້ອະນຸມັດ                   |
-| `audit_logs`      | ປະຫວັດການກະທຳ ແລະ Metadata (JSONB)                 |
-| `system_settings` | ການຕັ້ງຄ່າ Key-Value                               |
-
-## 6. API ຫຼັກ
-
-ທຸກ Endpoint ຕ້ອງມີ Data Validation ແລະ ກວດສິດຕາມຄວາມເໝາະສົມ.
-
-| Method | Endpoint                  | ໜ້າທີ່                |
-| ------ | ------------------------- | --------------------- |
-| POST   | `/api/auth/login`         | ເຂົ້າລະບົບ            |
-| POST   | `/api/auth/refresh`       | ຕໍ່ອາຍຸ Access Token  |
-| POST   | `/api/parking/check-in`   | ບັນທຶກລົດເຂົ້າ        |
-| POST   | `/api/parking/check-out`  | ລົດອອກ/ຄິດຄ່າ         |
-| GET    | `/api/parking/:id`        | ລາຍລະອຽດປີ້           |
-| POST   | `/api/payment/pay`        | ບັນທຶກການຊຳລະ         |
-| GET    | `/api/payment/:ticket_id` | ກວດການຊຳລະ            |
-| POST   | `/api/lost-ticket`        | ແຈ້ງປີ້ເສຍ            |
-| GET    | `/api/stats`              | ສະຖິຕິ/ລາຍຮັບ (Admin) |
-| POST   | `/api/pricing`            | ຈັດການລາຄາ (Admin)    |
-| POST   | `/api/settings`           | ຕັ້ງຄ່າ (Admin)       |
-
-## 7. ໜ້າຈໍລະບົບ
-
-**Staff Portal**
-
-- Check-in: ເປົ້າໝາຍບັນທຶກລົດພາຍໃນ 2 ຄລິກ ແລະ 2 ວິນາທີ.
-- Check-out: ຄົ້ນຫາ ຫຼື ສະແກນ QR.
-- Lost Ticket: ອັບໂຫຼດຫຼັກຖານ ແລະ ສະແດງຄ່າປັບໃໝ.
-
-**Admin Dashboard**
-
-- ສະແດງຈຳນວນລົດ, ບ່ອນວ່າງ ແລະ ລາຍຮັບ Real-time.
-- ສົ່ງອອກລາຍງານ Excel/PDF.
-- ຈັດການລາຄາ, ຜູ້ໃຊ້ ແລະ ສິດ.
-
-WebSocket ອັບເດດຈຳນວນລົດ, ລາຍຮັບ ແລະ ເຫດສຳຄັນໃຫ້ Dashboard ທັນທີ.
-
-## 8. ຄວາມປອດໄພ
-
-- JWT Access Token ອາຍຸສັ້ນ ແລະ Refresh Token Rotation.
-- RBAC Guards ກວດສິດທຸກ Endpoint.
-- `class-validator` ກວດຂໍ້ມູນຂາເຂົ້າ.
-- Redis Rate Limiting ປ້ອງກັນ Brute Force/DoS.
-- Helmet ຊ່ວຍປ້ອງກັນ XSS, Clickjacking ແລະ MIME Sniffing.
-- CORS ອະນຸຍາດສະເພາະ Origin ທີ່ກຳນົດ.
-- ຮັບອັບໂຫຼດສະເພາະ PNG/JPG/WEBP ຂະໜາດບໍ່ເກີນ 5MB.
-- ມີ Audit Log, Backup ແລະ Recovery.
-
-## 9. ຕິດຕັ້ງ ແລະ ເລີ່ມໃຊ້ງານ
-
-### 9.1 ຄວາມຕ້ອງການ
-
-- **Docker:** Windows 10/11 + WSL2 ຫຼື Linux, Docker Engine 20.10+, Docker Compose 2+, RAM ຢ່າງໜ້ອຍ 4GB (ແນະນຳ 8GB), ພື້ນທີ່ 10GB.
-- **Local Development:** Node.js 20+, npm 10+, PostgreSQL 16 ແລະ Redis 7.
-
-### 9.2 Environment
-
-ສ້າງ `.env` ຈາກ `.env.example`:
-
+#### ຂັ້ນຕອນທີ 2: ສ້າງ ແລະ ຕັ້ງຄ່າຟາຍ `.env`
+ສຳເນົາຟາຍແມ່ແບບ `.env.example` ໄປເປັນ `.env`:
 ```powershell
+# Windows PowerShell
 Copy-Item .env.example .env
 ```
-
-ຄ່າສຳຄັນ:
-
-- `PARKO_PORT=39741`
-- `PARKO_SSL_PORT=39742`
-- `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
-- `REDIS_HOST_PORT=39745`
-- `JWT_SECRET`
-- `JWT_ACCESS_EXPIRATION=15m`
-- `JWT_REFRESH_EXPIRATION=7d`
-
-ຕ້ອງປ່ຽນລະຫັດຜ່ານ/Secret ຕົວຢ່າງກ່ອນ Production ແລະ ຫ້າມເກັບຄ່າລັບໃນ Source Code.
-
-### 9.3 ຕິດຕັ້ງດ້ວຍ Docker
-
-```powershell
-.\deploy.ps1
+```bash
+# Linux / macOS
+cp .env.example .env
 ```
 
-ຫຼື:
+> **ໝາຍເຫດ:** ກະລຸນາກວດສອບ ແລະ ປ່ຽນແປງຄ່າ Secret Keys, Passwords ແລະ Ports ໃຫ້ເໝາະສົມກັບສະພາບແວດລ້ອມຕົວຈິງຂອງທ່ານ (ເບິ່ງຫົວຂໍ້ທີ 7).
 
+#### ຂັ້ນຕອນທີ 3: ເລີ່ມຕົ້ນລະບົບດ້ວຍ Docker (Production)
+ທ່ານສາມາດສັ່ງ Start ລະບົບທັງໝົດໄດ້ທັນທີຜ່ານສະຄຣິບ Deploy ອັດຕະໂນມັດ:
+
+```powershell
+# Windows PowerShell
+.\deploy.ps1
+```
+```bash
+# Linux / macOS
+chmod +x deploy.sh
+./deploy.sh
+```
+
+ຫຼື ສັ່ງຜ່ານຄຳສັ່ງ Docker Compose ໂດຍກົງ:
 ```bash
 docker compose up -d --build
 ```
 
-ເມື່ອພ້ອມໃຊ້ງານ:
+---
 
-- HTTP: `http://localhost:39741`
-- HTTPS: `https://localhost:39742`
+## 6. ວິທີເຂົ້າໃຊ້ງານ (Usage)
 
-Self-Signed Certificate ອາດມີຄຳເຕືອນໃນ Browser; Production ຄວນໃຊ້ Certificate ທີ່ເຊື່ອຖືໄດ້.
+### 6.1 URLs ສຳລັບເຂົ້າເຖິງລະບົບ
 
-**ບັນຊີຕົວຢ່າງຕາມເອກະສານເດີມ** (ໃຊ້ໄດ້ກໍຕໍ່ເມື່ອ Seed Script ສ້າງໄວ້):
+| ບໍລິການ | ໂປຣໂຕຄໍ / URL | ລາຍລະອຽດ |
+| :--- | :--- | :--- |
+| **Frontend UI (Staff & Admin)** | `http://localhost:39741` | ລະບົບໜ້າຈໍຫຼັກ (HTTP Gateway) |
+| **Frontend UI (Secure HTTPS)** | `https://localhost:39742` | ເຂົ້າລະຫັດ SSL/TLS (ແນະນຳສຳລັບກ້ອງສະແກນ QR) |
+| **Backend REST API** | `http://localhost:39741/api` | API Endpoints ຜ່ານ Nginx Reverse Proxy |
+| **Swagger API Docs** | `http://localhost:39741/api/docs` | ເອກະສານ OpenAPI / Swagger Interactive Testing |
+| **System Health Check** | `http://localhost:39741/health` | ຈຸດກວດສອບສະຖານະຄວາມພ້ອມຂອງລະບົບ |
 
-- Admin: `admin` / `admin123`
-- Staff: `staff01` / `staff123`
+### 6.2 ຄຳສັ່ງກວດສອບ ແລະ ຈັດການລະບົບ (Management Commands)
 
-ຕ້ອງປ່ຽນລະຫັດຜ່ານທັນທີ.
+- **ກວດສອບສະຖານະ Containers ທັງໝົດ:**
+  ```bash
+  docker compose ps
+  ```
 
-### 9.4 Local Development
+- **ເບິ່ງ Log ການເຮັດວຽກຂອງລະບົບ (Real-time Logs):**
+  ```bash
+  # ເບິ່ງ Log ທຸກໆ Services
+  docker compose logs -f
 
-1. ເປີດ PostgreSQL ແລະ Redis:
+  # ເບິ່ງ Log ສະເພາະ Backend API
+  docker compose logs -f backend
 
-```bash
-docker compose up -d postgres redis
-```
+  # ເບິ່ງ Log ສະເພາະ PostgreSQL Database
+  docker compose logs -f postgres
+  ```
 
-2. ເລີ່ມ Backend:
+- **ຢຸດການເຮັດວຽກຂອງລະບົບ (Stop):**
+  ```bash
+  docker compose down
+  ```
+
+- **Restart ທຸກ Service ໃໝ່:**
+  ```bash
+  docker compose restart
+  ```
+
+---
+
+## 7. ຄວາມປອດໄພ (Security)
+
+- **ການຈັດການ Secrets & `.env`:**
+  - ຫ້າມ Commit ຟາຍ `.env` ທີ່ມີຂໍ້ມູນລະຫັດຜ່ານຕົວຈິງຂຶ້ນ Git Repository ຢ່າງເດັດຂາດ (ຖືກກັນໄວ້ໃນ `.gitignore`).
+  - ປ່ຽນຄ່າ `JWT_SECRET` ໃນ `.env` ໃຫ້ເປັນລະຫັດສຸ່ມທີ່ມີຄວາມຍາວຢ່າງໜ້ອຍ 32 ຕົວອັກສອນ.
+  - ປ່ຽນຄ່າ `POSTGRES_PASSWORD` ຈາກຄ່າເລີ່ມຕົ້ນກ່ອນນຳໃຊ້ໃນ Production.
+- **ບັນຊີເລີ່ມຕົ້ນ (Default Accounts):**
+  - ເມື່ອລະບົບທຳການ Seed Data ຈະສ້າງບັນຊີທົດສອບດັ່ງນີ້:
+    - **Admin:** Username: `admin` | Password: `admin123`
+    - **Staff:** Username: `staff01` | Password: `staff123`
+  - **ຂໍ້ຄວນລະວັງ:** ຫຼັງຈາກຕິດຕັ້ງລະບົບສຳເລັດ ຕ້ອງເຂົ້າໄປປ່ຽນລະຫັດຜ່ານຂອງທຸກ User ເລີ່ມຕົ້ນທັນທີ!
+- **ຂໍ້ຄວນລະວັງດ້ານ Production:**
+  - **SSL/TLS Certificates:** ລະບົບເລີ່ມຕົ້ນໃຊ້ Self-Signed Certificate ເຊິ່ງ Browser ຈະແຈ້ງເຕືອນ Untrusted. ສຳລັບ Production ຕົວຈິງ ຕ້ອງປ່ຽນໄປໃຊ້ໃບຢັ້ງຢືນທີ່ຖືກຕ້ອງ (ເຊັ່ນ Let's Encrypt / CA) ໂດຍວາງໄວ້ທີ່ `infra/nginx/certs/`.
+  - **CORS & Network Firewall:** ກຳນົດ `CORS_ORIGIN` ໃນ `.env` ໃຫ້ອະນຸຍາດສະເພາະ Domain ທີ່ຕ້ອງການ. ບໍ່ຄວນເປີດ Public Port ຂອງ PostgreSQL (39744) ແລະ Redis (39745) ສູ່ພາຍນອກ.
+
+---
+
+## 8. ຖານຂໍ້ມູນ ແລະ ການສຳຮອງຂໍ້ມູນ (Database & Backup)
+
+### 8.1 Database Migration & Seed (ສຳລັບ Development)
+ຫາກຕ້ອງການພັດທະນາເພີ່ມເຕີມໃນຝັ່ງ Backend ສາມາດສັ່ງຄຳສັ່ງ Prisma ໄດ້ດັ່ງນີ້:
 
 ```bash
 cd backend
-npm install
+
+# ສ້າງ ແລະ Run Migration ໃໝ່
+npx prisma migrate dev --name <migration_name>
+
+# Generate Prisma Client
 npx prisma generate
-npx prisma migrate dev --name init
+
+# ລົງຂໍ້ມູນເລີ່ມຕົ້ນ (Seed Default Data: Admin, Staff, Rates)
 npm run prisma:seed
-npm run start:dev
+
+# ເປີດ Web GUI ສຳລັບຈັດການຂໍ້ມູນໃນ Database
+npx prisma studio
 ```
 
-- Backend: `http://localhost:3000`
-- Swagger: `http://localhost:3000/api/docs`
+### 8.2 ການສຳຮອງຂໍ້ມູນ (Backup)
+- **ສຳຮອງຂໍ້ມູນອັດຕະໂນມັດ (Automated Backup):** Docker Compose ມີ Service `backup` ທີ່ເຮັດວຽກເບື້ອງຫຼັງ ທຳການ Dump ຖານຂໍ້ມູນທຸກໆ **12 ຊົ່ວໂມງ** ໄປເກັບໄວ້ທີ່ `infra/database/backup/` ພ້ອມລຶບໄຟລ໌ເກົ່າທີ່ເກີນ 30 ວັນອັດຕະໂນມັດ.
+- **ສັ່ງສຳຮອງຂໍ້ມູນດ້ວຍມື (Manual Backup):**
+  ```powershell
+  # Windows PowerShell
+  .\scripts\backup.ps1
+  ```
+  ```bash
+  # Linux / macOS
+  chmod +x scripts/backup.sh
+  ./scripts/backup.sh
+  ```
 
-3. ເປີດ Terminal ໃໝ່ ແລະ ເລີ່ມ Frontend:
-
+### 8.3 ການກູ້ຄືນຂໍ້ມູນ (Restore)
+ຫາກຕ້ອງການ Restore ຖານຂໍ້ມູນຈາກໄຟລ໌ Backup (`.sql`):
+```powershell
+# Windows PowerShell
+.\scripts\restore.ps1 -BackupFile "infra/database/backup/backup_YYYYMMDD_HHMMSS.sql"
+```
 ```bash
-cd frontend
-npm install
-npm run dev
+# Linux / macOS (ຫາກບໍ່ລະບຸໄຟລ໌ ລະບົບຈະເລືອກໄຟລ໌ລ່າສຸດໃຫ້ອັດຕະໂນມັດ)
+chmod +x scripts/restore.sh
+./scripts/restore.sh infra/database/backup/backup_YYYYMMDD_HHMMSS.sql
 ```
 
-ກວດຄ່າ API URL ແລະ Environment ຕາມທີ່ໂປຣເຈັກກຳນົດ.
+---
 
-### 9.5 Backup/Restore
+## 9. ການແກ້ໄຂບັນຫາເບື້ອງຕົ້ນ (Troubleshooting)
 
-ໃຊ້ Script:
+| ບັນຫາທີ່ພົບເລື້ອຍ | ສາເຫດທີ່ອາດເກີດຂຶ້ນ | ວິທີແກ້ໄຂ |
+| :--- | :--- | :--- |
+| **Port ซ້ຳກັນ (Port Conflict)** | ພອດທີ່ລະບົບໃຊ້ (ເຊັ່ນ 39741, 39744) ຖືກໂປຣແກຣມອື່ນໃນ Host ຈອງຢູ່ແລ້ວ | ແກ້ໄຂເລກພອດໃນ `.env` (ເຊັ່ນ ປ່ຽນ `PARKO_PORT=39841`) ແລ້ວ Restart ລະບົບ |
+| **Container ບໍ່ Start / Unhealthy** | Build Cache ເກົ່າຄ້າງ ຫຼື ເກີດຂໍ້ຜິດພາດຂະນະ Start Service | ໃຊ້ຄຳສັ່ງ `docker compose logs <service>` ເພື່ອກວດສອບ ແລະ ສັ່ງ Rebuild ໃໝ່: `docker compose down && docker compose up -d --build` |
+| **Database ເຊື່ອມຕໍ່ບໍ່ໄດ້** | Service `postgres` ຍັງບໍ່ພ້ອມ ຫຼື Password ໃນ `.env` ບໍ່ກົງກັນ | ກວດສອບສະຖານະດ້ວຍ `docker compose ps` ຮັບປະກັນວ່າ `parko-postgres` ຂຶ້ນ `healthy`; ກວດສອບ `DATABASE_URL` ແລະ `POSTGRES_PASSWORD` ໃນ `.env` |
+| **ກ້ອງສະແກນ QR ບໍ່ເຮັດວຽກ** | Browser ບໍ່ອະນຸຍາດໃຫ້ເປີດກ້ອງເທິງ HTTP ທຳມະດາ | ເຂົ້າໃຊ້ງານຜ່ານ HTTPS (`https://localhost:39742`) ແລະ ກົດອະນຸຍາດສິດເຂົ້າເຖິງກ້ອງ (Camera Permission) ໃນ Browser |
+| **ເຄື່ອງພິມ Thermal ບໍ່ຕອບສະໜອງ** | Local Print Agent ບໍ່ສາມາດເຊື່ອມຕໍ່ USB/Port ຂອງເຄື່ອງພິມ | ກວດສອບສາຍເຊື່ອມຕໍ່ USB/Bluetooth, Driver ເຄື່ອງພິມ ແລະ ກວດສອບ Log ຂອງ `parko-print-agent` |
 
-- `scripts/backup.sh` / `scripts/backup.ps1`
-- `scripts/restore.sh` / `scripts/restore.ps1`
+---
 
-ສຳຮອງຂໍ້ມູນປະຈຳ ແລະ ທົດສອບການກູ້ຄືນ.
+## 10. ໃບອະນຸຍາດ ແລະ ການຮ່ວມພັດທະນາ (License & Contribution)
 
-### 9.6 ແກ້ໄຂບັນຫາ
+### ໃບອະນຸຍາດ (License)
+ໂຄງການ **PARKO** ສະຫງວນລິຂະສິດ (Proprietary / All Rights Reserved). ຫ້າມດັດແປງ, ແຈກຢາຍ ຫຼື ນຳໃຊ້ໃນທາງການຄ້າໂດຍບໍ່ໄດ້ຮັບອະນຸຍາດເປັນລາຍລັກອັກສອນຈາກເຈົ້າຂອງລິຂະສິດ.
 
-| ບັນຫາ                | ວິທີກວດສອບ/ແກ້ໄຂ                               |
-| -------------------- | ---------------------------------------------- |
-| Port ຊ້ຳ             | ປ່ຽນ Port ໃນ `.env`                            |
-| Container ເປີດບໍ່ໄດ້ | ກວດ `docker compose logs backend` ແລະ Database |
-| Login ບໍ່ໄດ້         | ກວດ Seed Script ແລະ ບັນຊີ                      |
-| QR Scanner ບໍ່ໄດ້    | ກວດສິດກ້ອງ ແລະ HTTPS                           |
-
-## 10. Seed Data
-
-`prisma/seed.ts` ຄວນສ້າງບັນຊີ Admin/Staff, ກົດເກນຄ່າຈອດເລີ່ມຕົ້ນ ແລະ ປີ້ຕົວຢ່າງສຳລັບທົດສອບ Dashboard.
-
-## 11. ປັບປຸງປະສິດທິພາບ
-
-- **Database Indexing:** `ticket_code`, `license_plate`, `status`, `entry_time`.
-- **Redis Caching:** Cache ສະຖິຕິ ແລະ Dashboard.
-- **Server-Side Pagination:** ຮອງຮັບປີ້ຈຳນວນຫຼາຍ.
-- **Code Splitting/Lazy Loading:** ໂຫຼດສະເພາະໂມດູນຈຳເປັນ.
-- **Health Check/Auto Restart:** ກວດສອບ Service ແລະ ຟື້ນຄືນ Container ຕາມການຕັ້ງຄ່າ.
-
-## 12. ແຜນພັດທະນາຕໍ່
-
-1. ເຊື່ອມ Dynamic QR ກັບ API ທະນາຄານ.
-2. ໃຊ້ AI License Plate Recognition (ALPR).
-3. ພັດທະນາ Mobile App ດ້ວຍ Flutter.
-4. ຂະຫຍາຍ Multi-branch ແລະ Smart City.
-
-## 13. ເປົ້າໝາຍ
-
-PARKO ຕ້ອງພ້ອມໃຊ້ໃນລານຈອດລົດຈິງ ໂດຍເນັ້ນ:
-
-- **High-Performance:** ຕອບສະໜອງໄວ ແລະ ບໍ່ຄ້າງ.
-- **Enterprise Security:** ລະບົບມີຄວາມປອດໄພສູງ.
-- **Clean code:** Maintainable Code ໂຄ້ດສະອາດ
-- **ນິ່ງຄວາມສະຖຽນ:** Health Check, Backup ແລະ Recovery.
+### ແນວທາງການຮ່ວມພັດທະນາ (Contribution Guidelines)
+1. ສ້າງ **Fork** ຂອງ Repository ນີ້
+2. ສ້າງ Feature Branch ໃໝ່:
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. Commit ການປ່ຽນແປງຂອງທ່ານຕາມຮູບແບບ [Conventional Commits](https://www.conventionalcommits.org/):
+   ```bash
+   git commit -m 'feat: add support for dynamic bank QR code'
+   ```
+4. ທົດສອບ Code Quality & Build:
+   ```bash
+   npm run lint && npm run build
+   ```
+5. Push Branch ຂອງທ່ານຂຶ້ນສູ່ Git:
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+6. ເປີດ **Pull Request (PR)** ພ້ອມອະທິບາຍລາຍລະອຽດການປັບປຸງໃຫ້ຄົບຖ້ວນ
