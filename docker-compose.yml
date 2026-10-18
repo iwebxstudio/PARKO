@@ -59,8 +59,6 @@ services:
         limits:
           cpus: '1.5'
           memory: 1G
-        reservations:
-          memory: 128M
     logging: *default-logging
     security_opt:
       - no-new-privileges:true
@@ -89,8 +87,6 @@ services:
         limits:
           cpus: '0.5'
           memory: 512M
-        reservations:
-          memory: 64M
     logging: *default-logging
     security_opt:
       - no-new-privileges:true
@@ -103,11 +99,9 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: production
+    image: parko-backend:latest
     container_name: parko-backend
     restart: unless-stopped
-    env_file:
-      - path: .env
-        required: false
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       BACKEND_PORT: 3000
@@ -135,19 +129,17 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3000/api/health || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 25s
+      retries: 10
+      start_period: 45s
     stop_grace_period: 30s
     deploy:
       resources:
         limits:
           cpus: '1.5'
           memory: 1G
-        reservations:
-          memory: 128M
     logging: *default-logging
     security_opt:
       - no-new-privileges:true
@@ -160,22 +152,21 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       target: production
+    image: parko-frontend:latest
     container_name: parko-frontend
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:80/ || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 3
-      start_period: 5s
+      retries: 5
+      start_period: 10s
     stop_grace_period: 15s
     deploy:
       resources:
         limits:
           cpus: '1.0'
           memory: 256M
-        reservations:
-          memory: 32M
     logging: *default-logging
     security_opt:
       - no-new-privileges:true
@@ -187,6 +178,7 @@ services:
     build:
       context: ./services/print-agent
       dockerfile: Dockerfile
+    image: parko-print-agent:latest
     container_name: parko-print-agent
     restart: unless-stopped
     environment:
@@ -205,8 +197,6 @@ services:
         limits:
           cpus: '0.5'
           memory: 256M
-        reservations:
-          memory: 64M
     logging: *default-logging
     security_opt:
       - no-new-privileges:true
@@ -218,6 +208,7 @@ services:
     build:
       context: ./infra/nginx
       dockerfile: Dockerfile
+    image: parko-nginx:latest
     container_name: parko-nginx
     restart: unless-stopped
     ports:
@@ -236,16 +227,14 @@ services:
       test: ["CMD", "nginx", "-t"]
       interval: 15s
       timeout: 5s
-      retries: 3
-      start_period: 5s
+      retries: 5
+      start_period: 10s
     stop_grace_period: 15s
     deploy:
       resources:
         limits:
           cpus: '0.5'
           memory: 256M
-        reservations:
-          memory: 64M
     logging: *default-logging
     security_opt:
       - no-new-privileges:true
@@ -257,9 +246,6 @@ services:
     image: postgres:16-alpine
     container_name: parko-backup
     restart: unless-stopped
-    env_file:
-      - path: .env
-        required: false
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-parko}
       POSTGRES_DB: ${POSTGRES_DB:-parko_db}
@@ -278,9 +264,9 @@ services:
         echo "[$$] Starting database backup at $$timestamp"
         
         pg_dump -h postgres -U $${POSTGRES_USER:-parko} -d $${POSTGRES_DB:-parko_db} \
-          -f /backup/backup_$${timestamp}.sql 2>> /backup/backup.log
+          -f /backup/backup_$${timestamp}.sql 2>> /backup/backup.log || true
         
-        find /backup -name "backup_*.sql" -mtime +$${BACKUP_RETENTION_DAYS} -delete
+        find /backup -name "backup_*.sql" -mtime +$${BACKUP_RETENTION_DAYS} -exec rm -f {} + 2>/dev/null || true
         echo "[$$] Backup completed: $$timestamp" >> /backup/backup.log
         
         # ໄລຍະຫ່າງຂອງການສຳຮອງຂໍ້ມູນອັດຕະໂນມັດ: ທຸກໆ 12 ຊົ່ວໂມງ (43,200 ວິນາທີ)
@@ -301,8 +287,6 @@ services:
         limits:
           cpus: '0.5'
           memory: 256M
-        reservations:
-          memory: 64M
     logging: *default-logging
     security_opt:
       - no-new-privileges:true

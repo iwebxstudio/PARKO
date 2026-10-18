@@ -25,22 +25,23 @@ RUN npx tsc prisma/seed.ts --outDir dist/prisma --skipLibCheck --module commonjs
 FROM node:20-alpine AS production
 WORKDIR /app
 
-# ຕິດຕັ້ງ openssl ສຳລັບ Prisma ORM ແລະ dumb-init ເພື່ອຈັດການ Signal PID 1 ໃຫ້ຖືກຕ້ອງ
-RUN apk add --no-cache openssl dumb-init
+# ຕິດຕັ້ງ openssl ສຳລັບ Prisma ORM, dumb-init, ແລະ wget ສຳລັບ Healthcheck
+RUN apk add --no-cache openssl dumb-init wget
 
-# ສຳເນົາ Dependencies ແລະ ໄຟລ໌ Artifacts ທີ່ Build ແລ້ວເຂົ້າມາ
-COPY --from=deps /prod_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=build /app/prisma ./prisma
-COPY package*.json ./
-COPY docker-entrypoint.sh ./
+# ສຳເນົາ Dependencies ແລະ ໄຟລ໌ Artifacts ທີ່ Build ແລ້ວເຂົ້າມາ ພ້ອມກຳນົດເຈົ້າຂອງ node:node
+COPY --chown=node:node --from=deps /prod_modules ./node_modules
+COPY --chown=node:node --from=build /app/dist ./dist
+COPY --chown=node:node --from=build /app/node_modules/.prisma ./node_modules/.prisma
+COPY --chown=node:node --from=build /app/node_modules/@prisma ./node_modules/@prisma
+COPY --chown=node:node --from=build /app/prisma ./prisma
+COPY --chown=node:node package*.json ./
+COPY --chown=node:node docker-entrypoint.sh ./
 
-# ສ້າງໂຟນເດີ uploads, logs ແລະ ກຳນົດສິດຄວາມປອດໄພໃຫ້ແກ່ user 'node' (Non-root user)
-RUN chmod +x docker-entrypoint.sh && \
+# ແກ້ໄຂບັນຫາ CRLF ຈາກ Windows, ກຳນົດສິດ Execute ແລະ ສ້າງໂຟນເດີ uploads, logs
+RUN sed -i 's/\r$//' docker-entrypoint.sh && \
+    chmod +x docker-entrypoint.sh && \
     mkdir -p uploads logs && \
-    chown -R node:node /app
+    chown -R node:node uploads logs
 
 USER node
 ENV NODE_ENV=production

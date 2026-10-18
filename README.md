@@ -1,43 +1,26 @@
 <div align="center">
-
-# 🚗 PARKO — ລະບົບຄຸ້ມຄອງລານຈອດລົດອັດສະລິຍະ
-### Smart Parking Management System
-
-ລະບົບຄຸ້ມຄອງບ່ອນຈອດລົດຄົບວົງຈອນ ຮອງຮັບການສະແກນ QR Code, ຄິດໄລ່ຄ່າຈອດ Real-time, ພິມປີ້ຄວາມຮ້ອນ ESC/POS ແລະ ຈັດການປີ້ເສຍ
-
+<!-- Main Cover Banner -->
+<p align="center">
+<img src="docs/screenshots/login.png" alt="PARKO Smart Parking System Cover" width="100%" />
+  <img src="docs/screenshots/checkin.png" alt="PARKO Smart Parking System Cover" width="100%" />
+</p>
+# PARKO — ໂປຣແກຣມບໍລິຫານຈັດການບ່ອນຈອດລົດ
+ໂປຣແກຣມລະບົບຄຸ້ມຄອງບໍລິຫານບ່ອນຈອດລົດ ຮອງຮັບລົດທຸກປະເພດ ທັງລົດມີປ້າຍ ແລະ ບໍ່ມີປ້າຍ. ໃຊ້ງານໄດ້ຜ່ານໂທລະສັບ ແລະ ຄອມພິວເຕີ ແທັບເລັດ ສາມາດພິມປີ້/ໃບຮັບເງິນຜ່ານ Thermal Printer (USB/Bluetooth).ຮອງຮັບການສະແກນ QR Code, ຄິດໄລ່ຄ່າຈອດ Real-time, ພິມປີ້ຄວາມຮ້ອນ ESC/POS ແລະ ຈັດການປີ້ເສຍລະບົບເນັ້ນ High-Performance, Enterprise Security, Clean code, ລະບົບນິ່ງຄວາມສະຖຽນ ແລະ ຮອງຮັບການອັບເກຣດລະບົບໄດ້ໃນອານາຕົດ.
 <br/>
-
 [![NestJS](https://img.shields.io/badge/NestJS-11.x-E0234E?logo=nestjs)](https://nestjs.com/)
 [![React](https://img.shields.io/badge/React-19.x-61DAFB?logo=react)](https://react.dev/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16.x-336791?logo=postgresql)](https://www.postgresql.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-6.x-2D3748?logo=prisma)](https://www.prisma.io/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](https://www.docker.com/)
-
 <br/><br/>
-
-<!-- Main Cover Banner -->
-<p align="center">
-  <img src="docs/screenshots/checkin.png" alt="PARKO Smart Parking System Cover" width="100%" />
-</p>
-
-### 📸 ພາບຕົວຢ່າງໜ້າຕາລະບົບ (Application Screenshots)
-
-| 🔐 ໜ້າຈໍເຂົ້າສູ່ລະບົບ (Login Portal) | 🚗 ໜ້າຈໍ Check-in ລົດເຂົ້າ (Staff Dashboard) |
-| :---: | :---: |
-| <img src="docs/screenshots/login.png" alt="PARKO Login Portal" width="100%" /> | <img src="docs/screenshots/checkin.png" alt="PARKO Check-in Dashboard" width="100%" /> |
-
 </div>
-
 ---
-
 ## 1. ພາບລວມໂຄງການ (Project Overview)
-
-**PARKO** ໂປຣແກຣມບໍລິຫານຈັດການບ່ອນຈອດລົດ ຮອງຮັບການໃຊ້ງານຜ່ານທັງຄອມພິວເຕີ (Desktop), ແທັບເລັດ (Tablet) ແລະ ໂທລະສັບມືຖື (Mobile) ພ້ອມທັງເຊື່ອມຕໍ່ເຄື່ອງພິມຄວາມຮ້ອນ (Thermal Printer ESC/POS).
-
-### ຈຸດປະສົງ ແລະ ບັນຫາທີ່ລະບົບແກ້ໄຂ
+PARKO ໂປຣແກຣມລະບົບຄຸ້ມຄອງບໍລິຫານບ່ອນຈອດລົດ ຮອງຮັບລົດທຸກປະເພດ ທັງລົດມີປ້າຍ ແລະ ບໍ່ມີປ້າຍ. ໃຊ້ງານໄດ້ຜ່ານໂທລະສັບ ແລະ ຄອມພິວເຕີ ແທັບເລັດ ສາມາດພິມປີ້/ໃບຮັບເງິນຜ່ານ Thermal Printer (USB/Bluetooth).ຮອງຮັບການສະແກນ QR Code, ຄິດໄລ່ຄ່າຈອດ Real-time, ພິມປີ້ຄວາມຮ້ອນ ESC/POS ແລະ ຈັດການປີ້ເສຍລະບົບເນັ້ນ High-Performance, Enterprise Security, Clean code, ລະບົບນິ່ງຄວາມສະຖຽນ ແລະ ຮອງຮັບການອັບເກຣດລະບົບໄດ້ໃນອານາຕົດ.
+## ຈຸດປະສົງ ແລະ ບັນຫາທີ່ລະບົບແກ້ໄຂ
 
 - **ລົບລ້າງລະບົບເຈ້ຍແບບດັ້ງເດີມ:** ແກ້ໄຂບັນຫາການຈົດປີ້ເຈ້ຍດ້ວຍມືທີ່ຊັກຊ້າ, ເກີດຂໍ້ຜິດພາດງ່າຍ, ແລະ ບໍ່ສາມາດກວດສອບຍ້ອນຫຼັງໄດ້.
-- **ປ້ອງກັນການຮົ່ວໄຫຼຂອງລາຍຮັບ:** ລະບົບຄຳນວນຄ່າຈອດລົດແບບອັດຕະໂນມັດຕາມເວລາຈິງ (Real-time LAK) ພ້ອມບັນທຶກປະຫວັດການເງິນ ແລະ Audit Log ທຸກທຸລະກຳ ປ້ອງກັນການທຸຈະລິດ.
+- **ປ້ອງກັນການຮົ່ວໄຫຼຂອງລາຍຮັບ:** ລະບົບຄຳນວນຄ່າຈອດລົດແບບອັດຕະໂນມັດຕາມເວລາຈິງ (Real-time LAK) ພ້ອມບັນທຶກປະຫວັດການເງິນ.
 - **ຮອງຮັບຍານພາຫະນະທຸກຮູບແບບ:** ຈັດການໄດ້ທັງລົດໃຫຍ່, ລົດຈັກ, ລົດໄຟຟ້າ (EV), ລົດບັນທຸກ, ທັງລົດທີ່ມີປ້າຍທະບຽນ, ບໍ່ມີປ້າຍ ຫຼື ປ້າຍຕ່າງປະເທດ ດ້ວຍລະຫັດປີ້ QR Code ເອກະລັກ.
 - **ຈັດການກໍລະນີປີ້ເສຍ (Lost Ticket) ຢ່າງຮັດກຸມ:** ມີຂັ້ນຕອນບັນທຶກຫຼັກຖານຮູບພາບຜູ້ຂັບຂີ່, ຕົວລົດ ແລະ ເອກະສານຢືນຢັນຕົວຕົນ ພ້ອມລະບົບອະນຸມັດໂດຍ Admin.
 
@@ -135,42 +118,16 @@ git clone https://github.com/your-org/parko.git
 cd parko
 ```
 
-#### ຂັ້ນຕອນທີ 2: ສ້າງ ແລະ ຕັ້ງຄ່າຟາຍ `.env`
+#### ຂັ້ນຕອນທີ 2: ເປີດໃຊ້ງານລະບົບໄດ້ທັນທີ (Turnkey Launch)
 
-ສຳເນົາຟາຍແມ່ແບບ `.env.example` ໄປເປັນ `.env`:
-
-```powershell
-# Windows PowerShell
-Copy-Item .env.example .env
-```
+ລະບົບມີການກຳນົດຄ່າເລີ່ມຕົ້ນ (.env) ພ້ອມໃຊ້ງານມາໃຫ້ແລ້ວ ທ່ານພຽງແຕ່ເປີດ **Docker Desktop** ແລ້ວໃຊ້ຄຳສັ່ງດຽວ:
 
 ```bash
-# Linux / macOS
-cp .env.example .env
+docker-compose up -d
 ```
+*(ຫຼື `docker compose up -d`)*
 
-> **ໝາຍເຫດ:** ກະລຸນາກວດສອບ ແລະ ປ່ຽນແປງຄ່າ Secret Keys, Passwords ແລະ Ports ໃຫ້ເໝາະສົມກັບສະພາບແວດລ້ອມຕົວຈິງຂອງທ່ານ (ເບິ່ງຫົວຂໍ້ທີ 7).
-
-#### ຂັ້ນຕອນທີ 3: ເລີ່ມຕົ້ນລະບົບດ້ວຍ Docker (Production)
-
-ທ່ານສາມາດສັ່ງ Start ລະບົບທັງໝົດໄດ້ທັນທີຜ່ານສະຄຣິບ Deploy ອັດຕະໂນມັດ:
-
-```powershell
-# Windows PowerShell
-.\deploy.ps1
-```
-
-```bash
-# Linux / macOS
-chmod +x deploy.sh
-./deploy.sh
-```
-
-ຫຼື ສັ່ງຜ່ານຄຳສັ່ງ Docker Compose ໂດຍກົງ:
-
-```bash
-docker compose up -d --build
-```
+> **ສຳລັບ Windows (ງ່າຍທີ່ສຸດ):** ສາມາດດັບເບິ້ລຄລິກໄຟລ໌ `start.bat` ເພື່ອເປີດລະບົບ ແລະ ເປີດ Browser ຂຶ້ນມາອັດຕະໂນມັດໄດ້ເລີຍ!
 
 ---
 
@@ -301,30 +258,3 @@ chmod +x scripts/restore.sh
 | **ເຄື່ອງພິມ Thermal ບໍ່ຕອບສະໜອງ**   | Local Print Agent ບໍ່ສາມາດເຊື່ອມຕໍ່ USB/Port ຂອງເຄື່ອງພິມ            | ກວດສອບສາຍເຊື່ອມຕໍ່ USB/Bluetooth, Driver ເຄື່ອງພິມ ແລະ ກວດສອບ Log ຂອງ `parko-print-agent`                                                 |
 
 ---
-
-## 10. ໃບອະນຸຍາດ ແລະ ການຮ່ວມພັດທະນາ (License & Contribution)
-
-### ໃບອະນຸຍາດ (License)
-
-ໂຄງການ **PARKO** ສະຫງວນລິຂະສິດ (Proprietary / All Rights Reserved). ຫ້າມດັດແປງ, ແຈກຢາຍ ຫຼື ນຳໃຊ້ໃນທາງການຄ້າໂດຍບໍ່ໄດ້ຮັບອະນຸຍາດເປັນລາຍລັກອັກສອນຈາກເຈົ້າຂອງລິຂະສິດ.
-
-### ແນວທາງການຮ່ວມພັດທະນາ (Contribution Guidelines)
-
-1. ສ້າງ **Fork** ຂອງ Repository ນີ້
-2. ສ້າງ Feature Branch ໃໝ່:
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-3. Commit ການປ່ຽນແປງຂອງທ່ານຕາມຮູບແບບ [Conventional Commits](https://www.conventionalcommits.org/):
-   ```bash
-   git commit -m 'feat: add support for dynamic bank QR code'
-   ```
-4. ທົດສອບ Code Quality & Build:
-   ```bash
-   npm run lint && npm run build
-   ```
-5. Push Branch ຂອງທ່ານຂຶ້ນສູ່ Git:
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-6. ເປີດ **Pull Request (PR)** ພ້ອມອະທິບາຍລາຍລະອຽດການປັບປຸງໃຫ້ຄົບຖ້ວນ

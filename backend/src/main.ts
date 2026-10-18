@@ -100,7 +100,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   const port = process.env.BACKEND_PORT || 3000;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   logger.log(`🅿️  PARKO API running on http://localhost:${port}`);
   logger.log(`📄 Swagger docs at http://localhost:${port}/api/docs`);
 }

@@ -73,7 +73,7 @@ web_modules/
 .yarn-integrity
 
 # ໄຟລ໌ຕົວປ່ຽນສະພາບແວດລ້ອມ (Environment variables) ທີ່ມີລະຫັດລັບ
-.env
+# ໝາຍເຫດ: .env ຫຼັກຖືກຕິດຕາມເພື່ອໃຫ້ສາມາດຍ້າຍໄປ Run ຜ່ານ docker-compose up -d ໄດ້ທັນທີ
 .env.test
 .env.production
 .env.local
@@ -135,11 +135,20 @@ dist
 *.sw?
 
 # ໄຟລ໌ສຳຮອງຖານຂໍ້ມູນ Database Backups
-database/backup/
-infra/database/backup/
+database/backup/*.sql
+infra/database/backup/*.sql
+infra/database/backup/*.log
+!infra/database/backup/.gitkeep
 
 # ໄຟລ໌ບັນທຶກ ແລະ ໃບຢັ້ງຢືນ SSL ພາຍໃນເຄື່ອງ
-infra/nginx/logs/
+logs/*
+!logs/.gitkeep
+logs/backend/*
+!logs/backend/.gitkeep
+infra/nginx/logs/*.log
+!infra/nginx/logs/.gitkeep
 infra/nginx/certs/*.crt
 infra/nginx/certs/*.key
 !infra/nginx/certs/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep

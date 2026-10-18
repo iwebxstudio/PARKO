@@ -187,16 +187,87 @@ export class UsersService {
   }
 
   /**
-   * ປິດການໃຊ້ງານບັນຊີຜູ້ໃຊ້ (Soft Delete ໂດຍການປ່ຽນຄ່າ isActive ເປັນ false)
+   * ລຶບບັນຊີຜູ້ໃຊ້ງານຖາວອນ (Hard Delete) ພ້ອມຈັດການຄວາມສຳພັນໃນຖານຂໍ້ມູນຢ່າງປອດໄພ
    */
-  async remove(id: string) {
-    await this.findById(id);
-
-    await this.prisma.user.update({
+  async remove(id: string, currentUserId?: string) {
+    const user = await this.prisma.user.findUnique({
       where: { id },
-      data: { isActive: false },
     });
 
-    return { message: 'User deactivated successfully' };
+    if (!user) throw new NotFoundException('User not found');
+
+    if (currentUserId && id === currentUserId) {
+      throw new BadRequestException('ບໍ່ສາມາດລຶບບັນຊີຂອງຕົນເອງທີ່ກຳລັງເຂົ້າສູ່ລະບົບຢູ່ໄດ້');
+    }
+
+    if (user.role === 'ADMIN') {
+      const adminCount = await this.prisma.user.count({
+        where: { role: 'ADMIN' },
+      });
+      if (adminCount <= 1) {
+        throw new BadRequestException('ບໍ່ສາມາດລຶບຜູ້ບໍລິຫານຄົນສຸດທ້າຍໃນລະບົບໄດ້');
+      }
+    }
+
+    // ຊອກຫາຜູ້ບໍລິຫານ ຫຼື ຜູ້ໃຊ້ງານອື່ນສຳລັບໂອນຍ້າຍ Foreign Key ທີ່ຈຳເປັນ
+    const fallbackUser = currentUserId
+      ? await this.prisma.user.findUnique({ where: { id: currentUserId } })
+      : (await this.prisma.user.findFirst({
+          where: { id: { not: id }, role: 'ADMIN' },
+        })) ||
+        (await this.prisma.user.findFirst({
+          where: { id: { not: id } },
+        }));
+
+    await this.prisma.$transaction(async (tx) => {
+      // 1. ລຶບ Refresh Tokens
+      await tx.refreshToken.deleteMany({ where: { userId: id } });
+
+      // 2. ຕັດການເຊື່ອມໂຍງ Nullable Foreign Keys
+      await tx.auditLog.updateMany({
+        where: { userId: id },
+        data: { userId: null },
+      });
+      await tx.systemSetting.updateMany({
+        where: { updatedById: id },
+        data: { updatedById: null },
+      });
+      await tx.lostTicketCase.updateMany({
+        where: { resolvedById: id },
+        data: { resolvedById: null },
+      });
+      await tx.parkingTicket.updateMany({
+        where: { checkedOutById: id },
+        data: { checkedOutById: null },
+      });
+
+      // 3. ໂອນຍ້າຍ Foreign Keys ທີ່ບໍ່ອະນຸຍາດໃຫ້ເປັນ Null ໄປຫາ Fallback Admin/User
+      if (fallbackUser) {
+        await tx.parkingTicket.updateMany({
+          where: { checkedInById: id },
+          data: { checkedInById: fallbackUser.id },
+        });
+        await tx.payment.updateMany({
+          where: { receivedById: id },
+          data: { receivedById: fallbackUser.id },
+        });
+        await tx.membership.updateMany({
+          where: { createdById: id },
+          data: { createdById: fallbackUser.id },
+        });
+        await tx.lostTicketCase.updateMany({
+          where: { staffId: id },
+          data: { staffId: fallbackUser.id },
+        });
+      }
+
+      // 4. ລຶບບັນຊີຜູ້ໃຊ້ງານອອກຈາກຖານຂໍ້ມູນຖາວອນ
+      await tx.user.delete({
+        where: { id },
+      });
+    });
+
+    this.logger.log(`User deleted permanently: ${user.username} (${user.id})`);
+    return { success: true, message: 'ລຶບຜູ້ໃຊ້ງານຖາວອນສຳເລັດແລ້ວ' };
   }
 }

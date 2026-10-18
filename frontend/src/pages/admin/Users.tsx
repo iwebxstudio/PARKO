@@ -207,14 +207,13 @@ export default function UsersPage() {
                 <th className="px-6 border-r border-white/30 text-base md:text-[17px] font-bold align-middle text-left">ຜູ້ໃຊ້</th>
                 <th className="px-6 border-r border-white/30 text-base md:text-[17px] font-bold align-middle text-left">ອີເມວ</th>
                 <th className="px-4 border-r border-white/30 w-36 text-base md:text-[17px] font-bold align-middle">ສິດ</th>
-                <th className="px-4 border-r border-white/30 w-36 text-base md:text-[17px] font-bold align-middle">ສະຖານະ</th>
                 <th className="px-4 w-32 text-base md:text-[17px] font-bold align-middle">ຈັດການ</th>
               </tr>
             </thead>
             <tbody>
               {paginatedUsers.length === 0 ? (
                 <tr className="h-16">
-                  <td colSpan={6} className="py-12 text-center text-gray-500 font-bold bg-[#FFFAEE] text-base md:text-[17px] align-middle">
+                  <td colSpan={5} className="py-12 text-center text-gray-500 font-bold bg-[#FFFAEE] text-base md:text-[17px] align-middle">
                     ບໍ່ມີຂໍ້ມູນຜູ້ໃຊ້
                   </td>
                 </tr>
@@ -250,29 +249,24 @@ export default function UsersPage() {
                         {u.role}
                       </td>
 
-                      {/* ຖັນທີ 5: ສະຖານະການໃຊ້ງານ (Column 5: Active Status) */}
-                      <td className={`px-4 ${borderClass} text-base md:text-[17px] font-bold align-middle`}>
-                        <span className={u.isActive !== false ? 'text-gray-800' : 'text-red-500'}>
-                          {u.isActive !== false ? 'Active' : 'Disabled'}
-                        </span>
-                      </td>
-
-                      {/* ຖັນທີ 6: ປຸ່ມຈັດການ ແກ້ໄຂ ແລະ ລຶບ (Column 6: Action Buttons) */}
+                      {/* ຖັນທີ 5: ປຸ່ມຈັດການ ແກ້ໄຂ ແລະ ລຶບ (Column 5: Action Buttons) */}
                       <td className="px-4 align-middle">
                         <div className="flex items-center justify-center gap-2">
                           <button
+                            type="button"
                             onClick={() => openEdit(u)}
                             title="ແກ້ໄຂ"
-                            className="w-9 h-9 rounded flex items-center justify-center text-gray-700 hover:bg-[#F9A825] hover:text-white transition-all shadow-none hover:shadow-sm active:scale-95"
+                            className="w-9 h-9 rounded flex items-center justify-center bg-[#F9A825] hover:bg-[#e0921a] text-white shadow-sm transition-all active:scale-95 cursor-pointer"
                           >
-                            <SvgIcon raw={squarePenIcon} className="w-5 h-5" />
+                            <SvgIcon raw={squarePenIcon} className="w-5 h-5 text-white" />
                           </button>
                           <button
+                            type="button"
                             onClick={() => confirmDelete(u.id, u.displayName || u.username)}
                             title="ລຶບ"
-                            className="w-9 h-9 rounded flex items-center justify-center text-gray-700 hover:bg-[#B02019] hover:text-white transition-all shadow-none hover:shadow-sm active:scale-95"
+                            className="w-9 h-9 rounded flex items-center justify-center bg-[#B02019] hover:bg-[#961b15] text-white shadow-sm transition-all active:scale-95 cursor-pointer"
                           >
-                            <SvgIcon raw={trashIcon} className="w-5 h-5" />
+                            <SvgIcon raw={trashIcon} className="w-5 h-5 text-white" />
                           </button>
                         </div>
                       </td>
@@ -511,30 +505,68 @@ export default function UsersPage() {
       {/* ໜ້າຕ່າງປັອບອັບຢືນຢັນການລຶບຜູ້ໃຊ້ງານ (Delete Confirmation Modal) */}
       {deleteConfirm && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-4"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 animate-scale-in"
           onClick={() => setDeleteConfirm(null)}
         >
           <div
-            className="bg-[#212529] text-white p-5 rounded-2xl shadow-2xl max-w-sm w-full flex flex-col gap-3 border border-gray-700/50"
+            className="bg-[#FFF9EE] w-full max-w-md shadow-2xl rounded-none overflow-hidden"
+            style={{ borderRadius: 0 }}
             onClick={e => e.stopPropagation()}
           >
-            <p className="font-bold text-red-500 text-base md:text-[17px] text-center pt-1 leading-relaxed">
-              ຢືນຢັນການລຶບຜູ້ໃຊ້ "{deleteConfirm.name}" ຖາວອນ?
-            </p>
-            <div className="flex gap-2.5 mt-2">
+            {/* ສ່ວນຫົວໜ້າຕ່າງປັອບອັບ (Modal Header) */}
+            <div className="bg-[#5D5D5D] px-6 h-14 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <SvgIcon raw={trashIcon} className="w-5 h-5 text-white" />
+                <h3 className="text-base md:text-[18px] font-bold text-white tracking-normal">
+                  ຢືນຢັນການລຶບຜູ້ໃຊ້
+                </h3>
+              </div>
               <button
+                type="button"
+                onClick={() => setDeleteConfirm(null)}
+                className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-[#5D5D5D] hover:bg-gray-100 shadow transition-transform cursor-pointer"
+                title="ປິດ"
+              >
+                <SvgIcon raw={xIcon} className="w-4 h-4 text-[#5D5D5D]" />
+              </button>
+            </div>
+
+            {/* ເສັ້ນຂັ້ນສີແດງ (Red Stripe Divider) */}
+            <div className="h-[2.5px] bg-[#B02019] w-full" />
+
+            {/* ເນື້ອໃນຂໍ້ຄວາມຢືນຢັນ (Modal Body) */}
+            <div className="p-6 text-center bg-[#FFF9EE]">
+              <p className="text-base md:text-[17px] font-bold text-red-600 mb-2 leading-relaxed">
+                ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຜູ້ໃຊ້ "{deleteConfirm.name}" ຖາວອນ?
+              </p>
+              <p className="text-sm text-gray-600 font-bold">
+                ການກະທຳນີ້ບໍ່ສາມາດຍົກເລີກໄດ້ ຂໍ້ມູນຈະຖືກລຶບອອກຈາກລະບົບທັນທີ.
+              </p>
+            </div>
+
+            {/* ເສັ້ນຂັ້ນສີແດງ (Red Stripe Divider) */}
+            <div className="h-[2.5px] bg-[#B02019] w-full" />
+
+            {/* ສ່ວນທ້າຍປຸ່ມຄຳສັ່ງ (Modal Footer) */}
+            <div className="bg-[#5D5D5D] px-6 py-3.5 flex gap-3 justify-center">
+              <button
+                type="button"
                 onClick={() => {
                   const id = deleteConfirm.id;
                   setDeleteConfirm(null);
                   executeDelete(id);
                 }}
-                className="bg-[#EF4444] hover:bg-[#dc2626] text-white px-4 py-2.5 rounded-xl text-base font-bold flex-1 shadow-md transition-all active:scale-95"
+                className="bg-[#B02019] hover:bg-[#961b15] text-white font-bold h-10 px-6 rounded-none shadow-md transition-all active:scale-95 text-[15px] cursor-pointer flex items-center justify-center gap-2"
+                style={{ borderRadius: 0 }}
               >
-                ລົບເລີຍ
+                <SvgIcon raw={trashIcon} className="w-4 h-4 text-white" />
+                <span>ລຶບເລີຍ</span>
               </button>
               <button
+                type="button"
                 onClick={() => setDeleteConfirm(null)}
-                className="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2.5 rounded-xl text-base font-bold flex-1 border border-gray-200 shadow-md transition-all active:scale-95"
+                className="bg-white hover:bg-gray-100 text-[#232323] font-bold h-10 px-6 rounded-none shadow-md transition-all active:scale-95 text-[15px] cursor-pointer"
+                style={{ borderRadius: 0 }}
               >
                 ຍົກເລີກ
               </button>

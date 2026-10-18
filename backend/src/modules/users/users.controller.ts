@@ -96,8 +96,11 @@ export class UsersController {
 
   @Delete(':id')
   @Roles(Role.ADMIN)
-  @ApiOperation({ summary: 'Deactivate user (Admin only)' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.usersService.remove(id);
+  @ApiOperation({ summary: 'Delete user permanently (Admin only)' })
+  remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() currentUser: any,
+  ) {
+    return this.usersService.remove(id, currentUser?.id);
   }
 }
